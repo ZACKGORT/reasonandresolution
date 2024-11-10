@@ -565,28 +565,55 @@ iframe {
   /* Ensures it's above other modal elements */
 }
 
-#modal-image {
-  width: 100%;
-  height: auto;
-  max-width: 600px;
-  margin-bottom: 10px;
-  margin-top: 20px;
+/* =========================
+   Mobile-Optimized Modal Styles
+========================= */
+@media only screen and (max-width: 700px) {
+  .modal-content {
+    width: 90%;
+    max-width: 100%;
+    padding: 15px;
+    margin: 5% auto;
+    border-radius: 4px;
+    font-size: 14px; /* Adjusted font size for readability */
+  }
+
+  #modal-image {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .close-button {
+    font-size: 20px;
+    top: 5px;
+    right: 10px;
+    color: #aaa;
+    padding: 5px;
+  }
+
+  #modal-description h2 {
+    font-size: 20px; /* Slightly smaller heading for mobile */
+    margin-bottom: 10px;
+  }
+
+  #modal-description p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
 }
 
-#modal-description {
-  font-size: 16px;
-  color: #333;
-  text-align: left;
-}
+/* iPhone-Specific Adjustments (Width 375px) */
+@media only screen and (max-width: 375px) {
+  .modal-content {
+    padding: 10px; /* Reduced padding */
+    font-size: 12px; /* Further reduced font size for small screens */
+  }
 
-#modal-description h2 {
-  font-size: 24px;
-  margin-bottom: 10px;
-}
-
-#modal-description p {
-  font-size: 16px;
-  line-height: 1.5;
+  .close-button {
+    font-size: 18px; /* Smaller close button */
+    top: 5px;
+    right: 10px;
+  }
 }
 
 .modal-link {
