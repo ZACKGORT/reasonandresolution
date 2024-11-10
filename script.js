@@ -37,7 +37,7 @@ $(document).ready(function() {
         'pershingx': {
             'image': 'https://miro.medium.com/v2/resize:fit:2560/format:webp/1*OenHCQmGa10wpCzR8o9PtA.png',
             'description': `
-                <br><h2>BNY Mellon - Pershing X</h2>
+                <h2>BNY Mellon - Pershing X</h2>
                 <h3>Publicis Sapient</h3>
                 <label>Senior User Experience Designer II</label>
                 <p>Pershing X is a project involving financial technology solutions for modern wealth management. It focuses on delivering integrated platforms for financial advisors and their clients.</p><br>
@@ -46,7 +46,7 @@ $(document).ready(function() {
         'tiktok-business': {
             'image': 'https://miro.medium.com/v2/resize:fit:2000/format:webp/1*gC_cmPMoCAMgckq051lwZg.png',
             'description': `
-                <br><h2>Headless Content Architecture for TikTok For Business</h2>
+                <h2>Headless Content Architecture for TikTok For Business</h2>
                 <h3>Code & Theory</h3>
                 <label>Senior Interaction Designer</label>
                 <p>Enhancing content delivery and scalability through a headless CMS architecture tailored for TikTok's business platform.</p><br>
@@ -55,26 +55,26 @@ $(document).ready(function() {
         'gnc-shopify': {
             'image': 'https://miro.medium.com/v2/resize:fit:2400/format:webp/1*ijfhJkgMsBKeSl3rIzi0XQ.png',
             'description': `
-               <br><h2>Shopify Overhaul for General Nutrition Centers (GNC)</h2>
+               <h2>Shopify Overhaul for General Nutrition Centers (GNC)</h2>
                 <h3>Elva Design Group</h3>
                 <label>Senior User Experience Designer</label>
-                <p>Revamping the e-commerce experience for GNC by overhauling their brand and shopping experience to improve user engagement and sales conversion.</p><br>
+                <p>Revamping the e-commerce experience for GNC by overhauling their platform to improve user engagement and sales conversion.</p><br>
             `
         },
         'salesforce-integration': {
             'image': 'https://miro.medium.com/v2/resize:fit:4466/format:webp/1*mZdgz7yElh7nWKuuS8XZ2g.png',
             'description': `
 
-               <br><h2>Salesforce Integrations</h2>
+               <h2>Salesforce Integrations</h2>
                 <h3>PFSweb, LiveArea</h3>
-                <label>Manager, UX</label>
+                <label>Senior User Experience Designer</label>
                 <p>Streamlining CRM processes for YETI, West Marine, Aquasana, Hardinge, & Simpson Strong-Tie through advanced Salesforce integrations {aka, "Solutions Architecture"}.</p><br>
             `
         },
         'pharma-ux': {
             'image': 'https://miro.medium.com/v2/resize:fit:1400/format:webp/1*9EZTgvxttDXOacHzI9axeQ.gif',
             'description': `
-               <br><h2>UX + ADA Compliance for Pharma and Non-Profit</h2>
+               <h2>UX + ADA Compliance for Pharma and Non-Profit</h2>
                 <h3>FlightPath</h3>
                 <label>Senior User Experience Designer</label>                <p>Ensuring accessibility and user-friendliness by implementing UX best practices and ADA compliance for pharmaceutical and non-profit organizations.</p><br>
             `
@@ -82,7 +82,7 @@ $(document).ready(function() {
         'terrarium-app': {
             'image': 'https://miro.medium.com/v2/resize:fit:3962/format:webp/1*TutCePQB0bSCoMfMTWJb-Q.png',
             'description': `
-               <br><h2>A Ground Up 0-to-1 MVP iOS Video Sharing App</h2>
+               <h2>A Ground Up 0-to-1 MVP iOS Video Sharing App</h2>
                 <h3>O3 World</h3>
                 <label>User Experience Designer</label>                        
                 <p>Developed an MVP iOS app focusing on user engagement and seamless video experiences, taking it from concept to launch.</p><br>
@@ -91,7 +91,7 @@ $(document).ready(function() {
         'design-edu': {
             'image': 'https://miro.medium.com/v2/resize:fit:1400/format:webp/1*vkU8lZmqnOHgheOsK0qtrw.png',
             'description': `
-                <br><h2>Design 101 for .EDU</h2>
+                <h2>Design 101 for .EDU</h2>
                 <h3>One Sixty Over Ninety</h3>
                 <label>Interaction Designer</label>      
                 <p>Introducing foundational design principles to educational platforms to enhance learning experiences and engagement.</p><br>
@@ -100,7 +100,7 @@ $(document).ready(function() {
         'design-by-data': {
             'image': 'https://i.ibb.co/KLPDrZQ/image-5-Copy.png',
             'description': `
-                <br><h2>Design by Data</h2>
+                <h2>Design by Data</h2>
                 <h3>Leadnomics</h3>
                 <label>Senior Web Designer</label>                      <p>Leveraging analytics to inform and enhance design decisions, creating data-driven design strategies.</p><br>
             `
@@ -108,8 +108,8 @@ $(document).ready(function() {
         'pratt': {
             'image': 'https://miro.medium.com/v2/resize:fit:4466/format:webp/1*kY6yg0chz7Puu-WgrlYNMA.jpeg',
             'description': `
-                <br><h2>Pratt Institute of Art</h2>
-                <h3>BFA, Animation & Motion Graphics {Incomplete}</h3>
+                <h2>Pratt Institute of Art</h2>
+                <h3>BFA, Animation & Motion Graphics {Incomplete}; 3.2 GPA</h3>
                 <label>Circa: 2002-03; 2004-05</label>                      <p>"Stop-out", not 'drop-out'. Ask me before you judge me, please.</p><br>
             `
         },
@@ -117,18 +117,17 @@ $(document).ready(function() {
     };
 
     // Modal functionality
-$('.modal-link').on('mouseover', function() {
-    const imageUrl = $(this).data('image'); // Get data-image attribute
-    const preview = $('.image-preview');
-    preview.css({
-        'background-image': `url(${imageUrl})`,
-        'top': `${$(this).offset().top}px`,
-        'left': `${$(this).offset().left + $(this).outerWidth() + 10}px`,
-        'display': 'block'
+    $('.modal-link').on('click', function(e) {
+        e.preventDefault();
+        var linkId = $(this).attr('id');
+        var content = modalContent[linkId];
+
+        if (content) {
+            $('#modal-image').attr('src', content.image);
+            $('#modal-description').html(content.description);
+            $('#modal').fadeIn();
+        }
     });
-}).on('mouseout', function() {
-    $('.image-preview').css('display', 'none');
-});
 
     // Close modal functionality
     $('.close-button').on('click', function() {
@@ -396,6 +395,7 @@ function setTextLines() {
 
 
 
-
-
 // AUDIO PLAYER TEST //
+
+
+
