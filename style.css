@@ -114,7 +114,7 @@ a {
 
 a:hover,
 a:focus {
-  background-color: #FFFF00;
+  background-color: #ffff00;
   color: #262626;
   /* Ensure text color remains consistent on hover */
 }
@@ -238,7 +238,7 @@ a:focus {
 }
 
 .logo.collapsed a:hover {
-  color: #FF10F0;
+  color: #ff10f0;
   text-decoration: none;
 }
 
@@ -346,13 +346,50 @@ img:hover {
 }
 
 /* =========================
-   Footer Styles - Fixed to Bottom
+   Footer Styles
 ========================= */
 #footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
+  margin-top: 5%;
+  margin-bottom: 5%;
+}
+
+#footer ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#footer li {
+  font-size: 10pt;
+  font-weight: bold;
+  line-height: 200%;
+}
+
+#footer a {
+  color: #adadad;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+#footer a:hover {
+  color: #262626;
+}
+
+.footer-left {
+  flex: 1;
+  text-align: left;
+}
+
+.footer-center {
+  flex: 1;
+  text-align: center;
+}
+
+.footer-right {
+  flex: 1;
+  text-align: right;
 }
 
 /* =========================
@@ -473,13 +510,12 @@ iframe {
   display: none;
   position: fixed;
   z-index: 1000;
-  top: 50%;
-  left: 50%;
+  left: 0;
+  top: 0;
   width: 100%;
   height: 100%;
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.5);
-  transform: translate(-50%, -50%);
 }
 
 .modal-content {
@@ -500,6 +536,14 @@ iframe {
   top: 10px;
   right: 20px;
   cursor: pointer;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* Other styles like background, padding, etc. */
 }
 
 .close-button {
@@ -819,7 +863,7 @@ h4 {
   }
 }
 ::selection {
-  background: #FFFF00;
+  background: #ffff00;
 }
 
 /* Gallery Test */
@@ -860,45 +904,14 @@ h4 {
 
 /* embed test */
 .centered-content {
+  text-align: center;
+  /* Centers text content */
   max-width: 800px;
   /* Optional: set a max-width to keep content tidy */
   margin: 0 auto;
   /* Centers the container on the page */
-  padding-left: 1em;
-  padding-right: 1em;
-  text-align: left;
-  /* Left-align all text content */
 }
 
-/* Reduce spacing on smaller screens */
-@media (max-width: 768px) {
-  .centered-content {
-    padding-left: 0.5em !important;
-    padding-right: 0.5em !important;
-  }
-
-  .centered-content .video-container,
-.centered-content h2,
-.centered-content p,
-.centered-content ul {
-    margin-top: 0.5em !important;
-    margin-bottom: 0.5em !important;
-  }
-}
-@media (max-width: 480px) {
-  .centered-content {
-    padding-left: 0.25em !important;
-    padding-right: 0.25em !important;
-  }
-
-  .centered-content .video-container,
-.centered-content h2,
-.centered-content p,
-.centered-content ul {
-    margin-top: 0.25em !important;
-    margin-bottom: 0.25em !important;
-  }
-}
 .centered-content .video-container,
 .centered-content .pill-container,
 .centered-content audio,
@@ -906,38 +919,12 @@ h4 {
 .centered-content p,
 .centered-content ul {
   display: block;
-  margin: 0;
-  /* Left-align individual elements */
-  text-align: left;
-  /* Ensure left alignment */
+  margin: 0 auto;
+  /* Centers individual elements within the content area */
 }
 
-.centered-content iframe {
-  display: block;
-  width: 100%;
-  /* Ensure responsiveness */
-  max-width: 800px;
-  /* Set a fixed max-width for larger display */
-  height: 450px;
-  /* Adjust height to maintain aspect ratio */
-  margin: 0;
-  /* Remove centering margin */
-  padding: 0;
-  text-align: left;
-  /* Ensure left alignment */
-}
-
-/* For smaller screens */
-@media (max-width: 768px) {
-  .centered-content iframe {
-    max-width: 100%;
-    /* Scale to fit smaller screens */
-    height: auto;
-    /* Maintain aspect ratio */
-  }
-}
 /* Global Fix for Overflow Prevention down to 375px */
-@media only screen and (max-width: 400px) {
+@media only screen and (max-width: 375px) {
   /* Prevent any horizontal overflow on the body */
   body {
     overflow-x: hidden;
@@ -953,7 +940,22 @@ h4 {
   }
 
   /* Adjust primary layout containers */
-  .container, .article-content, .haiku-container, .centered-content, p, li, ul, h1, h2, h3, h4, h5, h6, img, video, iframe {
+  .container,
+.article-content,
+.haiku-container,
+.centered-content,
+p,
+li,
+ul,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+img,
+video,
+iframe {
     max-width: 100%;
     padding-left: 1em;
     padding-right: 1em;
@@ -961,7 +963,8 @@ h4 {
   }
 
   /* Prevent overflow on images */
-  img, video {
+  img,
+video {
     max-width: 100%;
     height: auto;
   }
@@ -974,13 +977,17 @@ h4 {
   }
 }
 /* Additional iPhone-specific queries to avoid overflow */
-@media only screen and (max-width: 400px) and (orientation: portrait) {
+@media only screen and (max-width: 375px) and (orientation: portrait) {
   /* Prevent right-side overflow for text and images */
-  p, li, ul, label {
+  p,
+li,
+ul,
+label {
     font-size: 14px;
   }
 
-  .article-content img, .gallery img {
+  .article-content img,
+.gallery img {
     margin-left: auto;
     margin-right: auto;
   }
@@ -990,75 +997,5 @@ h4 {
     flex-direction: column;
     padding-left: 1em;
     padding-right: 1em;
-  }
-}
-/* 375px Media Query for Flush-Left Alignment */
-@media only screen and (max-width: 375px) {
-  /* Ensure body padding and overflow control */
-  body {
-    overflow-x: hidden;
-    margin: 0;
-    padding-left: 1em;
-    /* Uniform left padding */
-    padding-right: 1em;
-    /* Uniform right padding */
-  }
-
-  /* Apply consistent flush-left padding and remove left margin */
-  p, li, ul, h1, h2, h3, h4, h5, h6, label, blockquote, .haiku-container, .centered-content, .article-content, .gallery, #nav ul, #footer ul, .modal-content {
-    padding-left: 0;
-    /* Ensure no extra left padding within the 1em body padding */
-    margin-left: 0;
-    /* Remove any left margin for flush alignment */
-  }
-
-  /* Adjust specific elements within containers for alignment */
-  #nav ul {
-    padding-left: 0;
-  }
-
-  #footer ul {
-    flex-direction: column;
-    align-items: flex-start;
-    /* Align flush left in the footer */
-    padding-left: 0;
-  }
-
-  .footer-left, .footer-center, .footer-right {
-    text-align: left;
-    /* Align footer text flush left */
-    margin-left: 0;
-  }
-
-  /* Gallery items flush left */
-  .gallery {
-    grid-template-columns: 1fr;
-    padding-left: 0;
-  }
-}
-/* Super Small Text Class */
-.super-small-text {
-  font-family: "PT Mono", monospace;
-  font-size: 0.625rem;
-  /* Initial font size */
-  color: #71717d;
-  text-align: left;
-  line-height: 1.4;
-  margin: 1em 0;
-  opacity: 0.7;
-}
-
-/* Mobile Styles (Max-width: 700px) */
-@media only screen and (max-width: 700px) {
-  .super-small-text {
-    font-size: 0.55rem;
-    /* Slightly smaller on mobile */
-  }
-}
-/* Tablet Styles (Max-width: 1020px) */
-@media only screen and (max-width: 1020px) {
-  .super-small-text {
-    font-size: 0.6rem;
-    /* Small but readable on tablets */
   }
 }
