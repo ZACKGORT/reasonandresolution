@@ -58,7 +58,7 @@ $(document).ready(function() {
                <h2>Shopify Overhaul for General Nutrition Centers (GNC)</h2>
                 <h3>Elva Design Group</h3>
                 <label>Senior User Experience Designer</label>
-                <p>Revamping the e-commerce experience for GNC by overhauling their Shopify platform to improve user engagement and sales conversion.</p><br>
+                <p>Revamping the e-commerce experience for GNC by overhauling their platform to improve user engagement and sales conversion.</p><br>
             `
         },
         'salesforce-integration': {
@@ -396,3 +396,8 @@ function setTextLines() {
 
 
 // AUDIO PLAYER TEST //
+
+
+
+
+
