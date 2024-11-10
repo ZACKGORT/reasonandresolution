@@ -117,17 +117,18 @@ $(document).ready(function() {
     };
 
     // Modal functionality
-    $('.modal-link').on('click', function(e) {
-        e.preventDefault();
-        var linkId = $(this).attr('id');
-        var content = modalContent[linkId];
-
-        if (content) {
-            $('#modal-image').attr('src', content.image);
-            $('#modal-description').html(content.description);
-            $('#modal').fadeIn();
-        }
+$('.modal-link').on('mouseover', function() {
+    const imageUrl = $(this).data('image'); // Get data-image attribute
+    const preview = $('.image-preview');
+    preview.css({
+        'background-image': `url(${imageUrl})`,
+        'top': `${$(this).offset().top}px`,
+        'left': `${$(this).offset().left + $(this).outerWidth() + 10}px`,
+        'display': 'block'
     });
+}).on('mouseout', function() {
+    $('.image-preview').css('display', 'none');
+});
 
     // Close modal functionality
     $('.close-button').on('click', function() {
