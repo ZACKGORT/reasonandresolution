@@ -58,7 +58,7 @@ $(document).ready(function() {
                <h2>Shopify Overhaul for General Nutrition Centers (GNC)</h2>
                 <h3>Elva Design Group</h3>
                 <label>Senior User Experience Designer</label>
-                <p>Revamping the e-commerce experience for GNC by overhauling their platform to improve user engagement and sales conversion.</p><br>
+                <p>Revamping the e-commerce experience for GNC by overhauling their Shopify platform to improve user engagement and sales conversion.</p><br>
             `
         },
         'salesforce-integration': {
@@ -110,7 +110,7 @@ $(document).ready(function() {
             'description': `
                 <h2>Pratt Institute of Art</h2>
                 <h3>BFA, Animation & Motion Graphics {Incomplete}; 3.2 GPA</h3>
-                <label>Circa: 2002-03; 2004-05</label>                      <p>"Stop-out", not 'drop-out'. Ask me before you judge me, please.</p><br>
+                <label>Circa: 2002-03; 2004-05</label>                      <p>"Stop-out", not 'drop-out'. Ask me about, if you'd like.</p><br>
             `
         },
         // Add more entries as needed
@@ -396,8 +396,3 @@ function setTextLines() {
 
 
 // AUDIO PLAYER TEST //
-
-
-
-
-
