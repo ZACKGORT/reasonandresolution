@@ -993,3 +993,31 @@ h4 {
     padding-right: 1em;
   }
 }
+
+
+
+
+/* Super Small Text Class */
+.super-small-text {
+  font-family: "PT Mono", monospace;
+  font-size: 0.625rem; /* Initial font size */
+  color: #71717d;
+  text-align: left;
+  line-height: 1.4;
+  margin: 1em 0;
+  opacity: 0.7;
+}
+
+/* Mobile Styles (Max-width: 700px) */
+@media only screen and (max-width: 700px) {
+  .super-small-text {
+    font-size: 0.55rem; /* Slightly smaller on mobile */
+  }
+}
+
+/* Tablet Styles (Max-width: 1020px) */
+@media only screen and (max-width: 1020px) {
+  .super-small-text {
+    font-size: 0.6rem; /* Small but readable on tablets */
+  }
+}
