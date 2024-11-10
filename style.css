@@ -470,15 +470,16 @@ iframe {
    Modal Styles
 ========================= */
 .modal {
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    transform: translate(-50%, -50%);
 }
 
 .modal-content {
@@ -501,13 +502,6 @@ iframe {
   cursor: pointer;
 }
 
-.modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  /* Other styles like background, padding, etc. */
-}
 
 .close-button {
   position: absolute;
