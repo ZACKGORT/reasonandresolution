@@ -1,7 +1,7 @@
-@charset "UTF-8";
 /* =========================
    General Styles
 ========================= */
+
 * {
   margin: 0;
   padding: 0;
@@ -35,12 +35,9 @@ h2 {
 }
 
 h2 span {
-  background-color: #ffff00;
-  /* Yellow highlight color */
-  padding: 0 2px;
-  /* Adds slight padding for better highlight visibility */
-  font-weight: bold;
-  /* Makes the text bold for emphasis */
+  background-color: #ffff00; /* Yellow highlight color */
+  padding: 0 2px; /* Adds slight padding for better highlight visibility */
+  font-weight: bold; /* Makes the text bold for emphasis */
 }
 
 h3 {
@@ -84,20 +81,15 @@ blockquote {
   font-size: 14px;
   max-width: 960px;
   margin: 10px 0 15px 0;
-  padding: 10px 20px;
-  /* Optional: adds padding for better readability */
-  border-left: 3px solid #262626;
-  /* Optional: adds a left border for visual distinction */
+  padding: 10px 20px; /* Optional: adds padding for better readability */
+  border-left: 3px solid #262626; /* Optional: adds a left border for visual distinction */
   -webkit-font-smoothing: antialiased;
 }
 
 .span {
-  background-color: #ffff00;
-  /* Yellow highlight color */
-  padding: 0 2px;
-  /* Adds slight padding for better highlight visibility */
-  font-weight: bold;
-  /* Makes the text bold for emphasis */
+  background-color: #ffff00; /* Yellow highlight color */
+  padding: 0 2px; /* Adds slight padding for better highlight visibility */
+  font-weight: bold; /* Makes the text bold for emphasis */
 }
 
 /* =========================
@@ -105,8 +97,7 @@ blockquote {
 ========================= */
 a {
   color: #262626;
-  border-bottom: 2px solid #262626;
-  /* Optional underline */
+  border-bottom: 2px solid #262626; /* Optional underline */
   cursor: pointer;
   transition: background-color 0.25s ease-in-out;
   text-decoration: none;
@@ -115,14 +106,12 @@ a {
 a:hover,
 a:focus {
   background-color: #ffff00;
-  color: #262626;
-  /* Ensure text color remains consistent on hover */
+  color: #262626; /* Ensure text color remains consistent on hover */
 }
 
 /* Adjusted Navigation Styles */
 #nav {
-  margin-top: 1em;
-  /* Space between logo and navigation */
+  margin-top: 1em; /* Space between logo and navigation */
   text-align: left;
 }
 
@@ -133,8 +122,7 @@ a:focus {
 }
 
 #nav ul li {
-  margin: 0.5em 0;
-  /* Space between links */
+  margin: 0.5em 0; /* Space between links */
 }
 
 #nav ul li a {
@@ -157,15 +145,12 @@ a:focus {
 .logo {
   display: flex;
   align-items: center;
-  font-size: 1rem;
-  /* Original font size */
+  font-size: 1rem; /* Original font size */
   color: #262626;
   cursor: pointer;
   transition: all 0.3s ease;
-  text-decoration: none;
-  /* Remove underline from link */
-  margin-bottom: 1em;
-  /* Add space below the logo */
+  text-decoration: none; /* Remove underline from link */
+  margin-bottom: 1em; /* Add space below the logo */
 }
 
 .logo img {
@@ -183,12 +168,13 @@ a:focus {
 .logo .collapse i {
   opacity: 0;
   transform: translateY(-5px);
-  transition: opacity 0.2s linear, transform 0.2s linear;
+  transition:
+    opacity 0.2s linear,
+    transform 0.2s linear;
 }
 
 .logo:hover .collapse {
-  max-width: 10rem;
-  /* Adjust as needed */
+  max-width: 10rem; /* Adjust as needed */
 }
 
 .logo:hover .collapse i {
@@ -233,8 +219,7 @@ a:focus {
 .logo.collapsed a:active {
   text-decoration: none;
   outline: none;
-  color: inherit;
-  /* Inherit color from parent */
+  color: inherit; /* Inherit color from parent */
 }
 
 .logo.collapsed a:hover {
@@ -274,22 +259,17 @@ a:focus {
 }
 
 footer .logo img {
-  width: 20px;
-  /* Adjust the width */
-  height: 20px;
-  /* Adjust the height */
-  margin-right: 0.25rem;
-  /* Adjust spacing if needed */
+  width: 20px; /* Adjust the width */
+  height: 20px; /* Adjust the height */
+  margin-right: 0.25rem; /* Adjust spacing if needed */
 }
 
 footer .logo .collapse {
-  max-width: none;
-  /* Ensure the collapse effect works */
+  max-width: none; /* Ensure the collapse effect works */
 }
 
 footer .logo:hover .collapse {
-  max-width: 10rem;
-  /* Same as header logo */
+  max-width: 10rem; /* Same as header logo */
 }
 
 /* Rotate footer logo image on hover */
@@ -305,12 +285,15 @@ video {
   max-width: 100%;
   max-height: 800px;
   height: auto;
+
   display: block;
 }
 
 img {
   filter: grayscale(100%);
-  transition: filter 0.5s ease, transform 0.3s ease;
+  transition:
+    filter 0.5s ease,
+    transform 0.3s ease;
 }
 
 img:hover {
@@ -348,6 +331,7 @@ img:hover {
 /* =========================
    Footer Styles
 ========================= */
+
 #footer {
   margin-top: 5%;
   margin-bottom: 5%;
@@ -402,7 +386,7 @@ img:hover {
   }
 
   #left-rail,
-.article-content {
+  .article-content {
     flex: 1 1 100%;
     width: 100%;
   }
@@ -412,8 +396,8 @@ img:hover {
   }
 
   p,
-li,
-ul {
+  li,
+  ul {
     font-size: 12px;
   }
 
@@ -429,8 +413,8 @@ ul {
   }
 
   .footer-left,
-.footer-center,
-.footer-right {
+  .footer-center,
+  .footer-right {
     text-align: center;
     margin-bottom: 10px;
   }
@@ -446,12 +430,13 @@ ul {
   }
 
   .article-content img.float-left,
-.article-content img.float-right {
+  .article-content img.float-right {
     float: none;
     display: block;
     margin: 15px auto;
   }
 }
+
 /* Tablet Styles (Max-width: 1020px) */
 @media only screen and (max-width: 1020px) {
   #left-rail {
@@ -472,12 +457,13 @@ ul {
   }
 
   .article-content img.float-left,
-.article-content img.float-right {
+  .article-content img.float-right {
     float: none;
     display: block;
     margin: 20px auto;
   }
 }
+
 /* =========================
    Embedded Content Styles
 ========================= */
@@ -547,73 +533,46 @@ iframe {
 }
 
 .close-button {
-  position: absolute;
-  /* Positioned relative to the modal */
+  position: absolute; /* Positioned relative to the modal */
   top: 10px;
   right: 10px;
   background: transparent;
   border: none;
   font-size: 24px;
   cursor: pointer;
-  transition: color 0.3s, z-index 0.3s;
+  transition:
+    color 0.3s,
+    z-index 0.3s;
 }
 
 .close-button:hover,
 .close-button:focus {
   color: #000;
-  z-index: 1000;
-  /* Ensures it's above other modal elements */
+  z-index: 1000; /* Ensures it's above other modal elements */
 }
 
-/* =========================
-   Mobile-Optimized Modal Styles
-========================= */
-@media only screen and (max-width: 700px) {
-  .modal-content {
-    width: 90%;
-    max-width: 100%;
-    padding: 15px;
-    margin: 5% auto;
-    border-radius: 4px;
-    font-size: 14px; /* Adjusted font size for readability */
-  }
-
-  #modal-image {
-    max-width: 100%;
-    height: auto;
-  }
-
-  .close-button {
-    font-size: 20px;
-    top: 5px;
-    right: 10px;
-    color: #aaa;
-    padding: 5px;
-  }
-
-  #modal-description h2 {
-    font-size: 20px; /* Slightly smaller heading for mobile */
-    margin-bottom: 10px;
-  }
-
-  #modal-description p {
-    font-size: 14px;
-    line-height: 1.5;
-  }
+#modal-image {
+  width: 100%;
+  height: auto;
+  max-width: 600px;
+  margin-bottom: 10px;
+  margin-top: 20px;
 }
 
-/* iPhone-Specific Adjustments (Width 375px) */
-@media only screen and (max-width: 375px) {
-  .modal-content {
-    padding: 10px; /* Reduced padding */
-    font-size: 12px; /* Further reduced font size for small screens */
-  }
+#modal-description {
+  font-size: 16px;
+  color: #333;
+  text-align: left;
+}
 
-  .close-button {
-    font-size: 18px; /* Smaller close button */
-    top: 5px;
-    right: 10px;
-  }
+#modal-description h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+#modal-description p {
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 .modal-link {
@@ -630,8 +589,7 @@ iframe {
   background-size: cover;
   background-position: center;
   display: none;
-  z-index: 1000;
-  /* Ensures the preview is on top */
+  z-index: 1000; /* Ensures the preview is on top */
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
   /* Optional: For smoother edges */
   border-radius: 0px;
@@ -640,6 +598,7 @@ iframe {
 }
 
 /* Add drop shadow */
+
 /* Display the image on hover */
 .modal-link:hover + .image-preview {
   display: block;
@@ -655,12 +614,12 @@ iframe {
    Left Rail "Back to Top" Button
 
 ========================= */
+
 .left-rail .back-to-top {
   font-family: "PT Mono", monospace;
   font-size: 16px;
   font-weight: 500;
-  color: #888;
-  /* Neutral gray for secondary link style */
+  color: #888; /* Neutral gray for secondary link style */
   text-decoration: none;
   cursor: pointer;
   display: inline-block;
@@ -670,8 +629,7 @@ iframe {
 }
 
 .left-rail .back-to-top:hover {
-  color: #262626;
-  /* Darken color on hover for emphasis */
+  color: #262626; /* Darken color on hover for emphasis */
   text-decoration: underline;
 }
 
@@ -687,7 +645,9 @@ iframe {
   cursor: pointer;
   border-radius: 2px;
   font-size: 14px;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    transform 0.3s ease;
 }
 
 .generate-btn:hover {
@@ -704,31 +664,31 @@ iframe {
   cursor: pointer;
   border-radius: 2px;
   font-size: 14px;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    transform 0.3s ease;
 }
 
 .back-to-top:hover {
   background-color: #555555;
-  transform: translateY(0px);
+  transform: translateY(-0px);
 }
 
 /* Positioning for Desktop Button */
 #back-to-top-desktop {
-  margin-top: auto;
-  /* Pushes the button to the bottom of the flex container */
-  align-self: center;
-  /* Centers the button horizontally */
+  margin-top: auto; /* Pushes the button to the bottom of the flex container */
+  align-self: center; /* Centers the button horizontally */
 }
 
 /* Positioning for Mobile Button */
 #back-to-top-mobile {
-  display: none;
-  /* Hidden by default */
+  display: none; /* Hidden by default */
   width: 100%;
   margin-top: 20px;
 }
 
 /* Responsive Design */
+
 /* Mobile Styles (Max-width: 700px) */
 @media only screen and (max-width: 700px) {
   /* Hide Desktop Button on Mobile */
@@ -741,6 +701,7 @@ iframe {
     display: block;
   }
 }
+
 /* Tablet Styles (Max-width: 1020px) */
 @media only screen and (max-width: 1020px) {
   /* Hide Desktop Button on Tablets */
@@ -753,6 +714,7 @@ iframe {
     display: block;
   }
 }
+
 /* Float Shadow */
 .float-shadow {
   display: inline-block;
@@ -768,8 +730,14 @@ iframe {
   width: 90%;
   height: 10px;
   opacity: 0;
-  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0) 80%);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.25) 0%,
+    rgba(0, 0, 0, 0) 80%
+  );
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
   z-index: -1;
 }
 
@@ -783,6 +751,7 @@ iframe {
 }
 
 /* CURSOR FX TEST */
+
 :root {
   --cursor-size: 20px;
   --bg: #0000ff;
@@ -813,12 +782,14 @@ iframe {
 }
 
 /* Media Query to Disable Custom Cursor on Touch Devices */
+
 @media (pointer: coarse), (hover: none) {
   #cursor,
-.cursor-circle {
+  .cursor-circle {
     display: none;
   }
 }
+
 /* =========================
    Haiku Styles (Matching Existing Text)
 ========================= */
@@ -841,6 +812,7 @@ iframe {
 }
 
 /* Auto Type Test */
+
 h4 {
   font-family: "PT Mono", monospace;
   color: #262626;
@@ -851,21 +823,18 @@ h4 {
   white-space: nowrap;
   overflow: hidden;
   width: 30em;
-  font-weight: normal;
-  /* Match font-weight with p */
-  animation: typing-deleting 10s steps(95, end) infinite;
-  /* Retain typing effect if needed */
+  font-weight: normal; /* Match font-weight with p */
+  animation: typing-deleting 10s steps(95, end) infinite; /* Retain typing effect if needed */
 }
 
 /* Disable typing animation on mobile */
 @media only screen and (max-width: 700px) {
   h4 {
-    animation: none;
-    /* Remove animation on mobile */
-    white-space: normal;
-    /* Allow text wrapping on smaller screens */
+    animation: none; /* Remove animation on mobile */
+    white-space: normal; /* Allow text wrapping on smaller screens */
   }
 }
+
 /* Keyframes for typing and deleting */
 @keyframes typing-deleting {
   0% {
@@ -873,27 +842,27 @@ h4 {
   }
   50% {
     width: 100%;
-  }
-  /* Typing completes at halfway */
+  } /* Typing completes at halfway */
   55% {
     width: 100%;
-  }
-  /* Brief pause after typing */
+  } /* Brief pause after typing */
   100% {
     width: 0;
-  }
-  /* Delete back to start */
+  } /* Delete back to start */
 }
+
 @keyframes blink {
   to {
     opacity: 0;
   }
 }
+
 ::selection {
   background: #ffff00;
 }
 
 /* Gallery Test */
+
 /* Gallery Styles */
 .gallery {
   display: grid;
@@ -906,18 +875,21 @@ h4 {
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
 /* 2-column layout for medium screens */
 @media only screen and (max-width: 1023px) and (min-width: 700px) {
   .gallery {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
 /* Single-column layout for small screens */
 @media only screen and (max-width: 699px) {
   .gallery {
     grid-template-columns: 1fr;
   }
 }
+
 .gallery img {
   width: 100%;
   height: auto;
@@ -931,12 +903,9 @@ h4 {
 
 /* embed test */
 .centered-content {
-  text-align: center;
-  /* Centers text content */
-  max-width: 800px;
-  /* Optional: set a max-width to keep content tidy */
-  margin: 0 auto;
-  /* Centers the container on the page */
+  text-align: center; /* Centers text content */
+  max-width: 800px; /* Optional: set a max-width to keep content tidy */
+  margin: 0 auto; /* Centers the container on the page */
 }
 
 .centered-content .video-container,
@@ -946,8 +915,7 @@ h4 {
 .centered-content p,
 .centered-content ul {
   display: block;
-  margin: 0 auto;
-  /* Centers individual elements within the content area */
+  margin: 0 auto; /* Centers individual elements within the content area */
 }
 
 /* Global Fix for Overflow Prevention down to 375px */
@@ -960,29 +928,27 @@ h4 {
 
   /* Force all containers and key elements to stay within viewport */
   * {
-    max-width: 100vw;
-    /* Constrain all elements to viewport width */
-    box-sizing: border-box;
-    /* Ensure padding doesn’t increase width */
+    max-width: 100vw; /* Constrain all elements to viewport width */
+    box-sizing: border-box; /* Ensure padding doesn’t increase width */
   }
 
   /* Adjust primary layout containers */
   .container,
-.article-content,
-.haiku-container,
-.centered-content,
-p,
-li,
-ul,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-img,
-video,
-iframe {
+  .article-content,
+  .haiku-container,
+  .centered-content,
+  p,
+  li,
+  ul,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  img,
+  video,
+  iframe {
     max-width: 100%;
     padding-left: 1em;
     padding-right: 1em;
@@ -991,7 +957,7 @@ iframe {
 
   /* Prevent overflow on images */
   img,
-video {
+  video {
     max-width: 100%;
     height: auto;
   }
@@ -1003,18 +969,19 @@ video {
     padding-right: 1em;
   }
 }
+
 /* Additional iPhone-specific queries to avoid overflow */
 @media only screen and (max-width: 375px) and (orientation: portrait) {
   /* Prevent right-side overflow for text and images */
   p,
-li,
-ul,
-label {
+  li,
+  ul,
+  label {
     font-size: 14px;
   }
 
   .article-content img,
-.gallery img {
+  .gallery img {
     margin-left: auto;
     margin-right: auto;
   }
