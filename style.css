@@ -67,7 +67,7 @@ ul {
   font-family: "PT Mono", monospace;
   color: #262626;
   line-height: 1.6em;
-  font-size: 14px;
+  font-size: 15px;
   list-style: none;
   max-width: 960px;
   -webkit-font-smoothing: antialiased;
@@ -142,7 +142,7 @@ a:focus {
   color: #bfbfbf;
   display: block;
   padding: 10px;
-  font-size: 14px;
+  font-size: 15px;
   text-decoration: none;
   transition: color 0.3s ease;
 }
