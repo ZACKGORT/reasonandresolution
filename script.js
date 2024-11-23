@@ -396,3 +396,14 @@ function setTextLines() {
 
 
 // AUDIO PLAYER TEST //
+
+
+
+
+
+document.querySelectorAll('a[href="https://ifimaybefrank.com/"]').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.open(link.href, '_blank');
+  });
+});
