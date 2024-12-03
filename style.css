@@ -66,8 +66,8 @@ li,
 ul {
   font-family: "PT Mono", monospace;
   color: #262626;
-  line-height: 1.6em;
-  font-size: 14px;
+  line-height: 1.8em;
+  font-size: 16px;
   list-style: none;
   max-width: 960px;
   -webkit-font-smoothing: antialiased;
@@ -81,7 +81,7 @@ blockquote {
   font-family: "PT Mono", monospace;
   color: #262626;
   line-height: 1.6em;
-  font-size: 14px;
+  font-size: 16px;
   max-width: 960px;
   margin: 10px 0 15px 0;
   padding: 10px 20px;
