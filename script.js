@@ -62,7 +62,7 @@ $(document).ready(function() {
             `
         },
         'salesforce-integration': {
-            'image': 'https://miro.medium.com/v2/resize:fit:4466/format:webp/1*mZdgz7yElh7nWKuuS8XZ2g.png',
+            'image': 'https://i.ibb.co/0DPv3vQ/Frame-4349.png',
             'description': `
 
                <h2>Salesforce Integrations</h2>
