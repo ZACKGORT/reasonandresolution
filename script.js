@@ -35,7 +35,7 @@ $(document).ready(function() {
     const modalContent = {
 
         'pershingx': {
-            'image': 'https://miro.medium.com/v2/resize:fit:2560/format:webp/1*OenHCQmGa10wpCzR8o9PtA.png',
+            'image': 'https://i.ibb.co/hRnRByb/wove-advisory-landing-main.png',
             'description': `
                 <h2>BNY Mellon - Pershing X</h2>
                 <h3>Publicis Sapient</h3>
