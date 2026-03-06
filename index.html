@@ -280,10 +280,11 @@ body.li-theme .ip-cta:not(:disabled):hover { background: #0a66c2; border-color: 
 
 /* ── Header compose button ── */
 #h-compose-btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 0;
-  padding: 5px 9px;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 11px;
 }
-#h-compose-btn .h-compose-icon { font-size: 12px; line-height: 1; }
+#h-compose-btn .h-compose-icon { font-size: 11px; line-height: 1; }
+#h-compose-btn .h-compose-label { font-family: var(--ui); font-size: 7px; letter-spacing: 0.14em; text-transform: uppercase; }
 #h-compose-btn.compose-active {
   border-color: var(--accent); color: var(--accent);
   background: var(--accent-l);
@@ -293,10 +294,11 @@ header:hover #h-compose-btn.compose-active { border-color: #d97757; color: #d977
 
 /* ── STUDIO BUTTON ── */
 #h-studio-btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 0;
-  padding: 5px 9px;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 11px;
 }
-#h-studio-btn .h-studio-icon { font-size: 12px; line-height: 1; }
+#h-studio-btn .h-studio-icon { font-size: 11px; line-height: 1; }
+#h-studio-btn .h-studio-label { font-family: var(--ui); font-size: 7px; letter-spacing: 0.14em; text-transform: uppercase; }
 #h-studio-btn.studio-active {
   border-color: var(--accent); color: var(--accent);
   background: var(--accent-l);
@@ -943,8 +945,8 @@ body.subch-workarea{ --pulse-rgb: 240,120,32; }
 
 #li-toggle {
   position: relative;
-  display: inline-flex; align-items: center; justify-content: center; gap: 0;
-  padding: 5px 8px;
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 10px 5px 8px;
   border: 1px solid var(--border);
   background: none;
   font-family: var(--ui); font-size: 7px;
@@ -972,8 +974,8 @@ body.li-theme #li-toggle {
   background: #0a66c2;
   border-color: #0a66c2;
   color: #fff;
-  border-radius: 4px;
-  padding: 5px 8px;
+  border-radius: 16px;
+  padding: 5px 12px 5px 8px;
 }
 body.li-theme #li-toggle .li-mark {
   background: #fff;
@@ -992,6 +994,201 @@ body.li-theme::before {
     linear-gradient(90deg, rgba(10,102,194,1) 1px, transparent 1px);
   background-size: 48px 48px;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   DOCUMENT THEME — INTOVIEW SPECIFICATION v1.0
+   Rendering mode: all ornamentation removed. Structure carries full weight.
+   Anthropic variant: anchored to policy document register.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+body.doc-theme {
+  --bg:      #faf9f7;
+  --ink:     #111110;
+  --ink-2:   #444440;
+  --ink-3:   #999990;
+  --accent:  #111110;
+  --accent-l:rgba(17,17,16,0.05);
+  --border:  rgba(17,17,16,0.14);
+  --ui:      'DM Mono', monospace;
+  --disp:    'DM Serif Text', serif;
+  transition: background-color 0.5s ease;
+}
+
+/* Flatten all chapter palette shifts */
+body.doc-theme.ch-2, body.doc-theme.ch-3, body.doc-theme.ch-4,
+body.doc-theme.ch-5, body.doc-theme.ch-6, body.doc-theme.ch-7,
+body.doc-theme.ch-8, body.doc-theme.ch-9, body.doc-theme.ch-10,
+body.doc-theme.subch-160, body.doc-theme.subch-o3, body.doc-theme.subch-workarea {
+  --bg:      #faf9f7;
+  --ink:     #111110;
+  --ink-2:   #444440;
+  --ink-3:   #999990;
+  --accent:  #111110;
+  --border:  rgba(17,17,16,0.14);
+}
+
+/* Kill grain, images, scan lines */
+body.doc-theme::after  { opacity: 0 !important; }
+body.doc-theme::before { display: none !important; }
+body.doc-theme #image-layer { opacity: 0 !important; pointer-events: none; }
+body.doc-theme #li-img-layer { display: none !important; }
+
+/* ── Header — letterhead ── */
+body.doc-theme header {
+  background: #faf9f7 !important;
+  border-bottom: 2px solid #111110 !important;
+  box-shadow: none !important;
+}
+body.doc-theme header:hover { background: #faf9f7 !important; }
+body.doc-theme .h-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.10em; text-transform: uppercase;
+  color: #111110;
+}
+body.doc-theme .h-tagline { color: #555550; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.06em; }
+body.doc-theme .mall-crumb { color: #999990; }
+body.doc-theme .mall-crumb .node { color: #555550; font-family: 'DM Mono', monospace; }
+body.doc-theme .mall-crumb .node:hover { color: #111110; }
+body.doc-theme .h-btn { border-color: rgba(17,17,16,0.28); color: #444440; border-radius: 0; font-family: 'DM Mono', monospace; letter-spacing: 0.08em; }
+body.doc-theme .h-btn:hover { border-color: #111110; color: #111110; background: none; }
+body.doc-theme .h-btn.cta { background: #111110; border-color: #111110; color: #faf9f7; border-radius: 0; }
+body.doc-theme .h-btn.cta:hover { background: #333330; border-color: #333330; opacity: 1; }
+body.doc-theme #header-overlay { background: #f0efe9; border-bottom: 1px solid rgba(17,17,16,0.14); }
+body.doc-theme .ho-label { font-family: 'DM Mono', monospace; font-size: 7px; letter-spacing: 0.18em; text-transform: uppercase; color: #999990; }
+body.doc-theme .ho-value { font-family: 'DM Serif Text', serif; font-size: 12px; color: #111110; line-height: 1.5; }
+
+/* ── li-toggle: "off" state ── */
+body.doc-theme #li-toggle {
+  background: #111110; border-color: #111110; color: #faf9f7; border-radius: 0; padding: 5px 10px 5px 8px;
+}
+body.doc-theme #li-toggle .li-mark { background: #faf9f7; color: #111110; border-radius: 1px; }
+body.doc-theme #li-toggle:hover { background: #333330; border-color: #333330; }
+
+/* ── Progress bar ── */
+body.doc-theme #progress { background: #111110 !important; height: 1px !important; }
+
+/* ── Chapter headers ── */
+body.doc-theme .ch-header { padding: 48px 0 24px; }
+body.doc-theme .ch-header-rule { background: #111110 !important; height: 2px !important; margin-bottom: 10px; }
+body.doc-theme .ch-header-label { font-family: 'DM Mono', monospace !important; font-size: 8px !important; letter-spacing: 0.22em; text-transform: uppercase; color: #999990 !important; font-weight: 400; }
+body.doc-theme .ch-header-title { font-family: 'DM Serif Text', serif !important; font-size: clamp(22px, 2.4vw, 32px) !important; font-weight: 400 !important; letter-spacing: 0.01em !important; line-height: 1.18 !important; text-transform: none !important; color: #111110 !important; }
+body.doc-theme .ch-header-num { -webkit-text-stroke: 0 !important; color: rgba(17,17,16,0.10) !important; }
+
+/* ── Sentence types ── */
+body.doc-theme .sentence.poster {
+  font-family: 'DM Serif Text', serif !important;
+  font-size: clamp(22px, 2.8vw, 36px) !important;
+  font-weight: 400 !important; line-height: 1.22 !important;
+  letter-spacing: 0.01em !important; text-transform: none !important;
+  color: #111110 !important;
+}
+body.doc-theme .sentence.poster .ac { color: #111110 !important; }
+body.doc-theme .sentence.poster.active::before { background: #111110 !important; width: 2px !important; }
+
+body.doc-theme .sentence.body {
+  font-family: 'DM Serif Text', serif !important;
+  font-size: clamp(14px, 1.5vw, 17px) !important;
+  font-weight: 400 !important; line-height: 1.75 !important;
+  letter-spacing: 0.005em !important; color: #333330 !important;
+  max-width: 640px !important;
+}
+body.doc-theme .sentence.body .em { color: #111110 !important; font-style: italic; font-weight: 400; }
+body.doc-theme .sentence.active.body { color: #111110 !important; }
+body.doc-theme .sentence.past.body { color: #555550 !important; }
+
+body.doc-theme .sentence.pull {
+  font-family: 'DM Serif Text', serif !important;
+  font-style: italic !important; font-weight: 400 !important;
+  font-size: clamp(14px, 1.5vw, 17px) !important; line-height: 1.68 !important;
+  color: #333330 !important; border-left: 2px solid #111110 !important;
+  padding-left: 20px !important; max-width: 560px !important; opacity: 1 !important;
+}
+body.doc-theme .sentence.pull .ac { color: #111110 !important; }
+body.doc-theme .sentence.active.pull { color: #111110 !important; }
+
+body.doc-theme .sentence.label {
+  font-family: 'DM Mono', monospace !important; font-size: 7px !important;
+  letter-spacing: 0.26em !important; text-transform: uppercase !important;
+  color: #999990 !important; opacity: 1 !important; padding: 16px 0 4px !important;
+}
+
+body.doc-theme .sentence.spec {
+  font-family: 'DM Mono', monospace !important; font-size: 11px !important;
+  letter-spacing: 0.02em !important; color: #333330 !important;
+  border-top: 1px solid rgba(17,17,16,0.10); padding: 6px 0 !important;
+}
+body.doc-theme .sentence.spec .spec-key {
+  font-size: 9px !important; letter-spacing: 0.18em !important;
+  text-transform: uppercase !important; color: #999990 !important; min-width: 140px !important;
+}
+body.doc-theme .sentence.spec .spec-val { color: #111110 !important; font-family: 'DM Mono', monospace !important; }
+
+body.doc-theme .sentence.break { padding: 16px 0 !important; opacity: 1 !important; }
+body.doc-theme .sentence.break::before {
+  content: '— — —' !important; display: block !important;
+  width: auto !important; height: auto !important; background: none !important;
+  font-family: 'DM Serif Text', serif !important; font-size: 12px !important;
+  letter-spacing: 0.3em !important; color: #aaaaaa !important; text-align: center !important;
+  max-width: 640px !important;
+}
+
+/* Sentence opacity — document mode: everything readable at all times */
+body.doc-theme .sentence { opacity: 0.65 !important; }
+body.doc-theme .sentence.active { opacity: 1 !important; }
+body.doc-theme .sentence.past { opacity: 0.85 !important; }
+body.doc-theme .sentence.revealed { opacity: 0.5 !important; }
+body.doc-theme .sentence:hover:not(.active):not(.break):not(.label) { opacity: 0.82 !important; }
+
+/* ── Panel, nav, cursor ── */
+body.doc-theme #panel { background: #f0efe9 !important; border-left: 1px solid rgba(17,17,16,0.14) !important; }
+body.doc-theme #nav-widget .nw-shell { background: #f0efe9 !important; border: 1px solid rgba(17,17,16,0.18) !important; border-radius: 0 !important; }
+body.doc-theme #nav-widget .nw-nav-pip-fill { background: #111110 !important; }
+body.doc-theme #cursor { background: #111110 !important; }
+
+/* ── Links ── */
+body.doc-theme a { color: #111110 !important; text-decoration: underline !important; }
+body.doc-theme a:hover { color: #333330 !important; }
+
+/* ── Toast ── */
+body.doc-theme #toast { background: #111110 !important; border-color: #333330 !important; color: #faf9f7 !important; border-radius: 0 !important; }
+
+/* Suppress sub-chapter palette bleeds */
+body.doc-theme .sentence.pull { border-left-color: #111110 !important; }
+body.doc-theme .sentence.label { color: #999990 !important; }
+body.doc-theme .ch-header-rule { background: #111110 !important; }
+body.doc-theme #progress { background: #111110 !important; }
+
+/* ── DOC-THEME: dark chapter occupies content area only ── */
+body.doc-theme.dark-moment #dark-veil { opacity: 0 !important; pointer-events: none !important; }
+body.doc-theme.dark-moment #dark-spotlight {
+  position: fixed; inset: auto; left: 0; right: 0; top: 0; bottom: 0;
+  display: flex; align-items: flex-start; justify-content: flex-start;
+  padding: 0; pointer-events: none; z-index: 10;
+}
+body.doc-theme.dark-moment #dark-spotlight::before {
+  content: ''; position: absolute; inset: 0; background: #faf9f7; z-index: -1;
+}
+body.doc-theme.dark-moment #dark-spotlight .ds-inner {
+  font-family: 'DM Serif Text', serif !important;
+  font-size: clamp(22px, 2.8vw, 36px) !important; font-weight: 400 !important;
+  line-height: 1.22 !important; letter-spacing: 0.01em !important;
+  text-transform: none !important; color: #111110 !important; text-align: left !important;
+  max-width: 640px !important;
+}
+body.doc-theme.dark-moment #dark-spotlight .ds-inner .ac { color: #111110 !important; }
+body.doc-theme.dark-moment #dark-spotlight .ds-inner .em { color: #444440 !important; font-style: italic !important; font-weight: 400 !important; }
+body.doc-theme.dark-moment .ds-ch-label { font-family: 'DM Mono', monospace !important; color: #999990 !important; font-size: 7px !important; letter-spacing: 0.26em !important; }
+body.doc-theme.dark-moment .ds-ch-title { font-family: 'DM Serif Text', serif !important; font-weight: 400 !important; color: #444440 !important; font-size: clamp(13px, 1.4vw, 18px) !important; text-transform: none !important; letter-spacing: 0.01em !important; }
+body.doc-theme.dark-moment #nav-widget, body.doc-theme.dark-moment #chapter-widget,
+body.doc-theme.dark-moment #panel, body.doc-theme.dark-moment #progress,
+body.doc-theme.dark-moment #built-by, body.doc-theme.dark-moment #wolfie-credit,
+body.doc-theme.dark-moment #scroll-toggle { opacity: 1 !important; pointer-events: auto !important; }
+body.doc-theme.dark-moment .sentence, body.doc-theme.dark-moment .ch-header { opacity: 1 !important; }
+body.doc-theme.dark-moment #dark-escape-hint { color: rgba(17,17,16,0.35) !important; }
+
+/* ── Once-per-session spent marker ── */
+.sentence[data-dark-spent='true'].poster { opacity: 0.55 !important; }
 
 /* color transitions */
 #image-layer::after, header, #panel,
@@ -1208,7 +1405,6 @@ header:hover #header-overlay { opacity: 1; pointer-events: auto; transform: tran
   font-family: var(--disp); font-weight: 900;
   font-size: clamp(52px,7.5vw,100px);
   line-height: 0.88; letter-spacing: -0.03em; text-transform: uppercase; padding: 4px 0;
-  max-width: 860px;
 }
 .sentence.poster .ac { color: var(--accent); }
 .sentence.poster .dim { color: var(--ink-2); font-weight: 300; font-style: italic; }
@@ -1650,19 +1846,7 @@ body.ch-7 { --hud-bg: rgba(248,236,240,0.97); --hud-ink: #200810; --hud-ink-2: #
     padding: 40px 24px 140px; 
     z-index: 10; /* Keeps your text above the background images */
   }
-  .h-center { display: flex; position: static; transform: none; align-items: flex-start; gap: 1px; flex-direction: column; }
-  #wolfie-credit { display: none; }
-  .mall-crumb { display: none; }
-  /* Mobile header: logo left, actions right, compact */
-  header { padding: 0 14px; gap: 0; }
-  .h-name { font-size: 11px; letter-spacing: 0.04em; }
-  .h-tagline { font-size: 6px; letter-spacing: 0.1em; }
-  .h-actions { gap: 5px; flex-shrink: 0; flex-wrap: nowrap; }
-  .h-btn { padding: 5px 8px; white-space: nowrap; }
-  /* HUD button alignment */
-  .nw-action-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  .nw-cell-value { display: flex; align-items: center; justify-content: center; line-height: 1; }
-  .nw-action-label { display: flex; align-items: center; justify-content: center; }
+  .h-center { display: none; }
   .sentence.poster { font-size: clamp(40px,11vw,72px); }
   .sentence.poster.active::before { left: -16px; }
   #header-overlay { grid-template-columns: 1fr 1fr; }
@@ -2501,18 +2685,6 @@ body.compose-mode #compose-syntax-rail {
 }
 body.compose-mode #panel > *:not(#compose-syntax-rail) { display: none !important; }
 
-/* Force panel fully visible in compose mode — no hover required */
-body.compose-mode #panel {
-  background: rgba(248,246,238,0.98) !important;
-  border-left-color: rgba(0,0,0,0.07) !important;
-  padding: 0 !important;
-}
-body.compose-mode #compose-syntax-rail {
-  padding: 20px 22px 48px;
-  overflow-y: auto;
-}
-body.compose-mode #panel .csr-parse-desc { color: #888; }
-
 /* ── COMPOSE PREVIEW GHOST — floats left of rail on item hover ── */
 #csr-preview-ghost {
   position: fixed;
@@ -3350,23 +3522,26 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
     <nav class="mall-crumb">
       <span class="node">&#9671; zackgort.com</span>
       <span class="sep">/</span>
-      <span class="node">Made with love*</span>
+      <span class="node">Open to Work</span>
     </nav>
     <div class="h-center">
       <span class="h-name">Anthropic RSP v3</span>
       <span class="h-tagline">Narrative Edition &middot; wolfie.love</span>
     </div>
     <div class="h-actions">
-      <button id="li-toggle" aria-label="Toggle LinkedIn theme">
+      <button id="li-toggle" aria-label="Cycle theme" title="in → out → off">
         <span class="li-mark" id="li-mark-logo">in</span>
+        <span id="li-toggle-label">In</span>
       </button>
       <button id="h-compose-btn" class="h-btn h-compose-btn" aria-label="Toggle compose mode" title="Edit narrative (Cmd+E)">
         <span class="h-compose-icon">&#9998;</span>
+        <span class="h-compose-label">Compose</span>
       </button>
       <button id="h-studio-btn" class="h-btn" aria-label="Open Studio editor" title="Open visual node editor (Cmd+Shift+E)">
         <span class="h-studio-icon">&#9670;</span>
+        <span class="h-studio-label">Studio</span>
       </button>
-      <a href="https://wolfie.love" target="_blank" class="h-btn cta" style="white-space:nowrap">wolfie.love &rarr;</a>
+      <a href="https://wolfie.life" target="_blank" class="h-btn cta">wolfie.life &rarr;</a>
     </div>
     <div id="header-overlay">
       <div class="ho-cell">
@@ -3593,7 +3768,7 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
   <div class="nw-shell">
 
     <button class="nw-action-btn" id="nw-cv-btn" title="View CV / Resume" onclick="openPanelSheet ? openPanelSheet() : focusPanel()">
-      <span class="nw-cell-value">&#9776;</span><span class="nw-action-label">&#8202;A/&#8202;</span>
+      <span class="nw-cell-value">&#9776;</span><span class="nw-action-label">A/</span>
     </button>
 
     <div class="nw-handle" id="nw-handle"><div class="nw-drag-dots">&middot; &middot; &middot;</div></div>
@@ -5311,12 +5486,18 @@ function isGridOpen() { return document.getElementById('imageGridOverlay').class
   });
 })();
 
-// ── LINKEDIN THEME TOGGLE ─────────────────────────────────────────────────
-(function initLiTheme() {
-  var active = false;
-  var toastTimer = null;
+// ===================================
+// THEME CYCLE TOGGLE — in / out / off
+// ===================================
+// Single button, three states:
+//   default   → mark: "in"  / label: "In"   (no theme)
+//   li-theme  → mark: "out" / label: "Out"  (LinkedIn)
+//   doc-theme → mark: "off" / label: "Off"  (Document)
+(function() {
+  var state = 0; // 0=default, 1=li-theme, 2=doc-theme
+  var toastTimer;
 
-  function showLiToast(icon, title, sub, actionLabel, actionFn, duration) {
+  function showToast(icon, title, sub, actionLabel, actionFn, duration) {
     var ti = document.getElementById('toast-icon');
     var tt = document.getElementById('toast-title');
     var ts = document.getElementById('toast-sub');
@@ -5347,24 +5528,52 @@ function isGridOpen() { return document.getElementById('imageGridOverlay').class
     }, duration || 4000);
   }
 
-  function toggle() {
-    active = !active;
-    var mark = document.getElementById('li-mark-logo');
-    if (active) {
-      document.body.classList.add('li-theme', 'no-transitions');
-      if (mark) mark.textContent = 'out';
-      showLiToast('🔵', 'In Mode', 'Blinded by the light.', 'Escape →', toggle, 6000);
+  function applyState(newState, skipTransition) {
+    state = newState;
+    var mark  = document.getElementById('li-mark-logo');
+    var label = document.getElementById('li-toggle-label');
+
+    document.body.classList.remove('li-theme', 'doc-theme');
+    if (skipTransition) {
+      document.body.classList.add('no-transitions');
       setTimeout(function() { document.body.classList.remove('no-transitions'); }, 50);
-    } else {
-      document.body.classList.remove('li-theme');
-      if (mark) mark.textContent = 'in';
-      showLiToast('✦', 'Back to Normal', 'Conviction restored.', null, null, 2800);
+    }
+
+    if (state === 0) {
+      if (mark)  mark.textContent  = 'in';
+      if (label) label.textContent = 'In';
+      showToast('✦', 'Back to Normal', 'Conviction restored.', null, null, 2800);
+
+    } else if (state === 1) {
+      document.body.classList.add('li-theme');
+      if (mark)  mark.textContent  = 'out';
+      if (label) label.textContent = 'Out';
+      showToast('🔵', 'In Mode', 'Congratulations. You are open to work.', 'Escape →', function() { applyState(0); }, 6000);
+
+    } else if (state === 2) {
+      document.body.classList.add('doc-theme');
+      if (mark)  mark.textContent  = 'off';
+      if (label) label.textContent = 'Off';
+      showToast('§', 'Document Mode', 'All ornamentation removed. The sentence carries the weight.', 'Esc →', function() { applyState(0); }, 5000);
     }
   }
 
+  function cycle() { applyState((state + 1) % 3, true); }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && state !== 0) {
+      if (!document.body.classList.contains('dark-moment')) {
+        applyState(0, false);
+      }
+    }
+  });
+
   var btn = document.getElementById('li-toggle');
-  if (btn) btn.addEventListener('click', toggle);
+  if (btn) btn.addEventListener('click', cycle);
 })();
+
+// ── Once-per-session dark chapter tracking ──────────────────────────────────
+var _darkFiredIds = {};
 
 // ===================================
 // NARRATIVE ENGINE
@@ -6429,11 +6638,45 @@ var darkAskActive    = false;
 var darkSpotlightEl  = null; // the navigable sentence being spotlighted
 
 function enterDarkMoment(posterEl) {
+  // ── Once-per-session guard ──────────────────────────────────────────────
+  var sentId = posterEl ? (posterEl.dataset.sentId || posterEl.id || '') : '';
+  if (sentId && _darkFiredIds[sentId]) {
+    goToSkipDark(current + 1, 1);
+    return;
+  }
+  if (sentId) {
+    _darkFiredIds[sentId] = true;
+    if (posterEl) posterEl.dataset.darkSpent = 'true';
+  }
+
   darkMomentActive = true;
   darkSpotlightEl = posterEl;
+  var spotlight = document.getElementById('dark-spotlight');
   var inner = document.getElementById('ds-inner');
+
+  // ── Doc-theme: anchor spotlight to content column only ─────────────────
+  var isDocTheme = document.body.classList.contains('doc-theme');
+  if (isDocTheme && posterEl && spotlight) {
+    var stream = posterEl.closest('#stream') || posterEl.closest('.stream') || posterEl.parentElement;
+    if (stream) {
+      var rect = stream.getBoundingClientRect();
+      spotlight.style.position       = 'fixed';
+      spotlight.style.left           = rect.left + 'px';
+      spotlight.style.width          = rect.width + 'px';
+      spotlight.style.top            = '0';
+      spotlight.style.bottom         = '0';
+      spotlight.style.right          = 'auto';
+      spotlight.style.alignItems     = 'center';
+      spotlight.style.justifyContent = 'flex-start';
+      spotlight.style.padding        = '0 clamp(20px,4vw,60px)';
+    }
+  } else if (spotlight) {
+    spotlight.style.position = spotlight.style.left = spotlight.style.width =
+    spotlight.style.top = spotlight.style.bottom = spotlight.style.right =
+    spotlight.style.alignItems = spotlight.style.justifyContent = spotlight.style.padding = '';
+  }
+
   if (inner && posterEl) {
-    // Find the nearest preceding ch-header
     var chHeader = null;
     var node = posterEl.previousElementSibling;
     while (node) {
@@ -6464,6 +6707,12 @@ function exitDarkMoment() {
   if (!darkMomentActive) return;
   darkMomentActive = false;
   darkSpotlightEl = null;
+  var spotlight = document.getElementById('dark-spotlight');
+  if (spotlight) {
+    spotlight.style.position = spotlight.style.left = spotlight.style.width =
+    spotlight.style.top = spotlight.style.bottom = spotlight.style.right =
+    spotlight.style.alignItems = spotlight.style.justifyContent = spotlight.style.padding = '';
+  }
   document.body.classList.remove('dark-moment');
 }
 
@@ -6692,6 +6941,9 @@ document.getElementById('dark-veil').addEventListener('click', function() {
     if (!stamp) return;
     if (stamp.dark)   el.dataset.dark          = 'true';
     if (stamp.darkCh) el.dataset.darkChapter   = 'true';
+    if (stamp.darkCh || stamp.dark) {
+      el.dataset.sentId = 'dark-' + (el.dataset.idx || si);
+    }
     if (stamp.ask)    el.dataset.ask           = stamp.ask;
   });
 })();
