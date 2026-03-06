@@ -280,11 +280,10 @@ body.li-theme .ip-cta:not(:disabled):hover { background: #0a66c2; border-color: 
 
 /* ── Header compose button ── */
 #h-compose-btn {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 5px 11px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0;
+  padding: 5px 9px;
 }
-#h-compose-btn .h-compose-icon { font-size: 11px; line-height: 1; }
-#h-compose-btn .h-compose-label { font-family: var(--ui); font-size: 7px; letter-spacing: 0.14em; text-transform: uppercase; }
+#h-compose-btn .h-compose-icon { font-size: 12px; line-height: 1; }
 #h-compose-btn.compose-active {
   border-color: var(--accent); color: var(--accent);
   background: var(--accent-l);
@@ -294,11 +293,10 @@ header:hover #h-compose-btn.compose-active { border-color: #d97757; color: #d977
 
 /* ── STUDIO BUTTON ── */
 #h-studio-btn {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 5px 11px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0;
+  padding: 5px 9px;
 }
-#h-studio-btn .h-studio-icon { font-size: 11px; line-height: 1; }
-#h-studio-btn .h-studio-label { font-family: var(--ui); font-size: 7px; letter-spacing: 0.14em; text-transform: uppercase; }
+#h-studio-btn .h-studio-icon { font-size: 12px; line-height: 1; }
 #h-studio-btn.studio-active {
   border-color: var(--accent); color: var(--accent);
   background: var(--accent-l);
@@ -945,8 +943,8 @@ body.subch-workarea{ --pulse-rgb: 240,120,32; }
 
 #li-toggle {
   position: relative;
-  display: inline-flex; align-items: center; gap: 7px;
-  padding: 5px 10px 5px 8px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0;
+  padding: 5px 8px;
   border: 1px solid var(--border);
   background: none;
   font-family: var(--ui); font-size: 7px;
@@ -974,8 +972,8 @@ body.li-theme #li-toggle {
   background: #0a66c2;
   border-color: #0a66c2;
   color: #fff;
-  border-radius: 16px;
-  padding: 5px 12px 5px 8px;
+  border-radius: 4px;
+  padding: 5px 8px;
 }
 body.li-theme #li-toggle .li-mark {
   background: #fff;
@@ -1210,6 +1208,7 @@ header:hover #header-overlay { opacity: 1; pointer-events: auto; transform: tran
   font-family: var(--disp); font-weight: 900;
   font-size: clamp(52px,7.5vw,100px);
   line-height: 0.88; letter-spacing: -0.03em; text-transform: uppercase; padding: 4px 0;
+  max-width: 860px;
 }
 .sentence.poster .ac { color: var(--accent); }
 .sentence.poster .dim { color: var(--ink-2); font-weight: 300; font-style: italic; }
@@ -1651,7 +1650,19 @@ body.ch-7 { --hud-bg: rgba(248,236,240,0.97); --hud-ink: #200810; --hud-ink-2: #
     padding: 40px 24px 140px; 
     z-index: 10; /* Keeps your text above the background images */
   }
-  .h-center { display: none; }
+  .h-center { display: flex; position: static; transform: none; align-items: flex-start; gap: 1px; flex-direction: column; }
+  #wolfie-credit { display: none; }
+  .mall-crumb { display: none; }
+  /* Mobile header: logo left, actions right, compact */
+  header { padding: 0 14px; gap: 0; }
+  .h-name { font-size: 11px; letter-spacing: 0.04em; }
+  .h-tagline { font-size: 6px; letter-spacing: 0.1em; }
+  .h-actions { gap: 5px; flex-shrink: 0; flex-wrap: nowrap; }
+  .h-btn { padding: 5px 8px; white-space: nowrap; }
+  /* HUD button alignment */
+  .nw-action-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .nw-cell-value { display: flex; align-items: center; justify-content: center; line-height: 1; }
+  .nw-action-label { display: flex; align-items: center; justify-content: center; }
   .sentence.poster { font-size: clamp(40px,11vw,72px); }
   .sentence.poster.active::before { left: -16px; }
   #header-overlay { grid-template-columns: 1fr 1fr; }
@@ -2489,6 +2500,18 @@ body.compose-mode #compose-syntax-rail {
   display: flex; flex-direction: column; flex: 1; min-height: 0;
 }
 body.compose-mode #panel > *:not(#compose-syntax-rail) { display: none !important; }
+
+/* Force panel fully visible in compose mode — no hover required */
+body.compose-mode #panel {
+  background: rgba(248,246,238,0.98) !important;
+  border-left-color: rgba(0,0,0,0.07) !important;
+  padding: 0 !important;
+}
+body.compose-mode #compose-syntax-rail {
+  padding: 20px 22px 48px;
+  overflow-y: auto;
+}
+body.compose-mode #panel .csr-parse-desc { color: #888; }
 
 /* ── COMPOSE PREVIEW GHOST — floats left of rail on item hover ── */
 #csr-preview-ghost {
@@ -3335,18 +3358,15 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
     </div>
     <div class="h-actions">
       <button id="li-toggle" aria-label="Toggle LinkedIn theme">
-        <span class="li-mark">in</span>
-        <span id="li-toggle-label">In</span>
+        <span class="li-mark" id="li-mark-logo">in</span>
       </button>
       <button id="h-compose-btn" class="h-btn h-compose-btn" aria-label="Toggle compose mode" title="Edit narrative (Cmd+E)">
         <span class="h-compose-icon">&#9998;</span>
-        <span class="h-compose-label">Compose</span>
       </button>
       <button id="h-studio-btn" class="h-btn" aria-label="Open Studio editor" title="Open visual node editor (Cmd+Shift+E)">
         <span class="h-studio-icon">&#9670;</span>
-        <span class="h-studio-label">Studio</span>
       </button>
-      <a href="https://wolfie.life" target="_blank" class="h-btn cta">wolfie.life &rarr;</a>
+      <a href="https://wolfie.love" target="_blank" class="h-btn cta" style="white-space:nowrap">wolfie.love &rarr;</a>
     </div>
     <div id="header-overlay">
       <div class="ho-cell">
@@ -3573,7 +3593,7 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
   <div class="nw-shell">
 
     <button class="nw-action-btn" id="nw-cv-btn" title="View CV / Resume" onclick="openPanelSheet ? openPanelSheet() : focusPanel()">
-      <span class="nw-cell-value">&#9776;</span><span class="nw-action-label">A/</span>
+      <span class="nw-cell-value">&#9776;</span><span class="nw-action-label">&#8202;A/&#8202;</span>
     </button>
 
     <div class="nw-handle" id="nw-handle"><div class="nw-drag-dots">&middot; &middot; &middot;</div></div>
@@ -5329,15 +5349,15 @@ function isGridOpen() { return document.getElementById('imageGridOverlay').class
 
   function toggle() {
     active = !active;
-    var label = document.getElementById('li-toggle-label');
+    var mark = document.getElementById('li-mark-logo');
     if (active) {
       document.body.classList.add('li-theme', 'no-transitions');
-      if (label) label.textContent = 'Out';
+      if (mark) mark.textContent = 'out';
       showLiToast('🔵', 'In Mode', 'Congratulations. You are open to work.', 'Escape →', toggle, 6000);
       setTimeout(function() { document.body.classList.remove('no-transitions'); }, 50);
     } else {
       document.body.classList.remove('li-theme');
-      if (label) label.textContent = 'In';
+      if (mark) mark.textContent = 'in';
       showLiToast('✦', 'Back to Normal', 'Conviction restored.', null, null, 2800);
     }
   }
