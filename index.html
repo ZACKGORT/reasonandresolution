@@ -1159,34 +1159,6 @@ body.doc-theme .sentence.label { color: #999990 !important; }
 body.doc-theme .ch-header-rule { background: #111110 !important; }
 body.doc-theme #progress { background: #111110 !important; }
 
-/* ── DOC-THEME: dark chapter occupies content area only ── */
-body.doc-theme.dark-moment #dark-veil { opacity: 0 !important; pointer-events: none !important; }
-body.doc-theme.dark-moment #dark-spotlight {
-  position: fixed; inset: auto; left: 0; right: 0; top: 0; bottom: 0;
-  display: flex; align-items: flex-start; justify-content: flex-start;
-  padding: 0; pointer-events: none; z-index: 10;
-}
-body.doc-theme.dark-moment #dark-spotlight::before {
-  content: ''; position: absolute; inset: 0; background: #faf9f7; z-index: -1;
-}
-body.doc-theme.dark-moment #dark-spotlight .ds-inner {
-  font-family: 'DM Serif Text', serif !important;
-  font-size: clamp(22px, 2.8vw, 36px) !important; font-weight: 400 !important;
-  line-height: 1.22 !important; letter-spacing: 0.01em !important;
-  text-transform: none !important; color: #111110 !important; text-align: left !important;
-  max-width: 640px !important;
-}
-body.doc-theme.dark-moment #dark-spotlight .ds-inner .ac { color: #111110 !important; }
-body.doc-theme.dark-moment #dark-spotlight .ds-inner .em { color: #444440 !important; font-style: italic !important; font-weight: 400 !important; }
-body.doc-theme.dark-moment .ds-ch-label { font-family: 'DM Mono', monospace !important; color: #999990 !important; font-size: 7px !important; letter-spacing: 0.26em !important; }
-body.doc-theme.dark-moment .ds-ch-title { font-family: 'DM Serif Text', serif !important; font-weight: 400 !important; color: #444440 !important; font-size: clamp(13px, 1.4vw, 18px) !important; text-transform: none !important; letter-spacing: 0.01em !important; }
-body.doc-theme.dark-moment #nav-widget, body.doc-theme.dark-moment #chapter-widget,
-body.doc-theme.dark-moment #panel, body.doc-theme.dark-moment #progress,
-body.doc-theme.dark-moment #built-by, body.doc-theme.dark-moment #wolfie-credit,
-body.doc-theme.dark-moment #scroll-toggle { opacity: 1 !important; pointer-events: auto !important; }
-body.doc-theme.dark-moment .sentence, body.doc-theme.dark-moment .ch-header { opacity: 1 !important; }
-body.doc-theme.dark-moment #dark-escape-hint { color: rgba(17,17,16,0.35) !important; }
-
 /* ── Once-per-session spent marker ── */
 .sentence[data-dark-spent='true'].poster { opacity: 0.55 !important; }
 
@@ -1243,6 +1215,7 @@ body.no-transitions .sentence * { transition: none !important; }
   font-family: var(--disp); font-weight: 900; font-size: clamp(20px,2.8vw,34px);
   letter-spacing: -0.02em; text-transform: uppercase; line-height: 1; color: var(--ink);
   transition: color 1.6s ease;
+  max-width: 560px;
 }
 .ch-header-sub {
   font-family: var(--ui); font-size: 7px;
@@ -2897,6 +2870,36 @@ body.li-theme.dark-moment #dark-spotlight .ds-inner .ac { color: #0a66c2; }
 body.li-theme.dark-moment #dark-spotlight .ds-inner .em { color: #555; }
 body.li-theme.dark-moment .ds-ch-label { color: #0a66c2; }
 body.li-theme.dark-moment .ds-ch-title { color: #555; }
+
+/* doc-theme dark moment — content column only, no full-screen veil */
+body.doc-theme.dark-moment #dark-veil { opacity: 0 !important; pointer-events: none !important; }
+body.doc-theme #dark-veil { opacity: 0 !important; pointer-events: none !important; transition: none !important; }
+body.doc-theme.dark-moment #dark-spotlight {
+  position: fixed; inset: auto; left: 0; right: 0; top: 0; bottom: 0;
+  display: flex; align-items: flex-start; justify-content: flex-start;
+  padding: 0; pointer-events: none; z-index: 10;
+}
+body.doc-theme.dark-moment #dark-spotlight::before {
+  content: ''; position: absolute; inset: 0; background: #faf9f7; z-index: -1;
+}
+body.doc-theme.dark-moment #dark-spotlight .ds-inner {
+  font-family: 'DM Serif Text', serif !important;
+  font-size: clamp(22px, 2.8vw, 36px) !important; font-weight: 400 !important;
+  line-height: 1.22 !important; letter-spacing: 0.01em !important;
+  text-transform: none !important; color: #111110 !important;
+  text-align: left !important; max-width: 640px !important;
+}
+body.doc-theme.dark-moment #dark-spotlight .ds-inner .ac { color: #111110 !important; }
+body.doc-theme.dark-moment #dark-spotlight .ds-inner .em { color: #444440 !important; font-style: italic !important; font-weight: 400 !important; }
+body.doc-theme.dark-moment .ds-ch-label { font-family: 'DM Mono', monospace !important; color: #999990 !important; font-size: 7px !important; letter-spacing: 0.26em !important; }
+body.doc-theme.dark-moment .ds-ch-title { font-family: 'DM Serif Text', serif !important; font-weight: 400 !important; color: #444440 !important; font-size: clamp(13px, 1.4vw, 18px) !important; text-transform: none !important; letter-spacing: 0.01em !important; }
+body.doc-theme.dark-moment #nav-widget, body.doc-theme.dark-moment #chapter-widget,
+body.doc-theme.dark-moment #panel, body.doc-theme.dark-moment #progress,
+body.doc-theme.dark-moment #built-by, body.doc-theme.dark-moment #wolfie-credit,
+body.doc-theme.dark-moment #scroll-toggle { opacity: 1 !important; pointer-events: auto !important; }
+body.doc-theme.dark-moment .sentence,
+body.doc-theme.dark-moment .ch-header { opacity: 1 !important; }
+body.doc-theme.dark-moment #dark-escape-hint { color: rgba(17,17,16,0.35) !important; }
 body.li-theme.dark-moment #dark-escape-hint { color: rgba(0,0,0,0.25); }
 
 /* Escape hint */
@@ -6635,15 +6638,23 @@ renderNarrative();
 // ── Dark moment state ──────────────────────────────────────────────────────
 var darkMomentActive = false;
 var darkAskActive    = false;
-var darkSpotlightEl  = null; // the navigable sentence being spotlighted
+var darkSpotlightEl  = null;
+var _darkMomentTimer = null; // pending enterDarkMoment setTimeout
+
+function _scheduleDarkMoment(el) {
+  clearTimeout(_darkMomentTimer);
+  _darkMomentTimer = setTimeout(function() { enterDarkMoment(el); }, 60);
+}
+
+function _cancelDarkMoment() {
+  clearTimeout(_darkMomentTimer);
+  _darkMomentTimer = null;
+}
 
 function enterDarkMoment(posterEl) {
-  // ── Once-per-session guard ──────────────────────────────────────────────
+  // ── Once-per-session guard (safety net — primary check is in goTo hook) ──
   var sentId = posterEl ? (posterEl.dataset.sentId || posterEl.id || '') : '';
-  if (sentId && _darkFiredIds[sentId]) {
-    goToSkipDark(current + 1, 1);
-    return;
-  }
+  if (sentId && _darkFiredIds[sentId]) return;
   if (sentId) {
     _darkFiredIds[sentId] = true;
     if (posterEl) posterEl.dataset.darkSpent = 'true';
@@ -6712,6 +6723,15 @@ function exitDarkMoment() {
     spotlight.style.position = spotlight.style.left = spotlight.style.width =
     spotlight.style.top = spotlight.style.bottom = spotlight.style.right =
     spotlight.style.alignItems = spotlight.style.justifyContent = spotlight.style.padding = '';
+    // Cut transition so veil and spotlight disappear instantly, no lingering fade
+    spotlight.style.transition = 'none';
+    setTimeout(function() { spotlight.style.transition = ''; }, 50);
+  }
+  var veil = document.getElementById('dark-veil');
+  if (veil) {
+    veil.style.transition = 'none';
+    veil.style.opacity = '0';
+    setTimeout(function() { veil.style.transition = ''; veil.style.opacity = ''; }, 50);
   }
   document.body.classList.remove('dark-moment');
 }
@@ -6824,6 +6844,9 @@ function exitDarkAsk() {
 // ── Hook into goTo ─────────────────────────────────────────────────────────
 var _goToOriginal = goTo;
 goTo = function(n, opts) {
+  // Cancel any pending dark moment that hasn't fired yet
+  _cancelDarkMoment();
+
   // Clamp n here so navigable[n] lookup below is always valid
   n = Math.max(0, Math.min(navigable.length - 1, n));
 
@@ -6845,7 +6868,14 @@ goTo = function(n, opts) {
   // @@darkchapter — spotlight this poster sentence
   if (el.dataset.darkChapter === 'true') {
     if (!isScrollFree) {
-      setTimeout(function() { enterDarkMoment(el); }, 60);
+      // Once-per-session: skip silently if already fired
+      var dcId = el.dataset.sentId || el.id || '';
+      if (dcId && _darkFiredIds[dcId]) {
+        _cancelDarkMoment();
+        goToSkipDark(current + 1, 1);
+      } else {
+        _scheduleDarkMoment(el);
+      }
     }
     return;
   }
@@ -6853,7 +6883,13 @@ goTo = function(n, opts) {
   // @@dark — spotlight this sentence (non-poster)
   if (el.dataset.dark === 'true') {
     if (!isScrollFree) {
-      setTimeout(function() { enterDarkMoment(el); }, 60);
+      var dId = el.dataset.sentId || el.id || '';
+      if (dId && _darkFiredIds[dId]) {
+        _cancelDarkMoment();
+        goToSkipDark(current + 1, 1);
+      } else {
+        _scheduleDarkMoment(el);
+      }
     }
     return;
   }
