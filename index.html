@@ -3546,7 +3546,11 @@ body.raw-theme .sentence.past { opacity: 0.55; }
 body.raw-theme .sentence.revealed { opacity: 0.18; }
 body.raw-theme .sentence:hover:not(.active):not(.break):not(.label) { opacity: 0.45; }
 
-body.raw-theme .ch-header-rule { background: #000000 !important; height: 1px !important; }
+body.raw-theme .ch-header-inner  {
+  align-items: flex-start;
+  text-align: left;
+}
+body.raw-theme .ch-header-rule { display: none !important; }
 body.raw-theme .ch-header-label { color: #999999; font-family: monospace; font-size: 9px; }
 body.raw-theme .ch-header-num { -webkit-text-stroke: 1px rgba(0,0,0,0.12); color: transparent; }
 body.raw-theme .ch-header-title { color: #000000; font-family: monospace; font-size: clamp(14px,2vw,20px); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
