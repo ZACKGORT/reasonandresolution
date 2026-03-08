@@ -1962,6 +1962,11 @@ body.raw-theme.split-view #stream-col { max-width: 52vw; }
 
 body.scroll-free { overflow-y: auto !important; overflow-x: hidden !important; }
 body.scroll-free #stream-col { justify-content: flex-start; min-height: auto; padding-top: 64px; padding-bottom: 80px; }
+body.dispatch-mode { overflow-y: auto !important; overflow-x: hidden !important; height: auto !important; }
+body.dispatch-mode #stream-col { justify-content: flex-start; min-height: auto; padding-top: 64px; padding-bottom: 80px; }
+body.dispatch-mode #panel { position: fixed; top: 52px; right: 0; width: 320px; height: calc(100vh - 52px); }
+body.dispatch-mode #shell { grid-template-columns: 1fr 320px; }
+body.dispatch-mode main#stream-col { margin-right: 320px; }
 body.scroll-free .sentence { opacity: 1 !important; pointer-events: none; }
 body.scroll-free .sentence.past { opacity: 1 !important; }
 body.scroll-free .sentence.body { color: var(--ink-2) !important; }
@@ -2677,6 +2682,24 @@ body.ch-7 { --hud-bg: rgba(248,236,240,0.97); --hud-ink: #200810; --hud-ink-2: #
 @media (max-width: 760px) {
   #spec-cursor-ghost { pointer-events: none; } /* shown/hidden via JS on mobile */
   .sentence.spec.auto-flow.ghost-active { opacity: 1 !important; }
+  /* Mobile spec ghost — half-width, smaller text, wraps for long content */
+  #spec-cursor-ghost .scg-inner {
+    max-width: 50vw;
+    white-space: normal;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 10px 14px;
+  }
+  #spec-cursor-ghost .scg-key {
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    min-width: unset;
+  }
+  #spec-cursor-ghost .scg-val {
+    font-size: 13px;
+    line-height: 1.3;
+  }
 }
 
 /* ── RESUME PANEL ──────────────────────────────────────────────────────────── */
@@ -4941,6 +4964,14 @@ document.addEventListener('touchstart', function() {
     var col  = document.getElementById('stream-col');
     var colR = col ? col.getBoundingClientRect() : { left: 0, right: window.innerWidth - 320 };
     var rLim = colR.right - 8;
+    // If element is off-screen (overscroll / scrolled away), park at a safe
+    // viewport-relative anchor rather than chasing an off-screen rect
+    var onScreen = rect.bottom > 0 && rect.top < window.innerHeight;
+    if (!onScreen) {
+      var safeX = Math.max(colR.left + 4, Math.min(colR.left + 8, rLim - gw));
+      var safeY = Math.max(60, Math.min(window.innerHeight * 0.38 - gh * 0.5, window.innerHeight - gh - 8));
+      return { x: safeX, y: safeY };
+    }
     var candidates = [
       { x: rect.left,        y: rect.top    - gh - 10 },
       { x: rect.left,        y: rect.bottom + 10      },
@@ -5021,6 +5052,13 @@ document.addEventListener('touchstart', function() {
     if (ghostVisible && !following) { var p = computeIdlePos(); idleX = p.x; idleY = p.y; }
   });
 
+  // Recompute idle anchor on scroll — keeps ghost tracking the viewport correctly.
+  // computeIdlePos now handles off-screen elements safely, so just nudge the RAF.
+  window.addEventListener('scroll', function() {
+    if (!ghostVisible || following) return;
+    if (!rafId) rafId = requestAnimationFrame(tick);
+  }, { passive: true });
+
   // ── Called by goTo on each sentence navigation ──
   window._specGhostUpdate = function(el) {
     document.querySelectorAll('.ghost-active').forEach(function(s) { s.classList.remove('ghost-active'); });
@@ -5036,8 +5074,8 @@ document.addEventListener('touchstart', function() {
         ghostKey.textContent = keyEl.textContent;
         ghostVal.textContent = valEl.textContent;
         if (isMob()) {
-          ghost.style.cssText = 'display:block;position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));top:auto;width:auto;opacity:1;';
-          ghost.querySelector('.scg-inner').style.cssText = 'min-width:unset;max-width:none;width:100%;justify-content:space-between;';
+          ghost.style.cssText = 'display:block;position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom));top:auto;opacity:1;';
+          ghost.querySelector('.scg-inner').style.cssText = '';
           ghost.classList.add('visible'); ghostVisible = true;
         } else { showGhost(); }
         return;
@@ -5058,8 +5096,8 @@ document.addEventListener('touchstart', function() {
       ghostKey.textContent = name || 'Sub-chapter';
       ghostVal.textContent = 'Ch.' + (ch || '?') + ' · Agency Life · Philly';
       if (isMob()) {
-        ghost.style.cssText = 'display:block;position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));top:auto;width:auto;opacity:1;';
-        ghost.querySelector('.scg-inner').style.cssText = 'min-width:unset;max-width:none;width:100%;justify-content:space-between;';
+        ghost.style.cssText = 'display:block;position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom));top:auto;opacity:1;';
+        ghost.querySelector('.scg-inner').style.cssText = '';
         ghost.classList.add('visible'); ghostVisible = true;
       } else { showGhost(); }
       return;
@@ -9251,10 +9289,8 @@ document.addEventListener('keydown', function(e) {
     // Use node.el but also cross-check it has .active (goTo already set this)
     activeEl = node.el;
     activeEl.classList.add('dispatch-active');
-    // Ensure stream sentence is visible — goTo handles scroll but re-trigger if needed
-    if (typeof current !== 'undefined' && navigable && navigable[current] === activeEl) {
-      activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    // Ensure stream sentence is always scrolled into view when dispatch updates
+    activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   function hideDispatchGhost() {
@@ -9309,7 +9345,14 @@ document.addEventListener('keydown', function(e) {
           return !el.classList.contains('break') && !el.classList.contains('label') && !el.classList.contains('cta-sentence');
         });
         var navIdx = navEls.indexOf(node.el);
-        if (navIdx >= 0 && typeof goTo === 'function') goTo(navIdx);
+        if (navIdx >= 0 && typeof goTo === 'function') {
+          goTo(navIdx);
+          // goTo triggers _dispatchUpdate which calls showDispatchGhost — but also
+          // ensure the stream sentence is centred in view after the panel click
+          setTimeout(function() {
+            node.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 60);
+        }
       });
     });
 
@@ -9328,16 +9371,63 @@ document.addEventListener('keydown', function(e) {
       var node = nodeIndex[i];
       entry.classList.toggle('pdv-active', !!(node && node.el.classList.contains('active')));
     });
-    // Scroll active entry into view within panel
+    // Scroll active entry into view within the right-rail panel
     var act = pdvEntries.querySelector('.pdv-active');
-    if (act) { var pv = document.getElementById('pdv-entries'); if (pv && pv.contains(act)) act.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+    if (act) act.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  // ── Scroll tracking — while dispatch is on, nearest node drives the selection ──
+  var dispatchScrollRaf = null;
+  var dispatchLastNearest = -1;
+
+  function dispatchGetNearest() {
+    var mid = window.innerHeight / 2;
+    var best = 0, bestDist = Infinity;
+    if (typeof navigable === 'undefined') return 0;
+    navigable.forEach(function(el, i) {
+      var r = el.getBoundingClientRect();
+      var center = r.top + r.height / 2;
+      var dist = Math.abs(center - mid);
+      if (dist < bestDist) { bestDist = dist; best = i; }
+    });
+    return best;
+  }
+
+  function dispatchTrackScroll() {
+    if (!active) return;
+    var n = dispatchGetNearest();
+    if (n !== dispatchLastNearest) {
+      dispatchLastNearest = n;
+      if (typeof goTo === 'function') goTo(n, { noScroll: true });
+    }
+    dispatchScrollRaf = requestAnimationFrame(dispatchTrackScroll);
+  }
+
+  function dispatchEnterScroll() {
+    document.documentElement.style.overflow = 'auto';
+    document.documentElement.style.height = 'auto';
+    document.body.style.overflow = 'auto';
+    document.body.style.height = 'auto';
+    if (typeof all !== 'undefined') {
+      all.forEach(function(el) { el.classList.add('revealed'); });
+    }
+    document.querySelectorAll('.ch-header').forEach(function(g) { g.classList.add('revealed'); });
+    dispatchLastNearest = -1;
+    dispatchScrollRaf = requestAnimationFrame(dispatchTrackScroll);
+  }
+
+  function dispatchExitScroll() {
+    if (dispatchScrollRaf) { cancelAnimationFrame(dispatchScrollRaf); dispatchScrollRaf = null; }
+    document.documentElement.style.overflow = '';
+    document.documentElement.style.height = '';
+    document.body.style.overflow = '';
+    document.body.style.height = '';
   }
 
   // ── Toggle dispatch mode ──
   window.toggleDispatch = function() {
     active = !active;
     document.body.classList.toggle('dispatch-mode', active);
-    // Return focus to body so keyboard sentence navigation keeps working
     if (document.activeElement && document.activeElement !== document.body) {
       document.activeElement.blur();
     }
@@ -9346,7 +9436,7 @@ document.addEventListener('keydown', function(e) {
     if (active) {
       buildIndex();
       populatePDV();
-      // Fire on current node immediately — shows ghost and applies dispatch-active
+      dispatchEnterScroll();
       if (typeof current !== 'undefined') {
         var navEls = Array.from(document.querySelectorAll('[data-idx]')).filter(function(el){
           return !el.classList.contains('break') && !el.classList.contains('label') && !el.classList.contains('cta-sentence');
@@ -9355,15 +9445,17 @@ document.addEventListener('keydown', function(e) {
         var node = nodeIndex.find(function(n){ return n.el === curEl; });
         if (node) {
           showDispatchGhost(node);
-          // Ensure stream reflects current node with dispatch-active
           document.querySelectorAll('.sentence.dispatch-active').forEach(function(s){ s.classList.remove('dispatch-active'); });
           node.el.classList.add('dispatch-active');
         }
       }
     } else {
-      // Clean up dispatch-active from all sentences
+      dispatchExitScroll();
       document.querySelectorAll('.sentence.dispatch-active').forEach(function(s){ s.classList.remove('dispatch-active'); });
       hideDispatchGhost();
+      if (typeof goTo === 'function' && typeof current !== 'undefined') {
+        goTo(current, { noScroll: true });
+      }
     }
   };
 
