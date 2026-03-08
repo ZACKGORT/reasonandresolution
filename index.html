@@ -2892,6 +2892,199 @@ body.ch-7 { --hud-bg: rgba(248,236,240,0.97); --hud-ink: #200810; --hud-ink-2: #
 }
 
 /* ===================================
+   DISPATCH MODE
+   =================================== */
+
+/* ── Dispatch ghost — floating node inspector ── */
+#dispatch-ghost {
+  position: fixed; pointer-events: none; z-index: 9200;
+  opacity: 0; transition: opacity .18s ease; will-change: left, top;
+  display: none;
+}
+body.dispatch-mode #dispatch-ghost { display: block; }
+#dispatch-ghost.visible { opacity: 1; }
+
+.dsp-inner {
+  background: var(--hud-bg); border: 1px solid var(--hud-border);
+  border-radius: 8px; padding: 16px 20px;
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 8px 36px rgba(0,0,0,.35), 0 1px 4px rgba(0,0,0,.15);
+  min-width: 260px; max-width: 380px;
+}
+.dsp-eyebrow {
+  font-family: var(--ui); font-size: 7px; letter-spacing: .20em;
+  text-transform: uppercase; color: var(--hud-accent);
+  margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+}
+.dsp-eyebrow::before {
+  content: ''; display: inline-block; width: 5px; height: 5px;
+  border-radius: 50%; background: var(--hud-accent); flex-shrink: 0;
+}
+.dsp-type-badge {
+  font-family: var(--ui); font-size: 7px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--hud-ink-3);
+  border: 1px solid var(--hud-border); border-radius: 3px;
+  padding: 2px 6px; margin-left: auto;
+}
+.dsp-summary {
+  font-family: var(--disp); font-size: 13px; font-weight: 400;
+  line-height: 1.5; letter-spacing: .01em;
+  color: var(--hud-ink); margin-bottom: 14px;
+}
+/* ── 4-up stats grid ── */
+.dsp-stats-row {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 0; border-top: 1px solid var(--hud-border);
+  border-left: 1px solid var(--hud-border);
+  border-radius: 5px; overflow: hidden; margin-bottom: 10px;
+}
+.dsp-stat {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 9px 8px 7px;
+  border-right: 1px solid var(--hud-border);
+  border-bottom: 1px solid var(--hud-border);
+}
+.dsp-stat-val {
+  font-family: var(--disp); font-size: 19px; font-weight: 400;
+  letter-spacing: -.01em; color: var(--hud-ink); line-height: 1;
+  margin-bottom: 4px;
+}
+.dsp-stat-key {
+  font-family: var(--ui); font-size: 7px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--hud-ink-3);
+}
+/* ── Signal bar ── */
+.dsp-signal-row {
+  display: flex; align-items: center; gap: 10px;
+  padding-top: 8px;
+}
+.dsp-sig-bar {
+  display: flex; gap: 3px; align-items: center; flex-shrink: 0;
+}
+.dsp-sig-seg {
+  width: 18px; height: 4px; border-radius: 2px;
+  background: var(--hud-border);
+  transition: background .18s;
+}
+.dsp-sig-seg.on { background: var(--hud-accent); }
+.dsp-signal-label {
+  font-family: var(--ui); font-size: 8px; letter-spacing: .10em;
+  text-transform: uppercase; color: var(--hud-ink-3);
+}
+
+/* active sentence dims when dispatch ghost is tracking it */
+body.dispatch-mode .sentence.dispatch-active {
+  opacity: 0.08 !important; transition: opacity .18s ease;
+}
+
+/* ── Dispatch button active state ── */
+#nw-dispatch-btn.dispatch-on { color: var(--hud-accent); }
+#nw-dispatch-btn.dispatch-on .nw-action-label { color: var(--hud-accent); }
+
+/* ── Panel dispatch view ── */
+#panel-dispatch-view {
+  display: none; flex-direction: column;
+  width: 100%; min-height: 0;
+}
+body.dispatch-mode #panel-dispatch-view { display: flex; }
+body.dispatch-mode .pg-chapter-list { display: none; }
+body.dispatch-mode .pg-preview-section { display: none; }
+body.dispatch-mode .pg-header { display: none; }
+
+.pdv-header {
+  padding: 16px 20px 12px; border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.pdv-eyebrow {
+  font-family: var(--ui); font-size: 7px; letter-spacing: .20em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 4px;
+}
+.pdv-current {
+  font-family: var(--disp); font-size: 13px; line-height: 1.4;
+  color: var(--ink); overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.pdv-entries {
+  flex: 1; overflow-y: auto; padding: 0;
+  max-height: 60vh;
+}
+.pdv-entry {
+  padding: 10px 20px; border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background .12s;
+}
+.pdv-entry:hover { background: var(--accent-l); }
+.pdv-entry.pdv-active { background: var(--accent-l); }
+.pdv-entry-top {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 4px;
+}
+.pdv-entry-type {
+  font-family: var(--ui); font-size: 7px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--accent);
+}
+.pdv-entry-type.sig-hi  { color: var(--accent); }
+.pdv-entry-type.sig-mid { color: var(--ink-2); }
+.pdv-entry-type.sig-lo  { color: var(--ink-3); }
+.pdv-entry-reads {
+  font-family: var(--disp); font-size: 13px; font-weight: 400;
+  color: var(--ink); letter-spacing: -.01em;
+}
+.pdv-entry-text {
+  font-family: var(--disp); font-size: 11px; line-height: 1.4;
+  color: var(--ink-2); margin-bottom: 6px;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.pdv-entry-bar-wrap {
+  height: 2px; background: var(--border); border-radius: 1px;
+  margin-bottom: 5px; overflow: hidden;
+}
+.pdv-entry-bar {
+  height: 100%; border-radius: 1px;
+  background: var(--ink-3); transition: width .3s ease;
+}
+.pdv-entry-bar.sig-hi  { background: var(--accent); }
+.pdv-entry-bar.sig-mid { background: var(--ink-2); }
+.pdv-entry-bar.sig-lo  { background: var(--ink-3); }
+.pdv-entry-stats {
+  display: flex; gap: 10px;
+  font-family: var(--ui); font-size: 7px; letter-spacing: .08em;
+  color: var(--ink-3);
+}
+.pdv-footer {
+  padding: 10px 20px; border-top: 1px solid var(--border);
+  font-family: var(--ui); font-size: 7px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--ink-3); flex-shrink: 0;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.pdv-close-btn {
+  background: none; border: none; cursor: pointer;
+  font-family: var(--ui); font-size: 7px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--accent);
+  padding: 0; transition: opacity .12s;
+}
+.pdv-close-btn:hover { opacity: 0.7; }
+
+/* mobile: ghost hidden, panel view stays */
+@media (max-width: 760px) {
+  #dispatch-ghost { display: none !important; }
+}
+
+/* raw/doc theme overrides */
+body.raw-theme .dsp-inner {
+  background: #fff; border: 1px solid #000; border-radius: 0;
+  backdrop-filter: none; box-shadow: 2px 3px 12px rgba(0,0,0,.12);
+}
+body.raw-theme .dsp-eyebrow { color: #000; }
+body.raw-theme .dsp-eyebrow::before { background: #000; }
+body.raw-theme .dsp-summary { font-family: monospace; font-size: 12px; color: #000; }
+body.raw-theme .dsp-type-badge { color: #999; border-color: #ddd; }
+body.raw-theme .dsp-stat-val { font-family: monospace; font-size: 15px; color: #000; }
+body.raw-theme .dsp-stat-key { font-family: monospace; color: #999; }
+body.raw-theme .dsp-stats-row { border-color: #ddd; }
+body.raw-theme .dsp-stat { border-color: #ddd; }
+body.raw-theme .dsp-sig-seg.on { background: #000; }
+body.raw-theme .dsp-signal-label { color: #999; font-family: monospace; }
+
+/* ===================================
    COMPOSE MODE
    =================================== */
 
@@ -4059,7 +4252,7 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
         <span class="h-studio-icon">&#9670;</span>
         <span class="h-studio-label">Studio</span>
       </button>
-      <a href="https://zackgort.com" target="_blank" class="h-btn cta">zack.gort &rarr;</a>
+      <a href="https://wolfie.life" target="_blank" class="h-btn cta">wolfie.life &rarr;</a>
     </div>
     <div id="header-overlay">
       <div class="ho-cell">
@@ -4100,6 +4293,19 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
   <!-- ── CHAPTER LIST ── -->
   <div class="pg-chapter-list" id="pg-chapter-list">
     <!-- populated by JS -->
+  </div>
+
+  <!-- ── DISPATCH VIEW — narrative node summary ── -->
+  <div id="panel-dispatch-view">
+    <div class="pdv-header">
+      <div class="pdv-title">&#9671; Dispatch · Node Analytics</div>
+      <div class="pdv-sub" id="pdv-sub">Navigate to inspect any node.</div>
+    </div>
+    <div class="pdv-entries" id="pdv-entries"></div>
+    <div class="pdv-footer" id="pdv-footer">
+      <span>0 nodes &middot; dispatch mode</span>
+      <button class="pdv-close-btn" onclick="toggleDispatch()">&#10005; close</button>
+    </div>
   </div>
 
   <!-- ── SITE PREVIEW ── -->
@@ -4309,6 +4515,10 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
       <span class="nw-cell-value" id="nw-scroll-icon">&#8645;</span><span class="nw-action-label" id="nw-scroll-label">Scroll</span>
     </button>
 
+    <button class="nw-action-btn" id="nw-dispatch-btn" title="Dispatch — node data overlay" onclick="toggleDispatch()">
+      <span class="nw-cell-value">&#9672;</span><span class="nw-action-label">Dispatch</span>
+    </button>
+
     <div class="nw-divider"></div>
     <div class="nw-nav">
       <button class="nw-btn-prev" id="nw-prev" aria-label="Previous">&#8593;</button>
@@ -4336,6 +4546,18 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
 
 <!-- Spec cursor ghost -->
 <div id="spec-cursor-ghost"><div class="scg-inner"><span class="scg-key" id="scg-key"></span><span class="scg-val" id="scg-val"></span></div></div>
+
+<!-- ── DISPATCH GHOST ── -->
+<div id="dispatch-ghost" aria-hidden="true">
+  <div class="dsp-inner">
+    <div class="dsp-eyebrow">
+      <span id="dsp-eyebrow-label">Node Analytics</span>
+      <span class="dsp-type" id="dsp-type">body</span>
+    </div>
+    <div class="dsp-summary" id="dsp-summary"></div>
+    <div class="dsp-meta" id="dsp-meta"></div>
+  </div>
+</div>
 
 <div id="toast">
   <span class="toast-icon" id="toast-icon">&#9671;</span>
@@ -5075,6 +5297,9 @@ function goTo(n, opts) {
   });
   updateChapterWidget(ch);
   updatePanelService(ch);
+  if (window._dispatchUpdate && typeof current !== 'undefined') {
+    window._dispatchUpdate(navigable[n]);
+  }
   if (window._specGhostUpdate) {
     // Check if active sentence is immediately preceded by a subch-break divider
     var ghostTarget = activeEl;
@@ -7610,11 +7835,10 @@ document.getElementById('dark-veil').addEventListener('click', function() {
 // ── SITES GRID ────────────────────────────────────────────────────────────
 var GRID_SITES = [
   { url: 'https://wolfie.love',         label: 'wolfie.love',     tag: 'Platform'  },
-  { url: 'https://zackgort',         label: 'portfolio',     tag: 'Thinker & Maker'  },
+  { url: 'https://wolfie.lfee',         label: 'wolfie.life',     tag: 'Application'  },
   { url: 'https:/reasonably.cc',    label: 'reasonably.cc',       tag: 'Prose for Prompts' },
-  { url: 'https://wolfie.love/dash',    label: 'love/dash',       tag: 'Narrative Analytics' },
-  { url: 'https://wolfie.life/data',    label: 'love/data',       tag: 'Narrative Analytics' },
-  { url: 'https://wolfie.love/net',    label: 'love/news',       tag: 'Narrative Media Nodes' },
+  { url: 'https://wolfie.love/dash',    label: 'wolfie.love/dash',       tag: 'Narrative Analytics' },
+  { url: 'https://wolfie.love/news',    label: 'wolfie.love/news',       tag: 'Nested Narrative Nodes' },
 
 ];
 var sitesGridOpen  = false;
@@ -8779,5 +9003,359 @@ document.addEventListener('keydown', function(e) {
 })();
 </script>
 
+
+<script>
+// ── DISPATCH MODE — Node Analytics ────────────────────────────────────────
+// Each sentence node carries seeded performance data: reads, dwell, drop-off,
+// re-read rate. The ghost becomes a live analytics card. The right rail
+// becomes a performance index across the full narrative.
+// Hooks into goTo via window._dispatchUpdate.
+(function() {
+
+  // ── DOM refs ──
+  var ghost      = document.getElementById('dispatch-ghost');
+  var dspSum     = document.getElementById('dsp-summary');
+  var dspMeta    = document.getElementById('dsp-meta');
+  var dspType    = document.getElementById('dsp-type');
+  var pdvEntries = document.getElementById('pdv-entries');
+  if (pdvEntries) {
+    pdvEntries.addEventListener('wheel', function(e) { e.stopPropagation(); }, { passive: true });
+  }
+  var pdvFooter  = document.getElementById('pdv-footer');
+  if (!ghost) return;
+
+  // ── State ──
+  var active    = false;
+  var visible   = false;
+  var following = false;
+  var gx=0, gy=0, tx=0, ty=0, ix=0, iy=0;
+  var raf=null, activeEl=null;
+  var LF=0.11, LI=0.07, OX=22, OY=-16;
+  var mx=window.innerWidth/2;
+  var nodeIndex = [];
+
+  function isMob() { return window.innerWidth <= 760; }
+  function lerp(a,b,t) { return a+(b-a)*t; }
+
+  // ── Seeded performance data per node ─────────────────────────────────────
+  // Deterministic pseudo-random so the numbers are stable on every reload.
+  // Models a real drop-off curve: high reads early, tapering toward end,
+  // pull quotes and posters spike re-read rate, body nodes have longest dwell.
+  function seededRand(seed) {
+    var x = Math.sin(seed + 1) * 10000;
+    return x - Math.floor(x);
+  }
+
+  // Total session count — the denominator everything else is relative to
+  var TOTAL_SESSIONS = 1847;
+
+  function nodePerf(idx, type, ch, wordCount) {
+    var s = idx * 7 + ch * 31;
+
+    // Read rate — drops as narrative progresses, chapter openings spike
+    var baseReadRate = Math.max(0.12, 1.0 - (idx * 0.018) + (seededRand(s) * 0.08));
+    // Posters and pull quotes at chapter starts get a boost
+    if (type === 'poster') baseReadRate = Math.min(0.99, baseReadRate + 0.14);
+    if (type === 'pull')   baseReadRate = Math.min(0.97, baseReadRate + 0.10);
+    if (type === 'label')  baseReadRate = Math.min(0.99, baseReadRate + 0.06);
+    var reads = Math.round(TOTAL_SESSIONS * baseReadRate);
+
+    // Dwell time in seconds — body nodes linger, specs are quick, pulls pause readers
+    var baseDwell = type === 'body'   ? (8  + wordCount * 0.38 + seededRand(s+1) * 4)
+                  : type === 'pull'   ? (12 + wordCount * 0.42 + seededRand(s+2) * 5)
+                  : type === 'poster' ? (6  + seededRand(s+3) * 3)
+                  : type === 'spec'   ? (3  + seededRand(s+4) * 2)
+                  : (2 + seededRand(s+5) * 2);
+    var dwell = Math.round(baseDwell * 10) / 10;
+
+    // Drop-off — % of readers who navigated away AT this node
+    var baseDrop = type === 'body'   ? (0.8  + seededRand(s+6) * 2.4)
+                 : type === 'pull'   ? (0.2  + seededRand(s+7) * 1.0)
+                 : type === 'poster' ? (0.4  + seededRand(s+8) * 1.2)
+                 : type === 'spec'   ? (1.2  + seededRand(s+9) * 2.0)
+                 : (0.3 + seededRand(s+10) * 0.8);
+    // Inflate drop-off toward narrative end
+    baseDrop = baseDrop * (1 + idx * 0.012);
+    var dropPct = Math.min(18, Math.round(baseDrop * 10) / 10);
+
+    // Re-read rate — pulls and posters get revisited
+    var rereadBase = type === 'pull'   ? (8  + seededRand(s+11) * 12)
+                   : type === 'poster' ? (6  + seededRand(s+12) * 9)
+                   : type === 'body'   ? (3  + seededRand(s+13) * 6)
+                   : (1 + seededRand(s+14) * 3);
+    var rereadPct = Math.min(34, Math.round(rereadBase * 10) / 10);
+
+    // Scroll depth at this node — % of readers who reached here
+    var depth = Math.round(baseReadRate * 100);
+
+    // Signal — composite engagement score 0–100
+    var signal = Math.round(
+      (rereadPct * 1.4) +
+      (Math.min(dwell, 20) * 2.2) +
+      ((10 - dropPct) * 3.1) +
+      (seededRand(s+15) * 8)
+    );
+    signal = Math.min(100, Math.max(12, signal));
+
+    return { reads, dwell, dropPct, rereadPct, depth, signal };
+  }
+
+  // Signal bar — 5 segments, filled proportionally
+  function signalBar(score) {
+    var filled = Math.round(score / 20); // 0–5
+    var bar = '';
+    for (var i = 0; i < 5; i++) {
+      bar += '<span class="dsp-sig-seg' + (i < filled ? ' on' : '') + '"></span>';
+    }
+    return '<span class="dsp-sig-bar">' + bar + '</span>';
+  }
+
+  // ── Build node index ──────────────────────────────────────────────────────
+  function buildIndex() {
+    nodeIndex = [];
+    var els = Array.from(document.querySelectorAll('[data-idx]'));
+    els.forEach(function(el) {
+      if (el.classList.contains('break') || el.classList.contains('cta-sentence')) return;
+      var type = el.classList.contains('spec')   ? 'spec'
+               : el.classList.contains('poster') ? 'poster'
+               : el.classList.contains('pull')   ? 'pull'
+               : el.classList.contains('label')  ? 'label'
+               : 'body';
+      var rawText = el.textContent.replace(/\s+/g,' ').trim();
+      var specKey = '', specVal = '';
+      if (type === 'spec') {
+        var kEl = el.querySelector('.sk'); var vEl = el.querySelector('.sv');
+        if (kEl && vEl) { specKey=kEl.textContent.trim(); specVal=vEl.textContent.trim(); }
+        else {
+          var parts = rawText.split('::');
+          specKey = parts.length===2 ? parts[0].trim() : rawText;
+          specVal = parts.length===2 ? parts[1].trim() : '';
+        }
+      }
+      var idx = parseInt(el.dataset.idx);
+      var ch  = parseInt(el.dataset.ch) || 1;
+      var wc  = rawText.split(/\s+/).filter(Boolean).length;
+      var perf = nodePerf(idx, type, ch, wc);
+      nodeIndex.push({ el, idx, ch, type, text: rawText, specKey, specVal, perf });
+    });
+  }
+
+  // ── Geometry helpers (mirror detail-ghost) ──
+  function rl(gw) {
+    if(isMob()) return window.innerWidth-12;
+    var col=document.getElementById('stream-col');
+    return col ? col.getBoundingClientRect().right-8 : window.innerWidth-328;
+  }
+  function idlePos() {
+    var gw=ghost.offsetWidth||260, gh=ghost.offsetHeight||90;
+    var rLimit=rl(gw);
+    var x=rLimit-gw;
+    var y=Math.max(68, Math.min(window.innerHeight*0.4-gh*0.5, window.innerHeight-gh-8));
+    return {x:x,y:y};
+  }
+  function clampFollow(x,y) {
+    var gw=ghost.offsetWidth||260, gh=ghost.offsetHeight||90;
+    var col=document.getElementById('stream-col');
+    var sr=col?col.getBoundingClientRect():{left:0,right:window.innerWidth};
+    var rLimit=rl(gw);
+    x=Math.max(sr.left+4, Math.min(x, rLimit-gw));
+    y=Math.max(68, Math.min(y, window.innerHeight-gh-8));
+    return {x:x,y:y};
+  }
+  function midX() {
+    var col=document.getElementById('stream-col');
+    if(!col) return window.innerWidth*0.45;
+    var r=col.getBoundingClientRect(); return r.left+r.width*0.5;
+  }
+  function enterFollow(){ if(following)return; following=true; if(!raf&&visible) raf=requestAnimationFrame(tick); }
+  function enterIdle(){
+    if(!following)return; following=false;
+    var p=idlePos(); ix=p.x; iy=p.y;
+    if(!raf&&visible) raf=requestAnimationFrame(tick);
+  }
+  function tick(){
+    if(following){ var c=clampFollow(tx,ty); gx=lerp(gx,c.x,LF); gy=lerp(gy,c.y,LF); }
+    else          {                           gx=lerp(gx,ix,LI);   gy=lerp(gy,iy,LI); }
+    ghost.style.left=gx+'px'; ghost.style.top=gy+'px';
+    raf = visible ? requestAnimationFrame(tick) : null;
+  }
+
+  // ── Show / hide ──
+  function showDispatchGhost(node) {
+    if (!active || isMob() || !node) return;
+    var p = node.perf;
+    var label = node.type === 'spec' ? (node.specKey + ' · ' + node.specVal) : node.text;
+    dspSum.textContent = label.length > 110 ? label.substring(0,107)+'…' : label;
+    if (dspType) dspType.textContent = node.type;
+
+    // Reads with formatted number
+    var readsFormatted = p.reads >= 1000
+      ? (p.reads/1000).toFixed(1).replace(/\.0$/,'') + 'k'
+      : String(p.reads);
+
+    // Signal interpretation
+    var signalLabel = p.signal >= 80 ? 'high'
+                    : p.signal >= 55 ? 'strong'
+                    : p.signal >= 35 ? 'moderate'
+                    : 'low';
+
+    dspMeta.innerHTML =
+      '<div class="dsp-stats-row">' +
+        '<div class="dsp-stat">' +
+          '<span class="dsp-stat-val">' + readsFormatted + '</span>' +
+          '<span class="dsp-stat-key">reads</span>' +
+        '</div>' +
+        '<div class="dsp-stat">' +
+          '<span class="dsp-stat-val">' + p.dwell + 's</span>' +
+          '<span class="dsp-stat-key">avg dwell</span>' +
+        '</div>' +
+        '<div class="dsp-stat">' +
+          '<span class="dsp-stat-val">' + p.dropPct + '%</span>' +
+          '<span class="dsp-stat-key">drop-off</span>' +
+        '</div>' +
+        '<div class="dsp-stat">' +
+          '<span class="dsp-stat-val">' + p.rereadPct + '%</span>' +
+          '<span class="dsp-stat-key">re-read</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="dsp-signal-row">' +
+        signalBar(p.signal) +
+        '<span class="dsp-signal-label">' + signalLabel + ' engagement &middot; ' + p.depth + '% reach</span>' +
+      '</div>';
+
+    // Position
+    var pos=idlePos(); ix=pos.x; iy=pos.y;
+    if(!visible){ gx=ix; gy=iy; ghost.style.left=gx+'px'; ghost.style.top=gy+'px'; }
+    ghost.classList.add('visible');
+    visible=true;
+    if(!raf) raf=requestAnimationFrame(tick);
+    // Dim sentence
+    if(activeEl) activeEl.classList.remove('dispatch-active');
+    activeEl = node.el;
+    activeEl.classList.add('dispatch-active');
+  }
+
+  function hideDispatchGhost() {
+    ghost.classList.remove('visible');
+    visible=false; following=false;
+    if(activeEl){ activeEl.classList.remove('dispatch-active'); activeEl=null; }
+    if(raf){ cancelAnimationFrame(raf); raf=null; }
+  }
+
+  // ── Panel dispatch view — performance index ──
+  function populatePDV() {
+    if (!pdvEntries) return;
+    var html = '';
+    // Find max reads for normalizing bar widths
+    var maxReads = nodeIndex.reduce(function(m, n) { return Math.max(m, n.perf.reads); }, 1);
+
+    nodeIndex.forEach(function(node, i) {
+      var p = node.perf;
+      var barW = Math.round((p.reads / maxReads) * 100);
+      var readsStr = p.reads >= 1000
+        ? (p.reads/1000).toFixed(1).replace(/\.0$/,'') + 'k'
+        : String(p.reads);
+      var sigClass = p.signal >= 80 ? 'sig-hi' : p.signal >= 50 ? 'sig-mid' : 'sig-lo';
+      var textSnip = node.type === 'spec'
+        ? (node.specKey + ' · ' + node.specVal)
+        : node.text;
+      if (textSnip.length > 72) textSnip = textSnip.substring(0,69) + '…';
+
+      html += '<div class="pdv-entry' + (node.el.classList.contains('active') ? ' pdv-active' : '') + '" data-pdv-i="' + i + '">' +
+        '<div class="pdv-entry-top">' +
+          '<span class="pdv-entry-type ' + sigClass + '">' + node.type + '</span>' +
+          '<span class="pdv-entry-reads">' + readsStr + '</span>' +
+        '</div>' +
+        '<div class="pdv-entry-text">' + textSnip.replace(/</g,'&lt;') + '</div>' +
+        '<div class="pdv-entry-bar-wrap"><div class="pdv-entry-bar ' + sigClass + '" style="width:' + barW + '%"></div></div>' +
+        '<div class="pdv-entry-stats">' +
+          '<span>' + p.dwell + 's dwell</span>' +
+          '<span>' + p.dropPct + '% drop</span>' +
+          '<span>' + p.rereadPct + '% re-read</span>' +
+        '</div>' +
+      '</div>';
+    });
+    pdvEntries.innerHTML = html;
+
+    // Wire clicks
+    pdvEntries.querySelectorAll('.pdv-entry').forEach(function(entry) {
+      entry.addEventListener('click', function() {
+        var i = parseInt(entry.dataset.pdvI);
+        var node = nodeIndex[i];
+        if (!node) return;
+        var navEls = Array.from(document.querySelectorAll('[data-idx]')).filter(function(el){
+          return !el.classList.contains('break') && !el.classList.contains('label') && !el.classList.contains('cta-sentence');
+        });
+        var navIdx = navEls.indexOf(node.el);
+        if (navIdx >= 0 && typeof goTo === 'function') goTo(navIdx);
+      });
+    });
+
+    // Footer summary
+    var totalReads = nodeIndex.reduce(function(s,n){ return s+n.perf.reads; },0);
+    var avgDwell   = Math.round(nodeIndex.reduce(function(s,n){ return s+n.perf.dwell; },0) / nodeIndex.length * 10) / 10;
+    if (pdvFooter) {
+      var span = pdvFooter.querySelector('span');
+      if (span) span.textContent = nodeIndex.length + ' nodes · ' + (totalReads/1000).toFixed(1) + 'k total reads · ' + avgDwell + 's avg dwell';
+    }
+  }
+
+  function refreshPDVActive() {
+    if (!pdvEntries) return;
+    pdvEntries.querySelectorAll('.pdv-entry').forEach(function(entry, i) {
+      var node = nodeIndex[i];
+      entry.classList.toggle('pdv-active', !!(node && node.el.classList.contains('active')));
+    });
+    // Scroll active entry into view within panel
+    var act = pdvEntries.querySelector('.pdv-active');
+    if (act) { var pv = document.getElementById('pdv-entries'); if (pv && pv.contains(act)) act.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+  }
+
+  // ── Toggle dispatch mode ──
+  window.toggleDispatch = function() {
+    active = !active;
+    document.body.classList.toggle('dispatch-mode', active);
+    // Return focus to body so keyboard sentence navigation keeps working
+    if (document.activeElement && document.activeElement !== document.body) {
+      document.activeElement.blur();
+    }
+    var btn = document.getElementById('nw-dispatch-btn');
+    if (btn) btn.classList.toggle('dispatch-on', active);
+    if (active) {
+      buildIndex();
+      populatePDV();
+      // Fire immediately on current node
+      if (typeof current !== 'undefined') {
+        var navEls = Array.from(document.querySelectorAll('[data-idx]')).filter(function(el){
+          return !el.classList.contains('break') && !el.classList.contains('label') && !el.classList.contains('cta-sentence');
+        });
+        var curEl = navEls[current];
+        var node = nodeIndex.find(function(n){ return n.el === curEl; });
+        if (node) showDispatchGhost(node);
+      }
+    } else {
+      hideDispatchGhost();
+    }
+  };
+
+  // ── goTo hook — called by sentence engine on every navigation ──
+  window._dispatchUpdate = function(navEl) {
+    if (!active) return;
+    var node = nodeIndex.find(function(n){ return n.el === navEl; });
+    if (node) showDispatchGhost(node);
+    refreshPDVActive();
+  };
+
+  // ── Mouse tracking (same zone logic as detail-ghost) ──
+  document.addEventListener('mousemove', function(e) {
+    mx=e.clientX; tx=e.clientX+OX; ty=e.clientY+OY;
+    if(visible && !isMob()) { mx<midX() ? enterFollow() : enterIdle(); }
+  }, {passive:true});
+  window.addEventListener('resize', function(){
+    if(visible&&!following){ var p=idlePos(); ix=p.x; iy=p.y; }
+  });
+
+})();
+</script>
 </body>
 </html>
