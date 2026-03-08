@@ -2972,9 +2972,24 @@ body.dispatch-mode #dispatch-ghost { display: block; }
   text-transform: uppercase; color: var(--hud-ink-3);
 }
 
-/* active sentence dims when dispatch ghost is tracking it */
+/* dispatch mode — non-active sentences recede, active node gets accent mark */
+body.dispatch-mode .sentence:not(.dispatch-active):not(.break):not(.label):not(.cta-sentence) {
+  opacity: 0.22 !important; transition: opacity .18s ease;
+}
 body.dispatch-mode .sentence.dispatch-active {
-  opacity: 0.08 !important; transition: opacity .18s ease;
+  opacity: 1 !important; transition: opacity .18s ease;
+}
+/* accent bar on active node in dispatch mode */
+body.dispatch-mode .sentence.dispatch-active::after {
+  content: ''; position: absolute;
+  left: -20px; top: 0; bottom: 0; width: 2px;
+  background: var(--accent); border-radius: 1px;
+  opacity: 1;
+}
+/* dispatch pulse on active node */
+body.dispatch-mode .sentence.dispatch-active.poster::before {
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
 }
 
 /* ── Dispatch button active state ── */
@@ -4233,7 +4248,7 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
     <nav class="mall-crumb">
       <span class="node">&#9671; zackgort.com</span>
       <span class="sep">/</span>
-      <span class="node">Open to Work</span>
+      <span class="node">thinker & maker</span>
     </nav>
     <div class="h-center">
       <span class="h-name">Anthropic RSP v3</span>
@@ -4252,7 +4267,7 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
         <span class="h-studio-icon">&#9670;</span>
         <span class="h-studio-label">Studio</span>
       </button>
-      <a href="https://wolfie.life" target="_blank" class="h-btn cta">wolfie.life &rarr;</a>
+      <a href="https://zackgort.com" target="_blank" class="h-btn cta">zack.gort &rarr;</a>
     </div>
     <div id="header-overlay">
       <div class="ho-cell">
@@ -5297,9 +5312,6 @@ function goTo(n, opts) {
   });
   updateChapterWidget(ch);
   updatePanelService(ch);
-  if (window._dispatchUpdate && typeof current !== 'undefined') {
-    window._dispatchUpdate(navigable[n]);
-  }
   if (window._specGhostUpdate) {
     // Check if active sentence is immediately preceded by a subch-break divider
     var ghostTarget = activeEl;
@@ -5321,6 +5333,11 @@ function goTo(n, opts) {
   if (isMobile() && n === navigable.length - 1 && ch !== 10) {
     setTimeout(function() { openPanelSheet(); }, 480);
   }
+  // ── Dispatch update — runs last so all state (active class, scroll) is settled ──
+  if (window._dispatchUpdate) {
+    window._dispatchUpdate(navigable[n]);
+  }
+
   // End-of-content toast
   if (n === navigable.length - 1) {
     setTimeout(showEndToast, 600);
@@ -9229,10 +9246,15 @@ document.addEventListener('keydown', function(e) {
     ghost.classList.add('visible');
     visible=true;
     if(!raf) raf=requestAnimationFrame(tick);
-    // Dim sentence
+    // Stamp dispatch-active — find the currently .active sentence directly
     if(activeEl) activeEl.classList.remove('dispatch-active');
+    // Use node.el but also cross-check it has .active (goTo already set this)
     activeEl = node.el;
     activeEl.classList.add('dispatch-active');
+    // Ensure stream sentence is visible — goTo handles scroll but re-trigger if needed
+    if (typeof current !== 'undefined' && navigable && navigable[current] === activeEl) {
+      activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   }
 
   function hideDispatchGhost() {
@@ -9324,16 +9346,23 @@ document.addEventListener('keydown', function(e) {
     if (active) {
       buildIndex();
       populatePDV();
-      // Fire immediately on current node
+      // Fire on current node immediately — shows ghost and applies dispatch-active
       if (typeof current !== 'undefined') {
         var navEls = Array.from(document.querySelectorAll('[data-idx]')).filter(function(el){
           return !el.classList.contains('break') && !el.classList.contains('label') && !el.classList.contains('cta-sentence');
         });
         var curEl = navEls[current];
         var node = nodeIndex.find(function(n){ return n.el === curEl; });
-        if (node) showDispatchGhost(node);
+        if (node) {
+          showDispatchGhost(node);
+          // Ensure stream reflects current node with dispatch-active
+          document.querySelectorAll('.sentence.dispatch-active').forEach(function(s){ s.classList.remove('dispatch-active'); });
+          node.el.classList.add('dispatch-active');
+        }
       }
     } else {
+      // Clean up dispatch-active from all sentences
+      document.querySelectorAll('.sentence.dispatch-active').forEach(function(s){ s.classList.remove('dispatch-active'); });
       hideDispatchGhost();
     }
   };
