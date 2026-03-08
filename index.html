@@ -1976,6 +1976,15 @@ body.dispatch-mode main#stream-col { margin-right: 320px; }
   }
   body.dispatch-mode #panel-overlay-backdrop { display: none !important; }
   body.dispatch-mode #dispatch-ghost { display: block !important; }
+  .pdv-mobile-close-btn {
+    display: none;
+    width: calc(100% - 32px); margin: 0 16px 16px;
+    padding: 12px; border-radius: 8px;
+    background: var(--accent); color: #fff;
+    border: none; font-family: var(--ui); font-size: 11px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    cursor: pointer; font-weight: 700; flex-shrink: 0;
+  }
 }
 body.scroll-free .sentence { opacity: 1 !important; pointer-events: none; }
 body.scroll-free .sentence.past { opacity: 1 !important; }
@@ -2450,6 +2459,8 @@ body.ch-7 { --hud-bg: rgba(248,236,240,0.97); --hud-ink: #200810; --hud-ink-2: #
   /* Hide ghost overlays when compose mode is active — they'd collide */
   body.compose-mode #detail-ghost { opacity: 0 !important; pointer-events: none !important; }
   body.compose-mode #spec-cursor-ghost { opacity: 0 !important; pointer-events: none !important; }
+  /* Show mobile dispatch exit button when dispatch is active on mobile */
+  body.dispatch-mode .pdv-mobile-close-btn { display: block; }
 }
 @media (min-width: 761px) {
   #panel-overlay-backdrop { display: none; }
@@ -4354,6 +4365,7 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
       <span>0 nodes &middot; dispatch mode</span>
       <button class="pdv-close-btn" onclick="toggleDispatch()">&#10005; close</button>
     </div>
+    <button class="pdv-mobile-close-btn" onclick="toggleDispatch()" aria-label="Exit dispatch">&#10005; Exit Dispatch</button>
   </div>
 
   <!-- ── SITE PREVIEW ── -->
@@ -4559,12 +4571,12 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
       <span class="nw-cell-value">&#9671;</span><span class="nw-action-label">Interest</span>
     </button>
 
-    <button class="nw-action-btn" id="nw-scroll-btn" title="Free scroll" onclick="document.getElementById('scroll-toggle').click()">
-      <span class="nw-cell-value" id="nw-scroll-icon">&#8645;</span><span class="nw-action-label" id="nw-scroll-label">Scroll</span>
-    </button>
-
     <button class="nw-action-btn" id="nw-dispatch-btn" title="Dispatch — node data overlay" onclick="toggleDispatch()">
       <span class="nw-cell-value">&#9672;</span><span class="nw-action-label">Dispatch</span>
+    </button>
+
+    <button class="nw-action-btn" id="nw-scroll-btn" title="Free scroll" onclick="document.getElementById('scroll-toggle').click()">
+      <span class="nw-cell-value" id="nw-scroll-icon">&#8645;</span><span class="nw-action-label" id="nw-scroll-label">Scroll</span>
     </button>
 
     <div class="nw-divider"></div>
@@ -7899,12 +7911,12 @@ document.getElementById('dark-veil').addEventListener('click', function() {
 
 // ── SITES GRID ────────────────────────────────────────────────────────────
 var GRID_SITES = [
-  { url: 'https://wolfie.love',         label: 'wolfie.love',     tag: 'Platform'  },
-  { url: 'https://wolfie.lfee',         label: 'wolfie.life',     tag: 'Application'  },
-  { url: 'https:/reasonably.cc',    label: 'reasonably.cc',       tag: 'Prose for Prompts' },
-  { url: 'https://wolfie.love/dash',    label: 'wolfie.love/dash',       tag: 'Narrative Analytics' },
-  { url: 'https://wolfie.love/news',    label: 'wolfie.love/news',       tag: 'Nested Narrative Nodes' },
-
+  { url: 'https://www.wolfie.love/',          label: 'wolfie.love',            tag: 'Platform'              },
+  { url: 'https://www.reasonably.cc/',        label: 'reasonably.cc',          tag: 'Prose for Prompts'     },
+  { url: 'https://www.wolfie.love/net',       label: 'wolfie.love/net',        tag: 'Network'               },
+  { url: 'https://reasonandresolution.com/',  label: 'reasonandresolution.com', tag: 'Case Study'           },
+  { url: 'https://www.emdash.click',          label: 'emdash.click',           tag: 'Tool'                  },
+  { url: 'https://www.zackgort.com',          label: 'zackgort.com',           tag: 'Portfolio'             },
 ];
 var sitesGridOpen  = false;
 var sitesGridBuilt = false;
@@ -7993,6 +8005,8 @@ document.addEventListener('keydown', function(e) {
 (function initChapterGuidePanel() {
 
   var PANEL_SITES = [
+    { url: 'https://wolfie.love',                                           label: 'wolfie.love',          tag: 'This Engine',
+      ghost: [{"k":"Platform","v":"wolfie.love"},{"k":"What","v":"Sentence-progressive narrative"},{"k":"Built by","v":"Zack Gort · wolfie.life"},{"k":"This page","v":"Built in one day"}] },
     { url: 'https://www.anthropic.com/news/responsible-scaling-policy-v3', label: 'anthropic.com/rsp',    tag: 'This Document',
       ghost: [{"k":"Document","v":"RSP v3 Announcement"},{"k":"Published","v":"Feb 24, 2026"},{"k":"Author","v":"Anthropic"},{"k":"Type","v":"Policy · Public"}] },
     { url: 'https://anthropic.com/responsible-scaling-policy/rsp-v3-0',    label: 'RSP Full Text',        tag: 'Policy',
@@ -8001,8 +8015,6 @@ document.addEventListener('keydown', function(e) {
       ghost: [{"k":"Document","v":"Frontier Safety Roadmap"},{"k":"Areas","v":"Security · Alignment · Safeguards"},{"k":"Format","v":"Public goals · self-graded"},{"k":"Cadence","v":"Ongoing updates"}] },
     { url: 'https://anthropic.com/feb-2026-risk-report',                   label: 'Risk Report',          tag: 'Feb 2026',
       ghost: [{"k":"Document","v":"Feb 2026 Risk Report"},{"k":"First","v":"External risk publication"},{"k":"Covers","v":"Capabilities · Threats · Mitigations"},{"k":"Review","v":"External audit piloting"}] },
-    { url: 'https://wolfie.love',                                           label: 'wolfie.love',          tag: 'This Engine',
-      ghost: [{"k":"Platform","v":"wolfie.love"},{"k":"What","v":"Sentence-progressive narrative"},{"k":"Built by","v":"Zack Gort · wolfie.life"},{"k":"This page","v":"Built in one day"}] },
     { url: 'https://wolfie.life',                                           label: 'wolfie.life',          tag: 'Studio',
       ghost: [{"k":"Studio","v":"wolfie.life"},{"k":"Founder","v":"Zack Gort · Designer"},{"k":"Practice","v":"UX · Narrative · Front-end"},{"k":"Contact","v":"zack@wolfie.love"}] },
     { url: 'https://www.ifimaybefrank.com',                                 label: 'ifimaybefrank.com',    tag: 'The Broader Idea',
@@ -8241,12 +8253,7 @@ document.addEventListener('keydown', function(e) {
   // Map: chapter number → site to surface when that chapter activates.
   // Fires once on first entry to each chapter; user dismiss suppresses repeat.
   var CHAPTER_TRIGGERS = {
-    1: { url: 'https://www.reasonably.cc',  label: 'The Source',      urlDisplay: 'anthropic.com/rsp-v3',      desc: 'The original document — a wall of text that carries one of the most important arguments in technology.' },
-    2: { url: 'https://www.reasonably.cc',    label: 'Full Policy',     urlDisplay: 'RSP v3.0',                  desc: 'The complete Responsible Scaling Policy — the if-then framework governing when and how Anthropic trains more capable models.' },
-    3: { url: 'https://www.reasonably.cc',                   label: 'Risk Report',     urlDisplay: 'Feb 2026 Risk Report',      desc: 'The first Risk Report — Anthropic\'s honest accounting of what current models can and can\'t do, and the active mitigations in place.' },
-    4: { url: 'https://www.reasonably.cc',     label: 'Safety Roadmap',  urlDisplay: 'Frontier Safety Roadmap',   desc: 'The Frontier Safety Roadmap — concrete, public goals Anthropic will grade itself against across security, alignment, and safeguards.' },
     5: { url: 'https://wolfie.love',                                           label: 'The Engine',      urlDisplay: 'wolfie.love',               desc: 'The same sentence-progressive engine running this experience — built for credentials, policy, property, and client reporting.' },
-    6: { url: 'https://wolfie.life',                                           label: 'The Studio',      urlDisplay: 'wolfie.life',               desc: 'wolfie.life — the studio behind the engine. One designer. Built with conviction.' },
   };
 
   var nstPanel   = document.getElementById('nst-panel');
@@ -8297,6 +8304,12 @@ document.addEventListener('keydown', function(e) {
   function showNst(ch, trigger) {
     if (dismissedChs.has(ch)) return;
     if (lastShownCh === ch) return;
+    // Suppress when any panel is open (sheet, dispatch, interest, sites grid)
+    var panelOpen = document.getElementById('panel') && document.getElementById('panel').classList.contains('sheet-open');
+    var dispatchOn = document.body.classList.contains('dispatch-mode');
+    var interestOn = document.getElementById('interest-panel') && document.getElementById('interest-panel').classList.contains('open');
+    var sitesOn = typeof sitesGridOpen !== 'undefined' && sitesGridOpen;
+    if (panelOpen || dispatchOn || interestOn || sitesOn) return;
     lastShownCh = ch;
     currentUrl  = trigger.url;
     nstLabel.textContent = trigger.label;
