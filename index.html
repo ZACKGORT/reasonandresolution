@@ -2307,14 +2307,34 @@ body.ch-7 { --hud-bg: rgba(248,236,240,0.97); --hud-ink: #200810; --hud-ink-2: #
     padding: 40px 24px 140px; 
     z-index: 10; /* Keeps your text above the background images */
   }
+  /* ── Header mobile ── */
+  header { padding: 0 14px; }
   .h-center {
     display: flex !important;
     position: static;
     transform: none;
     align-items: flex-start;
     gap: 1px;
+    flex: 1;
+    min-width: 0;
   }
+  .h-name {
+    font-size: 11px;
+    letter-spacing: 0.07em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .h-tagline { display: none; }
   .mall-crumb { display: none; }
+  /* Hide compose + studio on mobile */
+  #h-compose-btn, #h-studio-btn { display: none !important; }
+  /* Theme toggle — icon only */
+  #li-toggle-label { display: none; }
+  #li-toggle { padding: 5px 8px; gap: 0; min-width: 28px; justify-content: center; }
+  /* CTA compact */
+  .h-btn.cta { padding: 5px 10px; font-size: 7px; letter-spacing: 0.10em; }
+  .h-actions { gap: 5px; }
   .sentence.poster { font-size: clamp(40px,11vw,72px); }
   .sentence.poster.active::before { left: -16px; }
   #header-overlay { grid-template-columns: 1fr 1fr; }
@@ -4039,7 +4059,7 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
         <span class="h-studio-icon">&#9670;</span>
         <span class="h-studio-label">Studio</span>
       </button>
-      <a href="https://wolfie.life" target="_blank" class="h-btn cta">wolfie.life &rarr;</a>
+      <a href="https://zackgort.com" target="_blank" class="h-btn cta">zack.gort &rarr;</a>
     </div>
     <div id="header-overlay">
       <div class="ho-cell">
@@ -7590,10 +7610,11 @@ document.getElementById('dark-veil').addEventListener('click', function() {
 // ── SITES GRID ────────────────────────────────────────────────────────────
 var GRID_SITES = [
   { url: 'https://wolfie.love',         label: 'wolfie.love',     tag: 'Platform'  },
-  { url: 'https://wolfie.love/dash',    label: 'wolfie.love/dash',       tag: 'Narrative Analytics' },
-  { url: 'https://wolfie.love/net',    label: 'love/net',       tag: 'Narrative Media' },
+  { url: 'https://zackgort',         label: 'portfolio',     tag: 'Thinker & Maker'  },
   { url: 'https:/reasonably.cc',    label: 'reasonably.cc',       tag: 'Prose for Prompts' },
-  { url: 'https://zackgort.com',    label: 'zackgort.com',       tag: 'Principle in Practice' },
+  { url: 'https://wolfie.love/dash',    label: 'love/dash',       tag: 'Narrative Analytics' },
+  { url: 'https://wolfie.life/data',    label: 'love/data',       tag: 'Narrative Analytics' },
+  { url: 'https://wolfie.love/net',    label: 'love/news',       tag: 'Narrative Media Nodes' },
 
 ];
 var sitesGridOpen  = false;
