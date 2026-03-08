@@ -3440,8 +3440,41 @@ body.raw-theme #image-layer::after { display: none !important; }
 body.raw-theme #image-layer img {
   position: absolute;
   inset: auto;
-  width: clamp(180px, 14vw, 280px);
-  height: clamp(130px, 10vw, 200px);
+/* Image layer — postcard treatment, anchored to right zone */
+body.raw-theme #image-layer {
+  display: block !important;
+  background: transparent;
+  left: 42vw;
+  right: 320px;
+}
+body.raw-theme #image-layer::after { display: none !important; }
+
+body.raw-theme #image-layer img {
+  position: absolute;
+  inset: auto;
+  width: clamp(3.5em, 14vw, 280px);
+  height: clamp(3.5em, 10vw, 200px);
+  object-fit: cover;
+  object-position: center 40%;
+  opacity: 0;
+  transform: none;
+  transition: opacity 0.55s ease;
+  border: 10px solid #ffffff;
+  outline: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 2px 3px 10px rgba(0,0,0,0.12);
+  border-radius: 0;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+}
+body.raw-theme #image-layer img.visible { opacity: 1; transform: none; }
+
+body.raw-theme.split-view #image-layer { left: 48%; right: 0; }
+body.raw-theme.split-view #image-layer img {
+  left: 50%; top: 50%; translate: -50% -50%;
+  width: clamp(200px, 28vw, 360px);
+  height: clamp(150px, 20vw, 260px);
+}
   object-fit: cover;
   object-position: center 40%;
   opacity: 0;
