@@ -958,30 +958,22 @@ body.subch-workarea{ --pulse-rgb: 240,120,32; }
   white-space: nowrap;
   overflow: hidden;
 }
-#li-toggle:hover { border-color: #0a66c2; color: #0a66c2; }
-/* The LinkedIn "in" logo mark */
+#li-toggle:hover { border-color: var(--accent); color: var(--accent); }
+/* Theme mark glyph */
 #li-toggle .li-mark {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 14px; height: 14px;
-  background: #0a66c2; border-radius: 2px;
-  font-family: var(--ui); font-weight: 700; font-size: 9px;
-  color: #fff; letter-spacing: 0; text-transform: none;
+  font-family: var(--ui); font-size: 9px; font-weight: 400;
+  color: var(--ink-3); letter-spacing: 0; text-transform: none;
   flex-shrink: 0;
-  transition: transform 0.18s ease;
+  transition: color 0.18s ease;
 }
-#li-toggle:hover .li-mark { transform: scale(1.12); }
-body.li-theme #li-toggle {
-  background: #0a66c2;
-  border-color: #0a66c2;
-  color: #fff;
-  border-radius: 16px;
-  padding: 5px 12px 5px 8px;
+#li-toggle:hover .li-mark { color: var(--accent); }
+/* doc state toggle appearance */
+body.doc-theme #li-toggle {
+  border-color: rgba(17,17,16,0.28); color: #444440;
 }
-body.li-theme #li-toggle .li-mark {
-  background: #fff;
-  color: #0a66c2;
-}
-body.li-theme #li-toggle:hover { background: #004182; border-color: #004182; }
+body.doc-theme #li-toggle:hover { border-color: #111110; color: #111110; }
+body.doc-theme #li-toggle .li-mark { color: #555550; }
 
 /* Scan line easter egg in li-theme — very faint LinkedIn grid */
 body.li-theme::before {
@@ -1027,11 +1019,48 @@ body.doc-theme.subch-160, body.doc-theme.subch-o3, body.doc-theme.subch-workarea
   --border:  rgba(17,17,16,0.14);
 }
 
-/* Kill grain, images, scan lines */
+/* Kill grain and custom cursor — keep image layer as postcard */
 body.doc-theme::after  { opacity: 0 !important; }
 body.doc-theme::before { display: none !important; }
-body.doc-theme #image-layer { opacity: 0 !important; pointer-events: none; }
 body.doc-theme #li-img-layer { display: none !important; }
+body.doc-theme #cursor { display: none !important; }
+
+/* Image layer — same postcard treatment as raw */
+body.doc-theme #image-layer {
+  display: block !important;
+  background: transparent;
+  z-index: 150;
+  pointer-events: none;
+}
+body.doc-theme #image-layer::after { display: none !important; }
+
+body.doc-theme #image-layer img {
+  position: fixed;
+  inset: auto;
+  width: clamp(220px, 28vw, 380px);
+  height: clamp(160px, 20vw, 280px);
+  object-fit: cover;
+  object-position: center 40%;
+  opacity: 0;
+  top: 50%;
+  left: calc(50% + 80px);
+  translate: none;
+  transform: translateX(-50%) translateY(-50%);
+  transition: opacity 0.55s ease, filter 0.4s ease;
+  border: 10px solid #faf9f7;
+  outline: 1px solid rgba(17,17,16,0.10);
+  box-shadow: 2px 3px 10px rgba(17,17,16,0.14);
+  border-radius: 0;
+  filter: grayscale(1) opacity(0.40);
+  cursor: default;
+  pointer-events: none;
+}
+body.doc-theme #image-layer img.visible { opacity: 1; }
+body.doc-theme #image-layer img:hover { filter: grayscale(0) opacity(1); }
+
+@media (max-width: 760px) {
+  body.doc-theme #image-layer { display: none !important; }
+}
 
 /* ── Header — letterhead ── */
 body.doc-theme header {
@@ -1454,6 +1483,461 @@ header:hover #header-overlay { opacity: 1; pointer-events: auto; transform: tran
 @keyframes spec-scan { from { width: 0; } to { width: 100%; } }
 
 /* scroll toggle */
+
+/* ══════════════════════════════════════════════════════════════════════════
+   RAW THEME — engine exposed, images as postcards
+   ══════════════════════════════════════════════════════════════════════════ */
+body.raw-theme {
+  --bg:     #ffffff;
+  --ink:    #000000;
+  --ink-2:  #444444;
+  --ink-3:  #999999;
+  --accent: #000000;
+  --accent-l: rgba(0,0,0,0.06);
+  --border: rgba(0,0,0,0.18);
+  --ui:     monospace;
+  --disp:   monospace;
+  background: #ffffff;
+  color: #000000;
+  cursor: auto;
+  transition: none !important;
+}
+
+/* Kill grain and custom cursor — keep image layer */
+body.raw-theme::after { display: none !important; }
+body.raw-theme #li-img-layer { display: none !important; }
+body.raw-theme #cursor { display: none !important; }
+
+/* Image layer — postcard treatment ── */
+body.raw-theme #image-layer {
+  display: block !important;
+  background: transparent;
+  z-index: 150;          /* above layout stacking context (z:10), below HUD (z:300) */
+  pointer-events: none;  /* layer itself doesn't eat clicks */
+}
+/* Kill the full-bleed veil */
+body.raw-theme #image-layer::after { display: none !important; }
+
+/* Postcard — original centered position, nudged right toward HUD */
+body.raw-theme #image-layer img {
+  position: fixed;
+  inset: auto;
+  width: clamp(220px, 28vw, 380px);
+  height: clamp(160px, 20vw, 280px);
+  object-fit: cover;
+  object-position: center 40%;
+  opacity: 0;
+  top: 50%;
+  left: calc(50% + 80px);
+  translate: none;
+  transform: translateX(-50%) translateY(-50%);
+  transition: opacity 0.55s ease, filter 0.4s ease;
+  border: 10px solid #ffffff;
+  outline: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 2px 3px 10px rgba(0,0,0,0.12);
+  border-radius: 0;
+  filter: grayscale(1) opacity(0.45);
+  cursor: default;
+  pointer-events: none;
+}
+body.raw-theme #image-layer img.visible { opacity: 1; }
+body.raw-theme #image-layer img:hover { filter: grayscale(0) opacity(1); }
+
+/* Split + raw */
+body.raw-theme.split-view #image-layer img {
+  width: clamp(200px, 36vw, 420px);
+  height: clamp(150px, 26vw, 310px);
+}
+
+/* Mobile — hide image in raw portrait; show in landscape split-view only */
+@media (max-width: 760px) {
+  body.raw-theme #image-layer { display: none !important; }
+  body.raw-theme.split-view #image-layer { display: block !important; }
+}
+
+/* Override chapter and sub-chapter palette shifts — lock to raw */
+body.raw-theme.ch-2, body.raw-theme.ch-3, body.raw-theme.ch-4,
+body.raw-theme.ch-5, body.raw-theme.ch-6, body.raw-theme.ch-7,
+body.raw-theme.ch-8, body.raw-theme.ch-9, body.raw-theme.ch-10,
+body.raw-theme.ch-11,
+body.raw-theme.subch-160, body.raw-theme.subch-o3, body.raw-theme.subch-workarea {
+  --bg:     #ffffff;
+  --ink:    #000000;
+  --ink-2:  #444444;
+  --ink-3:  #999999;
+  --accent: #000000;
+  --border: rgba(0,0,0,0.18);
+  background: #ffffff !important;
+  transition: none !important;
+}
+
+/* Header — flat white strip */
+body.raw-theme header {
+  background: #ffffff !important;
+  border-bottom: 1px solid #000000 !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+  transition: none !important;
+}
+body.raw-theme header:hover { background: #ffffff !important; border-bottom-color: #000000 !important; }
+body.raw-theme .h-name { color: #000000; font-family: monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+body.raw-theme .h-name:hover, body.raw-theme header:hover .h-name { color: #000000; }
+body.raw-theme .h-tagline { color: #999999; font-size: 9px; }
+body.raw-theme header:hover .h-tagline { color: #999999; }
+body.raw-theme .mall-crumb { color: #999999; }
+body.raw-theme .mall-crumb .node { color: #555555; }
+body.raw-theme .h-btn {
+  font-family: monospace; font-size: 9px; letter-spacing: 0.08em;
+  border: 1px solid #000000; color: #000000; background: #ffffff;
+  border-radius: 0; padding: 4px 10px; transition: none;
+}
+body.raw-theme .h-btn:hover { background: #000000; color: #ffffff; border-color: #000000; }
+body.raw-theme .h-btn.cta { background: #000000; color: #ffffff; border-color: #000000; border-radius: 0; }
+body.raw-theme .h-btn.cta:hover { background: #333333; opacity: 1; }
+body.raw-theme #header-overlay {
+  background: #ffffff !important; border-bottom: 1px solid #000000;
+  backdrop-filter: none; box-shadow: none;
+}
+body.raw-theme .ho-label { color: #999999; }
+body.raw-theme .ho-value { color: #000000; }
+body.raw-theme header:hover #header-overlay { opacity: 1; }
+
+/* Progress bar — hairline */
+body.raw-theme #progress { background: #000000; height: 1px; }
+
+/* Sentences — preserve structure, strip color/animation */
+body.raw-theme .sentence { transition: opacity 0.15s ease; }
+
+body.raw-theme .sentence.poster {
+  font-family: monospace;
+  font-size: clamp(28px, 4vw, 52px);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 1.0;
+  color: #000000;
+}
+body.raw-theme .sentence.poster .ac { color: #000000; }
+body.raw-theme .sentence.poster.active::before { background: #000000; width: 2px; }
+
+body.raw-theme .sentence.body {
+  font-family: monospace; font-size: clamp(12px, 1.4vw, 15px);
+  line-height: 1.7; color: #444444; font-weight: 400; letter-spacing: 0;
+}
+body.raw-theme .sentence.body .em { font-style: italic; font-weight: 700; color: #000000; }
+body.raw-theme .sentence.active.body { color: #000000; }
+
+body.raw-theme .sentence.pull {
+  font-family: monospace; font-size: clamp(13px, 1.6vw, 18px);
+  font-style: italic; line-height: 1.5;
+  border-left: 2px solid #000000; padding-left: 16px;
+  color: #444444;
+}
+body.raw-theme .sentence.pull .ac { color: #000000; }
+body.raw-theme .sentence.active.pull { color: #000000; }
+
+body.raw-theme .sentence.label {
+  font-family: monospace; font-size: 9px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: #999999; font-weight: 400; padding: 10px 0 2px;
+}
+
+body.raw-theme .sentence.spec {
+  font-family: monospace; font-size: 11px; letter-spacing: 0;
+}
+body.raw-theme .sentence.spec .spec-key { color: #999999; letter-spacing: 0.08em; }
+body.raw-theme .sentence.spec .spec-val { color: #444444; }
+body.raw-theme .sentence.active.spec .spec-val { color: #000000; }
+
+body.raw-theme .sentence.break::before { background: #cccccc; height: 1px; width: 100%; max-width: 200px; }
+
+/* States */
+body.raw-theme .sentence { opacity: 0.12; }
+body.raw-theme .sentence.active { opacity: 1; }
+body.raw-theme .sentence.past { opacity: 0.55; }
+body.raw-theme .sentence.revealed { opacity: 0.18; }
+body.raw-theme .sentence:hover:not(.active):not(.break):not(.label) { opacity: 0.45; }
+
+/* Chapter headers */
+body.raw-theme .ch-header { opacity: 0.1; }
+body.raw-theme .ch-header.revealed { opacity: 1; }
+body.raw-theme .ch-header-rule { background: #cccccc; height: 1px; }
+body.raw-theme .ch-header-label { color: #999999; font-family: monospace; font-size: 9px; }
+body.raw-theme .ch-header-num { -webkit-text-stroke: 1px rgba(0,0,0,0.12); color: transparent; }
+body.raw-theme .ch-header-title { color: #000000; font-family: monospace; font-size: clamp(14px,2vw,20px); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+body.raw-theme .ch-header-sub { color: #999999; font-family: monospace; }
+
+/* Nav widget — plain bordered box */
+body.raw-theme .nw-shell {
+  background: #ffffff; border: 1px solid #000000;
+  border-radius: 0; backdrop-filter: none;
+  box-shadow: none;
+}
+body.raw-theme .nw-handle { border-bottom-color: rgba(0,0,0,0.15); }
+body.raw-theme .nw-drag-dots { color: #999999; }
+body.raw-theme .nw-divider { background: rgba(0,0,0,0.15); }
+body.raw-theme .nw-action-btn { color: #444444; }
+body.raw-theme .nw-action-btn .nw-action-label { color: #999999; }
+body.raw-theme .nw-action-btn:hover { color: #000000; background: rgba(0,0,0,0.04); }
+body.raw-theme .nw-action-btn:hover .nw-action-label { color: #000000; }
+body.raw-theme .nw-btn-prev, body.raw-theme .nw-btn-next {
+  background: transparent; border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 0; color: #444444;
+}
+body.raw-theme .nw-btn-prev:hover, body.raw-theme .nw-btn-next:hover { background: rgba(0,0,0,0.06); color: #000000; }
+body.raw-theme .nw-nav-pip-bar { background: rgba(0,0,0,0.10); }
+body.raw-theme .nw-nav-pip-fill { background: #000000; }
+body.raw-theme .nw-nav-pip-pct { color: #999999; font-family: monospace; }
+body.raw-theme .nw-interest-btn { color: #444444; }
+body.raw-theme .nw-interest-btn .nw-action-label { color: #999999; }
+body.raw-theme .nw-interest-btn:hover { color: #000000; background: rgba(0,0,0,0.04); }
+body.raw-theme .nw-interest-btn:hover .nw-action-label { color: #000000; }
+
+/* Chapter widget */
+body.raw-theme .cw-trigger {
+  background: #ffffff; border: 1px solid #000000;
+  border-radius: 0; backdrop-filter: none; box-shadow: none;
+  font-family: monospace; font-size: 9px; color: #000000;
+}
+body.raw-theme .cw-dropdown {
+  background: #ffffff; border: 1px solid #000000;
+  border-radius: 0; backdrop-filter: none; box-shadow: none;
+}
+body.raw-theme .cw-item { font-family: monospace; font-size: 9px; color: #444444; }
+body.raw-theme .cw-item:hover { background: rgba(0,0,0,0.05); }
+body.raw-theme .cw-item-num { color: #999999; }
+body.raw-theme .cw-item-dot { background: #000000; }
+body.raw-theme .cw-item.active { color: #000000; }
+
+/* Panel — flat white */
+body.raw-theme #panel {
+  background: #ffffff !important;
+  border-left: 1px solid #000000 !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+body.raw-theme #panel:hover { background: #ffffff !important; border-left-color: #000000 !important; }
+body.raw-theme .rp-label { color: #999999; font-family: monospace; font-size: 9px; letter-spacing: 0.18em; }
+body.raw-theme .rp-hero-name { color: #000000; font-family: monospace; font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: -0.01em; }
+body.raw-theme .rp-hero-role { color: #999999; font-family: monospace; font-size: 9px; margin-top: 4px; }
+body.raw-theme .rp-hero-summary { color: #444444; font-family: monospace; font-size: 11px; line-height: 1.6; }
+body.raw-theme .rp-contact { color: #444444; font-family: monospace; font-size: 10px; }
+body.raw-theme .rp-job {
+  background: transparent; border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 0; transition: none;
+}
+body.raw-theme .rp-job:hover { border-color: #000000; background: rgba(0,0,0,0.02); }
+body.raw-theme .rp-job-company { color: #000000; font-family: monospace; font-size: 12px; font-weight: 700; }
+body.raw-theme .rp-job-role { color: #444444; font-family: monospace; font-size: 10px; }
+body.raw-theme .rp-job-year { color: #999999; font-family: monospace; font-size: 9px; }
+body.raw-theme .rp-pill { color: #999999; border-color: rgba(0,0,0,0.12); font-family: monospace; border-radius: 0; }
+body.raw-theme .rp-comp-cat { color: #444444; font-family: monospace; font-size: 10px; }
+body.raw-theme .rp-ref { background: transparent; border-left: 2px solid #000000; }
+body.raw-theme .rp-ref-quote { color: #444444; font-family: monospace; font-size: 11px; }
+body.raw-theme .rp-ref-name { color: #999999; font-family: monospace; }
+body.raw-theme .rp-footer { color: #999999; border-top-color: rgba(0,0,0,0.15); font-family: monospace; }
+body.raw-theme .rp-footer a { color: #000000; }
+body.raw-theme #panel:hover .rp-label { color: #999999; }
+body.raw-theme #panel:hover .rp-hero-name { color: #000000; }
+body.raw-theme #panel:hover .rp-hero-role { color: #999999; }
+body.raw-theme #panel:hover .rp-hero-summary { color: #444444; }
+body.raw-theme #panel:hover .rp-job { background: transparent; border-color: rgba(0,0,0,0.15); }
+body.raw-theme #panel:hover .rp-job:hover { border-color: #000000; background: rgba(0,0,0,0.02); }
+body.raw-theme #panel:hover .rp-job-company { color: #000000; }
+body.raw-theme #panel:hover .rp-job-role { color: #444444; }
+body.raw-theme #panel:hover .rp-job-year { color: #999999; }
+body.raw-theme #panel:hover .rp-pill { color: #999999; border-color: rgba(0,0,0,0.12); }
+body.raw-theme #panel:hover .rp-comp-cat { color: #444444; }
+body.raw-theme #panel:hover .rp-ref { background: transparent; }
+body.raw-theme #panel:hover .rp-ref-quote { color: #444444; }
+body.raw-theme #panel:hover .rp-ref-name { color: #999999; }
+body.raw-theme #panel:hover .rp-footer { color: #999999; border-color: rgba(0,0,0,0.15); }
+
+/* Download button */
+body.raw-theme #rp-download-btn {
+  background: transparent; border: 1px solid #000000; border-radius: 0;
+  color: #000000; font-family: monospace; font-size: 9px; letter-spacing: 0.1em;
+  transition: none;
+}
+body.raw-theme #rp-download-btn:hover { background: #000000; color: #ffffff; }
+
+/* Resume ghost preview */
+body.raw-theme #rp-ghost-preview { display: none !important; }
+
+/* Toast */
+body.raw-theme #toast {
+  background: #ffffff; border: 1px solid #000000;
+  border-radius: 0; backdrop-filter: none; box-shadow: none;
+  color: #000000;
+}
+body.raw-theme #toast-icon { color: #000000; }
+body.raw-theme #toast-title { color: #000000; font-family: monospace; }
+body.raw-theme #toast-sub { color: #555555; font-family: monospace; }
+body.raw-theme .toast-act-btn {
+  font-family: monospace; border-radius: 0; border-color: rgba(0,0,0,0.20); color: #000000;
+  background: transparent; transition: none;
+}
+body.raw-theme .toast-act-btn:hover { border-color: #000000; background: rgba(0,0,0,0.06); }
+body.raw-theme .toast-act-btn.primary { background: #000000; color: #ffffff; border-color: #000000; }
+body.raw-theme .toast-act-btn.primary:hover { background: #333333; }
+
+/* Interest panel */
+body.raw-theme #interest-panel {
+  background: #ffffff; border: 1px solid #000000;
+  border-radius: 0; backdrop-filter: none; box-shadow: none;
+}
+body.raw-theme .ip-anchor { color: #999999; font-family: monospace; }
+body.raw-theme .ip-sentence { color: #444444; font-family: monospace; border-left-color: #000000; }
+body.raw-theme .ip-prompt { color: #444444; font-family: monospace; }
+body.raw-theme .ip-pill { font-family: monospace; border-color: rgba(0,0,0,0.20); border-radius: 0; color: #444444; }
+body.raw-theme .ip-pill:hover { border-color: #000000; color: #000000; background: rgba(0,0,0,0.04); }
+body.raw-theme .ip-pill.selected { border-color: #000000; color: #000000; background: rgba(0,0,0,0.08); }
+body.raw-theme .ip-cta { font-family: monospace; border-radius: 0; border-color: rgba(0,0,0,0.20); color: #444444; }
+body.raw-theme .ip-cta:not(:disabled):hover { background: #000000; border-color: #000000; color: #ffffff; }
+body.raw-theme .ip-hint { color: #999999; font-family: monospace; }
+
+/* Spec cursor ghost */
+body.raw-theme .scg-inner {
+  background: #ffffff; border: 1px solid #000000;
+  border-radius: 0; backdrop-filter: none; box-shadow: none;
+}
+body.raw-theme .scg-key { color: #999999; font-family: monospace; }
+body.raw-theme .scg-val { color: #000000; font-family: monospace; font-size: 18px; font-weight: 700; }
+
+/* Detail ghost */
+body.raw-theme .dg-inner {
+  background: #ffffff; border: 1px solid #000000;
+  border-radius: 0; backdrop-filter: none; box-shadow: none;
+}
+body.raw-theme .dg-label { color: #999999; font-family: monospace; }
+body.raw-theme .dg-row { border-bottom-color: rgba(0,0,0,0.10); }
+body.raw-theme .dg-row-key { color: #999999; font-family: monospace; }
+body.raw-theme .dg-row-val { color: #000000; font-family: monospace; font-size: 15px; font-weight: 700; }
+
+/* Dark moment — plain black/white invert */
+body.raw-theme.dark-moment #dark-veil { background: #ffffff; opacity: 0.97; }
+body.raw-theme.dark-moment #dark-spotlight .ds-inner { color: #000000; font-family: monospace; }
+body.raw-theme.dark-moment #dark-spotlight .ds-inner .ac { color: #000000; }
+body.raw-theme.dark-moment .ds-ch-label { color: #999999; font-family: monospace; }
+body.raw-theme.dark-moment .ds-ch-title { color: #444444; font-family: monospace; }
+body.raw-theme.dark-moment #dark-escape-hint { color: rgba(0,0,0,0.35); font-family: monospace; }
+
+/* Cluster buttons in raw theme — square, black/white */
+body.raw-theme #scroll-toggle,
+body.raw-theme #split-toggle {
+  background: transparent; border: 1px solid #000000;
+  color: #555555; box-shadow: none; border-radius: 0; font-family: monospace; cursor: auto;
+}
+body.raw-theme #scroll-toggle:hover,
+body.raw-theme #split-toggle:hover { background: rgba(0,0,0,0.06); color: #000000; border-color: #000000; }
+body.raw-theme #scroll-toggle.on,
+body.raw-theme #split-toggle.split-active { background: #000000; color: #ffffff; border-color: #000000; box-shadow: none; }
+
+
+/* Compose btn */
+/* Raw state toggle */
+body.raw-theme #li-toggle {
+  border-color: rgba(0,0,0,0.25); color: #444444; border-radius: 0;
+}
+body.raw-theme #li-toggle:hover { border-color: #000000; color: #000000; }
+body.raw-theme #li-toggle .li-mark { color: #999999; }
+
+body.raw-theme #h-compose-btn, body.raw-theme #h-studio-btn {
+  border-color: rgba(0,0,0,0.20); color: #555555; border-radius: 0;
+}
+body.raw-theme #h-compose-btn:hover, body.raw-theme #h-studio-btn:hover { border-color: #000000; color: #000000; }
+body.raw-theme #h-compose-btn.compose-active { border-color: #000000; color: #000000; background: rgba(0,0,0,0.06); }
+
+/* Raw theme toggle button in header */
+/* Wolfie credit */
+body.raw-theme #wolfie-credit { color: #cccccc; border-color: rgba(0,0,0,0.10); font-family: monospace; background: transparent; backdrop-filter: none; }
+body.raw-theme #wolfie-credit a { color: #999999; }
+
+/* Service rows in panel */
+body.raw-theme .service-dot { background: #000000; opacity: 0.25; }
+body.raw-theme .service-row.current .service-dot { opacity: 1; }
+body.raw-theme .panel-section-label { color: #999999; font-family: monospace; }
+body.raw-theme .service-name { color: #000000; font-family: monospace; }
+body.raw-theme .service-tag { color: #999999; font-family: monospace; }
+body.raw-theme .service-url { color: #cccccc; }
+body.raw-theme .service-row { border-color: rgba(0,0,0,0.10); }
+body.raw-theme .service-row:hover { background: rgba(0,0,0,0.03); }
+body.raw-theme .panel-tagline { color: #444444; font-family: monospace; }
+body.raw-theme .panel-wolfie { color: #cccccc; border-color: rgba(0,0,0,0.10); font-family: monospace; }
+body.raw-theme .panel-wolfie a { color: #999999; }
+
+/* Narrative site trigger — strip it */
+body.raw-theme .nst-chrome { border-radius: 0; box-shadow: none; }
+body.raw-theme .nst-bar { background: #ffffff; border-bottom-color: rgba(0,0,0,0.15); }
+body.raw-theme .nst-label { color: #999999; font-family: monospace; }
+body.raw-theme .nst-url { color: #000000; font-family: monospace; }
+body.raw-theme .nst-btn { border-radius: 0; font-family: monospace; }
+body.raw-theme .nst-btn.nst-visit { color: #000000; border-color: #000000; background: transparent; }
+body.raw-theme .nst-btn.nst-visit:hover { background: #000000; color: #ffffff; }
+body.raw-theme .nst-desc { color: #444444; font-family: monospace; }
+
+/* Sub-chapter break divider */
+body.raw-theme .subch-break { opacity: 0.08; }
+body.raw-theme .subch-break.revealed { opacity: 0.4; }
+body.raw-theme .subch-break.past { opacity: 0.3; }
+
+/* Pull border in sub-chapter mode — keep black */
+body.raw-theme .sentence.pull { border-left-color: #000000; }
+
+/* ── Compose bar raw ── */
+body.raw-theme .compose-bar {
+  background: #ffffff; border: 1px solid #000000; border-radius: 0;
+  backdrop-filter: none; box-shadow: none; color: #000000;
+}
+body.raw-theme .compose-drag-handle { border-bottom-color: rgba(0,0,0,0.12); color: #999999; }
+body.raw-theme .compose-label { color: #999999; font-family: monospace; }
+body.raw-theme .compose-chapter-select {
+  font-family: monospace; background: transparent; border-color: rgba(0,0,0,0.20);
+  border-radius: 0; color: #444444;
+}
+body.raw-theme .compose-chapter-select:focus, body.raw-theme .compose-chapter-select:hover { border-color: #000000; color: #000000; }
+
+/* ─ Mobile panel in raw theme ─ */
+@media (max-width: 760px) {
+  body.raw-theme #panel { background: #ffffff !important; border-radius: 0 !important; }
+}
+
+/* ── RAW THEME LABEL WATERMARK — so purpose is explicit ── */
+body.raw-theme::before {
+  content: 'RAW / ENGINE ONLY';
+  position: fixed;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: monospace;
+  font-size: 8px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(0,0,0,0.12);
+  z-index: 9999;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ── a, button cursor override in raw theme ── */
+body.raw-theme a,
+body.raw-theme button,
+body.raw-theme [data-idx],
+body.raw-theme .cw-trigger,
+body.raw-theme .cw-item { cursor: auto; }
+
+/* ── Panel image area ─ strip ── */
+body.raw-theme .panel-img-area { background: #eeeeee; border-color: rgba(0,0,0,0.12); border-radius: 0; }
+
+/* Raw theme + split: image layer shows normally */
+body.raw-theme.split-view #image-layer { display: block !important; }
+body.raw-theme.split-view #image-layer img.visible { opacity: 0.82; }
+body.raw-theme.split-view #image-layer::after {
+  background:
+    linear-gradient(to right, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.70) 14%, rgba(255,255,255,0.0) 40%) !important;
+}
+body.raw-theme.split-view #stream-col { max-width: 52vw; }
+
 #scroll-toggle {
   position: fixed;
   top: clamp(68px,10vh,88px); right: clamp(340px,calc(320px + 2vw),380px);
@@ -3540,7 +4024,7 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
       <span class="h-tagline">Narrative Edition &middot; wolfie.love</span>
     </div>
     <div class="h-actions">
-      <button id="li-toggle" aria-label="Cycle theme" title="in → out → off">
+      <button id="li-toggle" aria-label="Cycle theme" title="raw → doc → pitch">
         <span class="li-mark" id="li-mark-logo">in</span>
         <span id="li-toggle-label">In</span>
       </button>
@@ -4400,6 +4884,86 @@ imgs[0].classList.add('visible');
 
   // Observe body class changes for li-theme toggle
   var obs = new MutationObserver(checkTheme);
+  obs.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+})();
+
+
+// ── RAW / DOC IMAGE LAYER — magnetic cursor lerp (postcard parallax) ──────
+(function() {
+  var layer = document.getElementById('image-layer');
+  if (!layer) return;
+
+  var lerpX = 0, lerpY = 0;
+  var targetX = 0, targetY = 0;
+  var following = false;
+  var rafId = null;
+
+  var LERP_FOLLOW = 0.13;
+  var LERP_IDLE   = 0.07;
+  var MAG_X = 28;
+  var MAG_Y = 18;
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function isPostcard() {
+    return document.body.classList.contains('raw-theme') ||
+           document.body.classList.contains('doc-theme');
+  }
+  function isMob() { return window.innerWidth <= 760; }
+  function midX()  { return window.innerWidth * 0.5; }
+
+  function applyTransform() {
+    var imgs = layer.querySelectorAll('img');
+    for (var i = 0; i < imgs.length; i++) {
+      imgs[i].style.transform = 'translateX(-50%) translateY(-50%) translate(' + lerpX.toFixed(2) + 'px, ' + lerpY.toFixed(2) + 'px)';
+    }
+  }
+
+  function clearTransform() {
+    var imgs = layer.querySelectorAll('img');
+    for (var i = 0; i < imgs.length; i++) {
+      imgs[i].style.transform = '';
+    }
+  }
+
+  function tick() {
+    if (!isPostcard()) { clearTransform(); rafId = null; return; }
+    var tx = (!isMob() && following) ? targetX : 0;
+    var ty = (!isMob() && following) ? targetY : 0;
+    var t  = following ? LERP_FOLLOW : LERP_IDLE;
+    lerpX = lerp(lerpX, tx, t);
+    lerpY = lerp(lerpY, ty, t);
+    applyTransform();
+    var dist = Math.abs(lerpX - tx) + Math.abs(lerpY - ty);
+    rafId = dist > 0.05 ? requestAnimationFrame(tick) : null;
+  }
+
+  function startRaf() { if (!rafId) rafId = requestAnimationFrame(tick); }
+  function enterFollow() { if (!following) { following = true;  startRaf(); } }
+  function enterIdle()   { if (following)  { following = false; startRaf(); } }
+  function applyZone(mx) { mx < midX() ? enterFollow() : enterIdle(); }
+
+  document.addEventListener('mousemove', function(e) {
+    if (!isPostcard() || isMob()) return;
+    var nx = (e.clientX / window.innerWidth  - 0.5) * 2;
+    var ny = (e.clientY / window.innerHeight - 0.5) * 2;
+    targetX = nx * MAG_X;
+    targetY = ny * MAG_Y;
+    applyZone(e.clientX);
+  }, { passive: true });
+
+  document.addEventListener('mouseleave', function() { enterIdle(); });
+
+  // When theme changes: start lerp if entering postcard, clear if leaving
+  var obs = new MutationObserver(function() {
+    if (isPostcard()) {
+      startRaf();
+    } else {
+      following = false;
+      lerpX = 0; lerpY = 0;
+      clearTransform();
+      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    }
+  });
   obs.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 })();
 
@@ -5501,11 +6065,11 @@ function isGridOpen() { return document.getElementById('imageGridOverlay').class
 // THEME CYCLE TOGGLE — in / out / off
 // ===================================
 // Single button, three states:
-//   default   → mark: "in"  / label: "In"   (no theme)
-//   li-theme  → mark: "out" / label: "Out"  (LinkedIn)
-//   doc-theme → mark: "off" / label: "Off"  (Document)
+//   raw-theme → label: "raw"   (default — engine exposed, postcard images)
+//   doc-theme → label: "doc"   (parchment, DM Serif, postcard images)
+//   pitch     → label: "pitch" (dark cinematic — base palette, full-bleed images)
 (function() {
-  var state = 0; // 0=default, 1=li-theme, 2=doc-theme
+  var state = 0; // 0=raw, 1=doc, 2=pitch
   var toastTimer;
 
   function showToast(icon, title, sub, actionLabel, actionFn, duration) {
@@ -5541,31 +6105,42 @@ function isGridOpen() { return document.getElementById('imageGridOverlay').class
 
   function applyState(newState, skipTransition) {
     state = newState;
-    var mark  = document.getElementById('li-mark-logo');
     var label = document.getElementById('li-toggle-label');
+    var mark  = document.getElementById('li-mark-logo');
 
-    document.body.classList.remove('li-theme', 'doc-theme');
+    document.body.classList.remove('raw-theme', 'doc-theme');
+    // Clear inline image styles between themes
+    document.querySelectorAll('#image-layer img').forEach(function(el) { el.style.cssText = ''; });
     if (skipTransition) {
       document.body.classList.add('no-transitions');
       setTimeout(function() { document.body.classList.remove('no-transitions'); }, 50);
     }
 
     if (state === 0) {
-      if (mark)  mark.textContent  = 'in';
-      if (label) label.textContent = 'In';
-      showToast('✦', 'Back to Normal', 'Conviction restored.', null, null, 2800);
+      // Raw — engine exposed, postcard images on white
+      document.body.classList.add('raw-theme');
+      if (label) label.textContent = 'raw';
+      if (mark)  mark.textContent  = '◻';
+      // Hide cursor — raw uses system cursor:auto via CSS
+      if (typeof cursor !== 'undefined' && cursor) { cursor.style.opacity = '0'; cursorVisible = false; }
+      showToast('◻', 'Raw', 'Engine exposed.', null, null, 2200);
 
     } else if (state === 1) {
-      document.body.classList.add('li-theme');
-      if (mark)  mark.textContent  = 'out';
-      if (label) label.textContent = 'Out';
-      showToast('🔵', 'In Mode', 'Congratulations. You are open to work.', 'Escape →', function() { applyState(0); }, 6000);
+      // Doc — parchment, serif, postcard images
+      document.body.classList.add('doc-theme');
+      if (label) label.textContent = 'doc';
+      if (mark)  mark.textContent  = '§';
+      // Hide cursor — doc uses cursor:auto via CSS
+      if (typeof cursor !== 'undefined' && cursor) { cursor.style.opacity = '0'; cursorVisible = false; }
+      showToast('§', 'Doc', 'Structure carries the weight.', 'Esc →', function() { applyState(0); }, 4000);
 
     } else if (state === 2) {
-      document.body.classList.add('doc-theme');
-      if (mark)  mark.textContent  = 'off';
-      if (label) label.textContent = 'Off';
-      showToast('§', 'Document Mode', 'All ornamentation removed. The sentence carries the weight.', 'Esc →', function() { applyState(0); }, 5000);
+      // Pitch — dark cinematic, full-bleed images (base palette, no theme class)
+      if (label) label.textContent = 'pitch';
+      if (mark)  mark.textContent  = '✦';
+      // Restore custom cursor for pitch
+      if (typeof cursor !== 'undefined' && cursor) { cursor.style.opacity = '1'; cursorVisible = true; }
+      showToast('✦', 'Pitch', 'Conviction restored.', 'Esc →', function() { applyState(0); }, 3500);
     }
   }
 
@@ -5574,13 +6149,18 @@ function isGridOpen() { return document.getElementById('imageGridOverlay').class
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape' && state !== 0) {
       if (!document.body.classList.contains('dark-moment')) {
-        applyState(0, false);
+        applyState(0, true);
       }
     }
   });
 
   var btn = document.getElementById('li-toggle');
   if (btn) btn.addEventListener('click', cycle);
+
+  // Initialize with raw theme as default (no toast on load)
+  document.body.classList.add('raw-theme');
+  if (document.getElementById('li-mark-logo'))  document.getElementById('li-mark-logo').textContent  = '◻';
+  if (document.getElementById('li-toggle-label')) document.getElementById('li-toggle-label').textContent = 'raw';
 })();
 
 // ── Once-per-session dark chapter tracking ──────────────────────────────────
@@ -6995,13 +7575,11 @@ document.getElementById('dark-veil').addEventListener('click', function() {
 // ── SITES GRID ────────────────────────────────────────────────────────────
 var GRID_SITES = [
   { url: 'https://wolfie.love',         label: 'wolfie.love',     tag: 'Platform'  },
-  { url: 'https://wolfie.life/data',         label: 'wolfie.life',     tag: 'Data Layer'  },
-  { url: 'https://wolfie.life/dash',         label: 'love.dash',     tag: 'Narrative Analytics'  },
-  { url: 'https://reasonandresolution.com',         label: 'Reason & Resolution',     tag: 'Argument & Answer'  },
+  { url: 'https://wolfie.lfee',         label: 'wolfie.life',     tag: 'Application'  },
   { url: 'https:/reasonably.cc',    label: 'reasonably.cc',       tag: 'Prose for Prompts' },
-  { url: 'https://wolfie.love/net',    label: 'love.media',       tag: 'Rich Media' },
-  { url: 'https://wolfie.love/news',    label: 'love.news',       tag: 'Nested Narrative Nodes' },
-  
+  { url: 'https://wolfie.love/dash',    label: 'wolfie.love/dash',       tag: 'Narrative Analytics' },
+  { url: 'https://wolfie.love/news',    label: 'wolfie.love/news',       tag: 'Nested Narrative Nodes' },
+
 ];
 var sitesGridOpen  = false;
 var sitesGridBuilt = false;
