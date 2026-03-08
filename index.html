@@ -1038,10 +1038,11 @@ body.doc-theme #image-layer::after { display: none !important; }
 body.doc-theme #image-layer img {
   position: fixed;
   inset: auto;
-  width: clamp(220px, 28vw, 380px);
-  height: clamp(160px, 20vw, 280px);
-  object-fit: cover;
-  object-position: center 40%;
+  width: clamp(180px, 22vw, 320px);
+  height: auto;
+  max-height: 70vh;
+  object-fit: contain;
+  object-position: center center;
   opacity: 0;
   top: 50%;
   left: calc(50% + 80px);
@@ -1524,10 +1525,11 @@ body.raw-theme #image-layer::after { display: none !important; }
 body.raw-theme #image-layer img {
   position: fixed;
   inset: auto;
-  width: clamp(220px, 28vw, 380px);
-  height: clamp(160px, 20vw, 280px);
-  object-fit: cover;
-  object-position: center 40%;
+  width: clamp(180px, 22vw, 320px);
+  height: auto;
+  max-height: 70vh;
+  object-fit: contain;
+  object-position: center center;
   opacity: 0;
   top: 50%;
   left: calc(50% + 80px);
@@ -1548,8 +1550,9 @@ body.raw-theme #image-layer img:hover { filter: grayscale(0) opacity(1); }
 
 /* Split + raw */
 body.raw-theme.split-view #image-layer img {
-  width: clamp(200px, 36vw, 420px);
-  height: clamp(150px, 26vw, 310px);
+  width: clamp(180px, 30vw, 380px);
+  height: auto;
+  max-height: 75vh;
 }
 
 /* Mobile — hide image in raw portrait; show in landscape split-view only */
