@@ -2357,6 +2357,16 @@ body:has(header:hover) #chapter-widget {
     grid-template-rows: 52px auto; 
     z-index: auto; /* Frees the panel from the z-index trap */
   }
+  /* sticky fails when parent has z-index:auto stacking context reset;
+     fixed is equivalent visually and always works on mobile */
+  header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 9000;
+  }
+  #stream-col {
+    padding-top: calc(52px + 40px); /* compensate for fixed header */
+  }
   #stream-col { 
     grid-row: 2; 
     min-height: auto; 
