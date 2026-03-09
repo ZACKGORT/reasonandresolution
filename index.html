@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Reason & Resolution · A Thesis on Presence</title>
+<title>Reason &amp; Resolution · A Thesis on Presence</title>
 
 <link rel="icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAAAIAA8AQAAFgAAAIlQTkcNChoKAAAADUlIRFIAAAAQAAAAEAgGAAAAH/P/YQAAAQNJREFUeJxjYKAQMMIYlzJ5/qNL6k3/wkhIjgWmQCFQh4GBgYGBjZmRgZ2dmeHnz78Mlxgu/2dgYGCAySGDSwxX/utN/8LIyMDAwPBynQncBlEuFgZGDQGG/zc+MLz+9gev88WDzjCyMDAwMHz/ilD44sdfBv6zbxg+/vzL8OsvhssxAMSALwgDvjMwMHxk+E1QI6oBX/E7lSQXkArg0binVJGwh5GAS/d9RhQDGBgYGDZnyhJliO/0x3B9jOiSq+Ik8RoStug5ih4MAxgYGBgWBoliNSR+3WsM9VgNYGBgYJjhLohiSMbO9zjV4gT91rz/+6158XqJBZ/k969/SbaUZAAABDJTRS3nencAAAAASUVORK5CYII=" sizes="any">
 <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPGRlZnM+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9ImhnIiBjeD0iNDIlIiBjeT0iMzUlIiByPSI2NSUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZjBiODQwIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iNTUlIiBzdG9wLWNvbG9yPSIjZDQ4ODBhIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzhiNGEwMCIvPgogICAgPC9yYWRpYWxHcmFkaWVudD4KICAgIDxmaWx0ZXIgaWQ9InNvZnQiPgogICAgICA8ZmVHYXVzc2lhbkJsdXIgaW49IlNvdXJjZUFscGhhIiBzdGREZXZpYXRpb249IjAuNSIgcmVzdWx0PSJibHVyIi8+CiAgICAgIDxmZUNvbXBvc2l0ZSBpbj0iU291cmNlR3JhcGhpYyIgaW4yPSJibHVyIiBvcGVyYXRvcj0ib3ZlciIvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgogIDwhLS0gSGVhcnQgcGF0aCBjZW50ZXJlZCBpbiAzMngzMiwgc2xpZ2h0bHkgb3JnYW5pYyBwcm9wb3J0aW9ucyAtLT4KICA8cGF0aCBmaWx0ZXI9InVybCgjc29mdCkiCiAgICBkPSJNMTYgMjcuMiBDMTYgMjcuMiA0IDE5LjIgNCAxMS42IEM0IDcuNCA3LjIgNCAxMS4yIDQgQzEzLjQgNCAxNS4yIDUuMiAxNiA2LjIgQzE2LjggNS4yIDE4LjYgNCAyMC44IDQgQzI0LjggNCAyOCA3LjQgMjggMTEuNiBDMjggMTkuMiAxNiAyNy4yIDE2IDI3LjJaIgogICAgZmlsbD0idXJsKCNoZykiCiAgLz4KPC9zdmc+" type="image/svg+xml">
@@ -2007,6 +2007,9 @@ body.dispatch-mode header { position: fixed; top: 0; left: 0; right: 0; z-index:
   body.dispatch-mode #dispatch-ghost { display: block !important; }
   /* Keep HUD above the dispatch sheet */
   body.dispatch-mode #nav-widget { z-index: 2100; }
+  /* Keep HUD above A/ panel sheet when open */
+  #panel.sheet-open ~ #nav-widget,
+  body:has(#panel.sheet-open) #nav-widget { z-index: 2100; }
 }
 body.scroll-free .sentence { opacity: 1 !important; pointer-events: none; }
 body.scroll-free .sentence.past { opacity: 1 !important; }
@@ -2398,15 +2401,15 @@ body.ch-7 { --hud-bg: rgba(248,236,240,0.97); --hud-ink: #200810; --hud-ink-2: #
     position: fixed; bottom: calc(20px + env(safe-area-inset-bottom));
     left: 50%; right: auto; top: auto; transform: translateX(-50%); z-index: 300; width: auto;
   }
-  .nw-shell { flex-direction: row; align-items: stretch; border-radius: 24px; min-width: unset; width: auto; padding: 0; gap: 0; box-shadow: 0 8px 40px rgba(0,0,0,0.12); }
+  .nw-shell { flex-direction: row; align-items: stretch; border-radius: 24px; min-width: unset; width: auto; padding: 0; gap: 0; box-shadow: 0 8px 40px rgba(0,0,0,0.12); overflow: hidden; }
   .nw-handle, .nw-divider, .nw-nav-pip, .nw-nav-pip-pct { display: none !important; }
   .nw-action-btn { flex: 1; border: none; border-right: 1px solid var(--hud-border); border-radius: 0; padding: 12px 14px 10px; font-size: 15px; gap: 3px; }
-  .nw-action-btn:first-of-type { border-radius: 24px 0 0 24px; }
+  .nw-action-btn:first-of-type { border-radius: 0; }
 
   .nw-action-btn:last-of-type { border-right: none; }
   .nw-nav { flex: 2.5; flex-direction: row; padding: 0; gap: 0; width: auto; align-items: stretch; }
   .nw-btn-prev, .nw-btn-next { flex: 1; height: auto; min-height: 52px; font-size: 18px; border-radius: 0; border: none; border-left: 1px solid var(--hud-border); background: none; padding: 0 16px; }
-  .nw-btn-next { border-radius: 0 24px 24px 0; }
+  .nw-btn-next { border-radius: 0; }
   #toast { bottom: calc(96px + env(safe-area-inset-bottom)); }
   #wolfie-credit { bottom: calc(88px + env(safe-area-inset-bottom)); }
   #chapter-widget { left: 0; right: 0; top: calc(52px + 10px); padding: 0; justify-content: center; }
@@ -4388,13 +4391,13 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
 <div id="shell">
   <header>
     <nav class="mall-crumb">
-      <span class="node">A Thesis By Zack Gort</span>
+      <span class="node">Zack Gort</span>
       <span class="sep">&#9671;</span>
       <span class="node">Presence Designer</span>
     </nav>
     <div class="h-center">
-      <span class="h-name">Anthropic RSP v3</span>
-      <span class="h-tagline">Narrative Edition &middot; wolfie.love</span>
+      <span class="h-name">Reason &amp; Resolution</span>
+      <span class="h-tagline">Zack Gort &middot; A Thesis on Heuristics for Human Intent</span>
     </div>
     <div class="h-actions">
       <button id="li-toggle" aria-label="Cycle theme" title="raw → doc → pitch">
@@ -4414,7 +4417,7 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
     <div id="header-overlay">
       <div class="ho-cell">
         <span class="ho-label">What Is This?</span>
-        <span class="ho-value">"A Presence Platform"<br>#StoryTech &middot; UX &middot; Front-end</span>
+        <span class="ho-value">"A Presence Platform"<br>StoryTech &middot; UX &middot; Front-end</span>
       </div>
       <div class="ho-cell">
         <span class="ho-label">What Actually Is This?</span>
@@ -4426,19 +4429,20 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
       <div class="ho-cell">
         <span class="ho-label">What Does It Do?</span>
         <span class="ho-value">
-          Reading psychometrics at sentence level.<br>
-          Behavioral psychometrics per node.
+          Reading psychometrics at the sentence level.<br>
+          Behavioral psychometrics delivered per node.
         </span>
       </div>
       <div class="ho-cell">
         <span class="ho-label">What Now?</span>
         <span class="ho-value">
-          The format is the argument.<br>
-          This is my Reason. This is my Resolution.
+          The Sentence is the Argument.<br>
+          This is my Reason. &middot; This is my Resolution.
         </span>
       </div>
     </div>
   </header>
+
 
   <main id="stream-col">
     <button id="scroll-toggle" aria-label="Toggle free scroll">scroll</button>
@@ -4450,8 +4454,8 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
 
   <!-- ── CHAPTER GUIDE HEADER ── -->
   <div class="pg-header">
-    <div class="pg-title">RSP v3 &middot; Case Study</div>
-    <div class="pg-sub">For Anthropic &middot; 6 chapters</div>
+    <div class="pg-title">Reason &amp; Resolution</div>
+    <div class="pg-sub">Zack Gort &middot; 6 chapters</div>
   </div>
 
   <!-- ── CHAPTER LIST ── -->
@@ -4868,7 +4872,7 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
       <div class="nst-bar-left">
         <div class="nst-dot"></div>
         <span class="nst-label" id="nst-label">Live Site</span>
-        <span class="nst-url" id="nst-url">wolfie.love</span>
+        <span class="nst-url" id="nst-url">reasonandresolution.com</span>
       </div>
       <div class="nst-actions">
         <a class="nst-btn nst-visit" id="nst-visit" href="#" target="_blank" rel="noopener">Open &#8599;</a>
@@ -5876,14 +5880,17 @@ streamCol.addEventListener('click', function(e) {
 function isMobile() { return window.innerWidth <= 760; }
 function openPanelSheet() {
   var p = document.getElementById('panel');
+  if (p.classList.contains('sheet-open')) { closePanelSheet(); return; }
   p.classList.add('sheet-open');
-  document.getElementById('panel-overlay-backdrop').classList.add('show');
-  document.body.style.overflow = 'hidden';
+  var bd = document.getElementById('panel-overlay-backdrop');
+  bd.classList.add('show');
+  // No overflow:hidden — same protocol as dispatch, keeps HUD visible
 }
 function closePanelSheet() {
   var p = document.getElementById('panel');
   p.classList.remove('sheet-open');
-  document.getElementById('panel-overlay-backdrop').classList.remove('show');
+  var bd = document.getElementById('panel-overlay-backdrop');
+  bd.classList.remove('show');
   document.body.style.overflow = '';
 }
 document.getElementById('panel-overlay-backdrop').addEventListener('click', function() {
@@ -6672,7 +6679,7 @@ const narrative = `
 ###:01 · The Problem With Policy Documents
 
 img:7
-[label] wolfie.love &middot; Case Study &middot; Anthropic RSP v3
+[label] Reason &amp; Resolution &middot; A Thesis on Heuristics for Human Intent
 img:8
 @@darkchapter
 [poster] Policy is only as good as **who reads it.**
