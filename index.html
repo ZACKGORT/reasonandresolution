@@ -2209,6 +2209,13 @@ body.ch-7 { --hud-bg: rgba(248,236,240,0.97); --hud-ink: #200810; --hud-ink-2: #
   z-index: 8888; display: flex; justify-content: center;
   pointer-events: none; user-select: none;
 }
+
+header:hover ~ * #chapter-widget,
+body:has(header:hover) #chapter-widget {
+  top: calc(52px + 14px + 60px); /* adjust 60px to overlay height */
+  transition: top 0.22s ease;
+}
+
 .cw-trigger {
   pointer-events: auto; display: flex; flex-direction: row; align-items: center; gap: 8px;
   padding: 7px 14px; background: var(--hud-bg);
@@ -4396,8 +4403,8 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
       <span class="node">Presence Designer</span>
     </nav>
     <div class="h-center">
-      <span class="h-name">Reason &amp; Resolution</span>
-      <span class="h-tagline">Zack Gort &middot; A Thesis on Heuristics for Human Intent</span>
+      <span class="h-name">Anthropic RSP v3</span>
+      <span class="h-tagline">Narrative Edition &middot; Made with wolfie.love*</span>
     </div>
     <div class="h-actions">
       <button id="li-toggle" aria-label="Cycle theme" title="raw → doc → pitch">
@@ -4417,7 +4424,7 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
     <div id="header-overlay">
       <div class="ho-cell">
         <span class="ho-label">What Is This?</span>
-        <span class="ho-value">"A Presence Platform"<br>StoryTech &middot; UX &middot; Front-end</span>
+        <span class="ho-value">"A Presence Platform"<br>StoryTech &middot; Narrative Engine</span>
       </div>
       <div class="ho-cell">
         <span class="ho-label">What Actually Is This?</span>
@@ -4429,14 +4436,14 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
       <div class="ho-cell">
         <span class="ho-label">What Does It Do?</span>
         <span class="ho-value">
-          Reading psychometrics at the sentence level.<br>
-          Behavioral psychometrics delivered per node.
+          Reading psychometrics @ sentence level.<br>
+          Behavioral psychometrics track per node.
         </span>
       </div>
       <div class="ho-cell">
         <span class="ho-label">What Now?</span>
         <span class="ho-value">
-          The Sentence is the Argument.<br>
+          The Sentence is The Argument.<br>
           This is my Reason. &middot; This is my Resolution.
         </span>
       </div>
