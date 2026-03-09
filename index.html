@@ -2504,6 +2504,174 @@ body:has(header:hover) #chapter-widget {
   #detail-ghost { display: block; }
 }
 
+/* ── MOBILE LANDSCAPE SPLIT VIEW ─────────────────────────────────────────
+   Narrative left · Image right · Panel collapsed · HUD on right edge
+   Triggers on phones rotated sideways (height < 500px, width > height)
+───────────────────────────────────────────────────────────────────────── */
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
+
+  /* Shell: two columns — narrative | image. No panel column. */
+  #shell {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 44px 1fr;
+    z-index: auto;
+  }
+
+  /* Header: full width, compact height */
+  header {
+    grid-column: 1 / -1;
+    height: 44px;
+    padding: 0 12px;
+  }
+  .h-tagline { display: none; }
+  .mall-crumb { display: none; }
+  #h-compose-btn, #h-studio-btn { display: none !important; }
+  #li-toggle-label { display: none; }
+  #li-toggle { padding: 4px 7px; }
+  .h-btn.cta { padding: 4px 9px; font-size: 7px; }
+  .h-actions { gap: 4px; }
+  #header-overlay { display: none !important; }
+
+  /* Stream col: left half, full height, tight padding */
+  #stream-col {
+    grid-column: 1;
+    grid-row: 2;
+    min-height: auto;
+    padding: 16px 20px 80px 20px;
+    z-index: 10;
+    overflow-y: auto;
+  }
+
+  /* Sentences: scale down for landscape viewport height */
+  .sentence.poster { font-size: clamp(28px, 7vh, 52px); }
+  .sentence.body { font-size: clamp(13px, 2.2vh, 18px); line-height: 1.45; }
+  .sentence.pull { font-size: clamp(14px, 2.6vh, 22px); }
+
+  /* Panel: collapse completely off-screen — no sheet, no rail */
+  #panel {
+    display: none !important;
+  }
+  #panel-overlay-backdrop { display: none !important; }
+
+  /* Image layer: clip to right half only */
+  #image-layer {
+    left: 50%;
+    right: 0;
+    width: 50%;
+  }
+  /* Adjust gradient — fade from left edge of image toward right */
+  #image-layer::after {
+    background:
+      linear-gradient(to right, rgba(20,20,19,0.92) 0%, rgba(20,20,19,0.30) 50%, rgba(20,20,19,0.10) 100%),
+      linear-gradient(to top, rgba(20,20,19,0.70) 0%, transparent 50%);
+  }
+
+  /* Image col: right half, acts as the visual column */
+  #shell::after {
+    content: '';
+    display: block;
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  /* Progress bar: top of stream col */
+  #progress {
+    top: 44px;
+    bottom: auto;
+  }
+
+  /* Chapter widget: left half only */
+  #chapter-widget {
+    left: 0;
+    right: 50%;
+    top: calc(44px + 8px);
+    justify-content: center;
+  }
+
+  /* HUD: vertical strip hugging right viewport edge */
+  #nav-widget {
+    position: fixed;
+    right: 8px;
+    top: 50%;
+    left: auto;
+    bottom: auto;
+    transform: translateY(-50%);
+    z-index: 2100;
+    width: auto;
+  }
+  /* Restore vertical HUD layout */
+  .nw-shell {
+    flex-direction: column;
+    border-radius: 16px;
+    overflow: hidden;
+    width: auto;
+    min-width: 52px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  }
+  .nw-action-btn {
+    flex: unset;
+    border-right: none;
+    border-bottom: 1px solid var(--hud-border);
+    border-radius: 0;
+    padding: 10px 12px;
+    font-size: 13px;
+    width: 100%;
+  }
+  .nw-action-btn:first-of-type { border-radius: 0; }
+  .nw-action-btn:last-of-type { border-bottom: none; }
+  .nw-nav {
+    flex-direction: column;
+    flex: unset;
+    width: 100%;
+    align-items: stretch;
+  }
+  .nw-btn-prev, .nw-btn-next {
+    flex: unset;
+    height: 40px;
+    min-height: 40px;
+    border-left: none;
+    border-bottom: 1px solid var(--hud-border);
+    border-radius: 0;
+    font-size: 14px;
+    padding: 0 12px;
+  }
+  .nw-btn-next { border-bottom: none; border-radius: 0; }
+  .nw-action-label { font-size: 8px; }
+
+  /* Show A/ panel button, hide CV button */
+  #nw-cv-btn { display: none !important; }
+  .nw-action-btn#nw-panel-btn { display: flex; }
+
+  /* Toast and credit: adjust for landscape */
+  #toast { bottom: 16px; }
+  #wolfie-credit { bottom: 10px; }
+
+  /* Dispatch panel: when active, show as left-edge overlay on stream col */
+  body.dispatch-mode #panel {
+    display: flex !important;
+    position: fixed;
+    top: 44px; left: 0;
+    width: 50%; height: calc(100vh - 44px);
+    border-radius: 0;
+    transform: none !important;
+    z-index: 2000;
+    background: #f8f6ee !important;
+  }
+  body.dispatch-mode #nav-widget { z-index: 2200; }
+
+  /* Detail ghost: above stream text, below HUD */
+  #detail-ghost {
+    display: block !important;
+    position: fixed !important;
+    left: 8px !important;
+    bottom: 20px !important;
+    right: 60px !important;
+    top: auto !important;
+    max-width: 45vw !important;
+    width: auto !important;
+  }
+}
+
 
 /* ── Interest Panel ── */
 #interest-panel {
