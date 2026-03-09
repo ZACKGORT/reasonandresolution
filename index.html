@@ -12,12 +12,6 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Serif+Text:ital@0;1&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
 <style>
 
-/* ── Global superthin scrollbars ── */
-* { scrollbar-width: thin; scrollbar-color: var(--border, rgba(255,255,255,0.08)) transparent; }
-*::-webkit-scrollbar { width: 1px; height: 1px; }
-*::-webkit-scrollbar-track { background: transparent; }
-*::-webkit-scrollbar-thumb { background: var(--border, rgba(255,255,255,0.08)); border-radius: 0; }
-
 :root {
   --bg:       #141413;
   --ink:      #faf9f5;
@@ -470,8 +464,8 @@ header:hover #h-studio-btn.studio-active { border-color: #d97757; color: #d97757
 #studio-app.s-rail-hidden #studio-left-rail { border-right:none; }
 .s-rail-inner { padding:18px 14px;overflow-y:auto;flex:1;opacity:1;transition:opacity .2s; }
 #studio-app.s-rail-hidden .s-rail-inner { opacity:0;pointer-events:none; }
-.s-rail-inner::-webkit-scrollbar{width:1px}
-.s-rail-inner::-webkit-scrollbar-thumb{background:var(--s-ink-4,#c2b8a0);border-radius:0}
+.s-rail-inner::-webkit-scrollbar{width:3px}
+.s-rail-inner::-webkit-scrollbar-thumb{background:var(--s-ink-4,#c2b8a0);border-radius:2px}
 .s-rail-section { margin-bottom:22px; }
 .s-rs-head { font-size:7px;letter-spacing:.2em;text-transform:uppercase;color:var(--s-ink-3,#8a7a62);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--s-border,rgba(26,21,16,0.10));font-family:'Space Mono',monospace; }
 .s-size-rack { display:flex;flex-direction:column;gap:3px; }
@@ -500,8 +494,8 @@ header:hover #h-studio-btn.studio-active { border-color: #d97757; color: #d97757
   transition:background .3s,border-color .3s;
 }
 [data-theme="windowed"] #s-rail-raw-out { background:#1d1f2a;border-color:rgba(255,255,255,0.07);color:#4a4f6a; }
-#s-rail-raw-out::-webkit-scrollbar{width:1px}
-#s-rail-raw-out::-webkit-scrollbar-thumb{background:var(--s-ink-4,#c2b8a0);border-radius:0}
+#s-rail-raw-out::-webkit-scrollbar{width:3px}
+#s-rail-raw-out::-webkit-scrollbar-thumb{background:var(--s-ink-4,#c2b8a0);border-radius:2px}
 .s-rail-btn-row { display:flex;gap:5px; }
 .s-rail-act-btn {
   flex:1;font-family:'Space Mono',monospace;font-size:7px;letter-spacing:.1em;text-transform:uppercase;
@@ -559,8 +553,8 @@ header:hover #h-studio-btn.studio-active { border-color: #d97757; color: #d97757
   padding:36px 0 56px;
   position:relative;z-index:5;
 }
-#s-stream-scroll::-webkit-scrollbar{width:1px}
-#s-stream-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:0}
+#s-stream-scroll::-webkit-scrollbar{width:3px}
+#s-stream-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
 #s-stream-scroll.sz-sm{--ss:1}
 #s-stream-scroll.sz-md{--ss:1.18}
 #s-stream-scroll.sz-lg{--ss:1.38}
@@ -611,8 +605,8 @@ header:hover #h-studio-btn.studio-active { border-color: #d97757; color: #d97757
 [data-theme="windowed"] #studio-canvas-panel { background:#161820; }
 [data-theme="newspaper"] #studio-canvas-panel { background:#f0ebe0; }
 #s-canvas-nodes { flex:1;overflow-y:auto;padding:8px 10px;display:flex;flex-direction:column;gap:4px;overscroll-behavior:contain;min-height:0; }
-#s-canvas-nodes::-webkit-scrollbar{width:1px}
-#s-canvas-nodes::-webkit-scrollbar-thumb{background:var(--s-ink-4,#c2b8a0);border-radius:0}
+#s-canvas-nodes::-webkit-scrollbar{width:3px}
+#s-canvas-nodes::-webkit-scrollbar-thumb{background:var(--s-ink-4,#c2b8a0);border-radius:2px}
 #s-canvas-hint { height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:7px;pointer-events:none; }
 .s-hint-icon { font-size:20px;opacity:.25; }
 .s-hint-text { font-size:7px;letter-spacing:.16em;text-transform:uppercase;color:var(--s-ink-4,#c2b8a0);text-align:center;font-family:'Space Mono',monospace; }
@@ -1044,11 +1038,10 @@ body.doc-theme #image-layer::after { display: none !important; }
 body.doc-theme #image-layer img {
   position: fixed;
   inset: auto;
-  width: clamp(180px, 22vw, 320px);
-  height: auto;
-  max-height: 70vh;
-  object-fit: contain;
-  object-position: center center;
+  width: clamp(220px, 28vw, 380px);
+  height: clamp(160px, 20vw, 280px);
+  object-fit: cover;
+  object-position: center 40%;
   opacity: 0;
   top: 50%;
   left: calc(50% + 80px);
@@ -1397,26 +1390,6 @@ header:hover #header-overlay { opacity: 1; pointer-events: auto; transform: tran
   transition: width 0.25s ease;
 }
 
-/* ── Chapter progress bar — top of viewport ── */
-#chapter-progress-bar {
-  position: fixed; top: 52px; left: 0; right: 0;
-  height: 1px; z-index: 8999;
-  display: flex; gap: 1px;
-  pointer-events: none;
-}
-.cpb-seg {
-  flex: 1; height: 1px; position: relative;
-  background: var(--border);
-}
-.cpb-seg::after {
-  content: ''; position: absolute;
-  top: 0; left: 0; bottom: 0; width: 0%;
-  background: var(--accent);
-  transition: width 0.3s ease;
-}
-.cpb-seg.cpb-done::after { width: 100%; }
-.cpb-seg.cpb-active::after { width: var(--cpb-pct, 0%); }
-
 /* stream */
 #stream-col {
   grid-column: 1; grid-row: 2;
@@ -1551,11 +1524,10 @@ body.raw-theme #image-layer::after { display: none !important; }
 body.raw-theme #image-layer img {
   position: fixed;
   inset: auto;
-  width: clamp(180px, 22vw, 320px);
-  height: auto;
-  max-height: 70vh;
-  object-fit: contain;
-  object-position: center center;
+  width: clamp(220px, 28vw, 380px);
+  height: clamp(160px, 20vw, 280px);
+  object-fit: cover;
+  object-position: center 40%;
   opacity: 0;
   top: 50%;
   left: calc(50% + 80px);
@@ -1576,9 +1548,8 @@ body.raw-theme #image-layer img:hover { filter: grayscale(0) opacity(1); }
 
 /* Split + raw */
 body.raw-theme.split-view #image-layer img {
-  width: clamp(180px, 30vw, 380px);
-  height: auto;
-  max-height: 75vh;
+  width: clamp(200px, 36vw, 420px);
+  height: clamp(150px, 26vw, 310px);
 }
 
 /* Mobile — hide image in raw portrait; show in landscape split-view only */
@@ -1991,27 +1962,6 @@ body.raw-theme.split-view #stream-col { max-width: 52vw; }
 
 body.scroll-free { overflow-y: auto !important; overflow-x: hidden !important; }
 body.scroll-free #stream-col { justify-content: flex-start; min-height: auto; padding-top: 64px; padding-bottom: 80px; }
-body.dispatch-mode { overflow-y: auto !important; overflow-x: hidden !important; height: auto !important; }
-body.dispatch-mode #stream-col { justify-content: flex-start; min-height: auto; padding-top: 64px; padding-bottom: 80px; }
-body.dispatch-mode #panel { position: fixed; top: 52px; right: 0; width: 320px; height: calc(100vh - 52px); }
-body.dispatch-mode #shell { grid-template-columns: 1fr 320px; }
-body.dispatch-mode main#stream-col { margin-right: 320px; }
-/* Keep header fixed when body overflow changes in dispatch mode */
-body.dispatch-mode header { position: fixed; top: 0; left: 0; right: 0; z-index: 9000; }
-@media (max-width: 760px) {
-  #chapter-progress-bar { display: none; }
-}
-@media (max-width: 760px) {
-  body.dispatch-mode #panel {
-    top: auto; right: 0; left: 0; bottom: 0; width: 100%;
-    height: 55vh; border-radius: 18px 18px 0 0;
-    transform: translateY(0) !important;
-    z-index: 2000;
-  }
-  body.dispatch-mode #panel-overlay-backdrop { display: none !important; }
-  body.dispatch-mode #dispatch-ghost { display: block !important; }
-  /* Show mobile dispatch exit button when dispatch is active on mobile */
-}
 body.scroll-free .sentence { opacity: 1 !important; pointer-events: none; }
 body.scroll-free .sentence.past { opacity: 1 !important; }
 body.scroll-free .sentence.body { color: var(--ink-2) !important; }
@@ -2092,7 +2042,7 @@ body.ch-7 { --hud-bg: rgba(248,236,240,0.97); --hud-ink: #200810; --hud-ink-2: #
   display: flex; flex-direction: column;
   border-left: 1px solid var(--border);
   background: rgba(20,20,19,0.65); backdrop-filter: blur(20px);
-  overflow: hidden;
+  overflow-y: auto; padding: 28px 22px 48px;
   transition: background 0.4s ease, border-color 0.4s ease;
 }
 #panel:hover { background: rgba(248,246,238,0.98); border-left-color: rgba(0,0,0,0.07); }
@@ -2431,7 +2381,6 @@ body.ch-7 { --hud-bg: rgba(248,236,240,0.97); --hud-ink: #200810; --hud-ink-2: #
     -webkit-backdrop-filter: none !important;
   }
   #panel.sheet-open { transform: translateY(0); }
-  #panel .panel-scroll-inner { padding: 0 18px 16px; }
   #panel .panel-section-label { color: #aaa; }
   #panel .panel-img-area { background: #ede8e0; border-color: rgba(0,0,0,0.08); }
   #panel .service-name { color: #222; }
@@ -2728,29 +2677,16 @@ body.ch-7 { --hud-bg: rgba(248,236,240,0.97); --hud-ink: #200810; --hud-ink-2: #
 @media (max-width: 760px) {
   #spec-cursor-ghost { pointer-events: none; } /* shown/hidden via JS on mobile */
   .sentence.spec.auto-flow.ghost-active { opacity: 1 !important; }
-  /* Mobile spec ghost — half-width, smaller text, wraps for long content */
-  #spec-cursor-ghost .scg-inner {
-    max-width: 50vw;
-    white-space: normal;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-    padding: 10px 14px;
-  }
-  #spec-cursor-ghost .scg-key {
-    font-size: 9px;
-    letter-spacing: 0.14em;
-    min-width: unset;
-  }
-  #spec-cursor-ghost .scg-val {
-    font-size: 13px;
-    line-height: 1.3;
-  }
 }
 
 /* ── RESUME PANEL ──────────────────────────────────────────────────────────── */
 
-#panel::-webkit-scrollbar { display: none; }
+#panel {
+  padding: 20px 18px 48px;
+  overflow-y: auto;
+}
+
+#panel::-webkit-scrollbar { width: 3px; }
 #panel::-webkit-scrollbar-track { background: transparent; }
 #panel::-webkit-scrollbar-thumb { background: var(--ink-3); border-radius: 2px; }
 
@@ -3032,8 +2968,29 @@ body.dispatch-mode #dispatch-ghost { display: block; }
 }
 .dsp-sig-seg.on { background: var(--hud-accent); }
 .dsp-signal-label {
-  font-family: var(--ui); font-size: 8px; letter-spacing: .10em;
-  text-transform: uppercase; color: var(--hud-ink-3);
+  font-family: var(--ui); font-size: 8px; letter-spacing: .08em;
+  color: var(--hud-ink-3); white-space: nowrap;
+}
+
+/* comprehension ratio classes */
+.ratio-skip  { color: #c05050 !important; }
+.ratio-scan  { color: var(--hud-ink-3) !important; }
+.ratio-read  { color: var(--hud-ink) !important; }
+.ratio-study { color: var(--hud-accent) !important; }
+.ratio-dwell { color: var(--hud-accent) !important; font-weight: 500; }
+
+/* modality stat — smaller to fit arrow glyphs */
+.dsp-modality { font-size: 11px !important; letter-spacing: 0 !important; }
+
+/* modality distribution bar */
+.dsp-mod-bar {
+  display: flex; height: 4px; border-radius: 2px; overflow: hidden;
+  flex: 1; gap: 1px;
+}
+.dsp-mod-seg { height: 100%; border-radius: 1px; flex-shrink: 0; transition: width .3s; }
+.dsp-mod-empty {
+  font-family: var(--ui); font-size: 7px; letter-spacing: .08em;
+  color: var(--hud-ink-3); font-style: italic;
 }
 
 /* dispatch mode — non-active sentences recede, active node gets accent mark */
@@ -3061,78 +3018,19 @@ body.dispatch-mode .sentence.dispatch-active.poster::before {
 #nw-dispatch-btn.dispatch-on .nw-action-label { color: var(--hud-accent); }
 
 /* ── Panel dispatch view ── */
-/* ── Dispatch image preview strip ── */
-.pdv-img-strip {
-  position: relative; flex-shrink: 0;
-  height: 110px; overflow: hidden;
-  display: flex; align-items: flex-end;
-  border-bottom: 1px solid var(--border);
-}
-.pdv-img-thumb {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  object-fit: cover; object-position: center 30%;
-  opacity: 0; transition: opacity 0.5s ease, src 0s;
-  filter: grayscale(0.3);
-}
-.pdv-img-thumb.pdv-thumb-vis { opacity: 1; }
-.pdv-img-meta {
-  position: relative; z-index: 2;
-  padding: 10px 16px 12px;
-  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 100%);
-  width: 100%;
-}
-.pdv-img-chapter {
-  font-family: var(--ui); font-size: 7px; letter-spacing: .20em;
-  text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 2px;
-}
-.pdv-img-title {
-  font-family: var(--disp); font-size: 13px; font-weight: 400;
-  color: #fff; line-height: 1.2; margin-bottom: 2px;
-}
-.pdv-img-sub {
-  font-family: var(--ui); font-size: 8px; letter-spacing: .06em;
-  color: rgba(255,255,255,0.5);
-}
-
-/* ── Dispatch scroll position track ── */
-.pdv-track-wrap {
-  flex-shrink: 0; padding: 10px 16px 8px;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 10px;
-}
-.pdv-track {
-  flex: 1; height: 3px; background: var(--border);
-  border-radius: 2px; position: relative; overflow: visible;
-  display: flex; align-items: center; gap: 1px;
-}
-.pdv-track-pip {
-  flex: 1; height: 3px; border-radius: 1px;
-  background: var(--border); transition: background .15s, height .15s;
-}
-.pdv-track-pip.sig-hi  { background: var(--accent); }
-.pdv-track-pip.sig-mid { background: var(--ink-2); height: 2px; }
-.pdv-track-pip.sig-lo  { background: var(--border); }
-.pdv-track-pip.pdv-pip-active {
-  background: var(--ink) !important; height: 5px;
-  box-shadow: 0 0 4px var(--accent);
-}
-.pdv-track-label {
-  font-family: var(--ui); font-size: 7px; letter-spacing: .10em;
-  text-transform: uppercase; color: var(--ink-3); white-space: nowrap; flex-shrink: 0;
-}
-
 #panel-dispatch-view {
   display: none; flex-direction: column;
-  width: 100%; min-height: 0; flex: 1;
+  width: 100%; min-height: 0;
 }
 body.dispatch-mode #panel-dispatch-view { display: flex; }
 body.dispatch-mode .pg-chapter-list { display: none; }
 body.dispatch-mode .pg-preview-section { display: none; }
 body.dispatch-mode .pg-header { display: none; }
-body.dispatch-mode .panel-scroll-inner {
-  overflow: hidden; padding-bottom: 0;
-}
 
+.pdv-header {
+  padding: 16px 20px 12px; border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
 .pdv-eyebrow {
   font-family: var(--ui); font-size: 7px; letter-spacing: .20em;
   text-transform: uppercase; color: var(--accent); margin-bottom: 4px;
@@ -3143,9 +3041,8 @@ body.dispatch-mode .panel-scroll-inner {
 }
 .pdv-entries {
   flex: 1; overflow-y: auto; padding: 0;
+  max-height: 60vh;
 }
-.pdv-entries::-webkit-scrollbar { width: 1px; }
-.pdv-entries::-webkit-scrollbar-thumb { background: var(--border); border-radius: 0; }
 .pdv-entry {
   padding: 10px 20px; border-bottom: 1px solid var(--border);
   cursor: pointer; transition: background .12s;
@@ -3201,10 +3098,6 @@ body.dispatch-mode .panel-scroll-inner {
   padding: 0; transition: opacity .12s;
 }
 .pdv-close-btn:hover { opacity: 0.7; }
-@media (max-width: 760px) {
-  .pdv-footer { padding: 14px 20px; }
-  .pdv-close-btn { font-size: 9px; padding: 8px 0; min-height: 44px; display: flex; align-items: center; }
-}
 
 /* mobile: ghost hidden, panel view stays */
 @media (max-width: 760px) {
@@ -4097,17 +3990,10 @@ body.dark-ask #ask-interstitial { opacity: 1; pointer-events: auto; }
 .pg-preview-wrap.mode-image .pg-preview-frame-shell { display: none; }
 .pg-preview-wrap.mode-image .pg-preview-overlay { display: none; }
 .pg-preview-wrap.mode-image .pg-preview-img { display: block; }
-.pg-footer {
   font-family: var(--ui); font-size: 7px; letter-spacing: 0.10em;
   color: var(--ink-3); border-top: 1px solid var(--border);
-  padding: 12px 20px; flex-shrink: 0; transition: color 0.4s;
+  padding-top: 12px; margin-top: auto; flex-shrink: 0; transition: color 0.4s;
 }
-.panel-scroll-inner {
-  flex: 1; overflow-y: auto; padding: 28px 22px 16px;
-  display: flex; flex-direction: column;
-}
-.panel-scroll-inner::-webkit-scrollbar { width: 1px; }
-.panel-scroll-inner::-webkit-scrollbar-thumb { background: var(--border); border-radius: 0; }
 .pg-footer a { color: var(--accent); text-decoration: none; }
 .pg-footer a:hover { text-decoration: underline; }
 
@@ -4233,14 +4119,6 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
 
 <div id="cursor"></div>
 <div id="progress"></div>
-<div id="chapter-progress-bar" aria-hidden="true">
-  <div class="cpb-seg" id="cpb-1"></div>
-  <div class="cpb-seg" id="cpb-2"></div>
-  <div class="cpb-seg" id="cpb-3"></div>
-  <div class="cpb-seg" id="cpb-4"></div>
-  <div class="cpb-seg" id="cpb-5"></div>
-  <div class="cpb-seg" id="cpb-6"></div>
-</div>
 <div id="panel-overlay-backdrop"></div>
 
 <div id="image-layer">
@@ -4389,9 +4267,9 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
 <div id="shell">
   <header>
     <nav class="mall-crumb">
-      <span class="node">&#9671; Thesis by Zack Gort</span>
+      <span class="node">&#9671; zackgort.com</span>
       <span class="sep">/</span>
-      <span class="node">"Presence Designer"</span>
+      <span class="node">Open to Work</span>
     </nav>
     <div class="h-center">
       <span class="h-name">Anthropic RSP v3</span>
@@ -4410,34 +4288,27 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
         <span class="h-studio-icon">&#9670;</span>
         <span class="h-studio-label">Studio</span>
       </button>
-      <a href="https://zackgort.com" target="_blank" class="h-btn cta">zack.gort &rarr;</a>
+      <a href="https://wolfie.life" target="_blank" class="h-btn cta">wolfie.life &rarr;</a>
     </div>
     <div id="header-overlay">
       <div class="ho-cell">
-        <span class="ho-label">What Is This?</span>
-        <span class="ho-value">"A Presence Platform"<br>#StoryTech &middot; UX &middot; Front-end</span>
+        <span class="ho-label">Currently</span>
+        <span class="ho-value">Open to full-time roles.<br>Product design &middot; UX &middot; Front-end</span>
       </div>
       <div class="ho-cell">
-        <span class="ho-label">What Actually Is This?</span>
+        <span class="ho-label">Recent Work</span>
         <span class="ho-value">
-          A sentence-progressive narrative engine.<br>
-          The sentence is the primitive.
+          <a href="#">Code &amp; Theory</a> &middot; <a href="#">Publicis Sapient</a><br>
+          <a href="#">Huge</a> &middot; <a href="#">LiveArea</a> &middot; <a href="#">FlightPath</a>
         </span>
       </div>
       <div class="ho-cell">
-        <span class="ho-label">What Does It Do?</span>
-        <span class="ho-value">
-          Renders reading psychometrics at the sentence level.<br>
-          Behavioral psychometrics delivered at the node level.
-        </span>
+        <span class="ho-label">Also Building</span>
+        <span class="ho-value">intoview.pro &middot; emdash.click<br>Self-initiated tools &amp; platforms</span>
       </div>
       <div class="ho-cell">
-        <span class="ho-label">What Now?</span>
-        <span class="ho-value">
-          The format is the argument.<br>
-          This is my Reason.<br>
-          This is my Resolution.
-        </span>
+        <span class="ho-label">Start a Conversation</span>
+        <span class="ho-value">Every collaboration begins<br>with one honest sentence.</span>
       </div>
     </div>
   </header>
@@ -4448,7 +4319,6 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
   </main>
 
   <aside id="panel">
-  <div class="panel-scroll-inner">
 
   <!-- ── CHAPTER GUIDE HEADER ── -->
   <div class="pg-header">
@@ -4463,26 +4333,15 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
 
   <!-- ── DISPATCH VIEW — narrative node summary ── -->
   <div id="panel-dispatch-view">
-    <!-- ── Image preview strip ── -->
-    <div class="pdv-img-strip">
-      <img class="pdv-img-thumb" id="pdv-img-thumb" src="" alt="">
-      <div class="pdv-img-meta">
-        <div class="pdv-img-chapter" id="pdv-img-chapter">Chapter 01</div>
-        <div class="pdv-img-title" id="pdv-img-title">&#9671; Dispatch · Node Analytics</div>
-        <div class="pdv-img-sub" id="pdv-img-sub">Navigate to inspect any node.</div>
-      </div>
-    </div>
-    <!-- ── Scroll position track ── -->
-    <div class="pdv-track-wrap">
-      <div class="pdv-track" id="pdv-track"></div>
-      <div class="pdv-track-label" id="pdv-track-label">node 1 of 0</div>
+    <div class="pdv-header">
+      <div class="pdv-title">&#9671; Dispatch · Node Analytics</div>
+      <div class="pdv-sub" id="pdv-sub">Navigate to inspect any node.</div>
     </div>
     <div class="pdv-entries" id="pdv-entries"></div>
     <div class="pdv-footer" id="pdv-footer">
       <span>0 nodes &middot; dispatch mode</span>
       <button class="pdv-close-btn" onclick="toggleDispatch()">&#10005; close</button>
     </div>
-
   </div>
 
   <!-- ── SITE PREVIEW ── -->
@@ -4512,9 +4371,7 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
     </div>
   </div>
 
-  </div><!-- /.panel-scroll-inner -->
-
-  <!-- ── WOLFIE FOOTER — pinned ── -->
+  <!-- ── WOLFIE FOOTER ── -->
   <div class="pg-footer">
     <a href="https://wolfie.love" target="_blank" rel="noopener">wolfie.love</a> &middot; Wolfgang &amp; Co
   </div>
@@ -4690,12 +4547,12 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
       <span class="nw-cell-value">&#9671;</span><span class="nw-action-label">Interest</span>
     </button>
 
-    <button class="nw-action-btn" id="nw-dispatch-btn" title="Dispatch — node data overlay" onclick="toggleDispatch()">
-      <span class="nw-cell-value">&#9672;</span><span class="nw-action-label">Dispatch</span>
-    </button>
-
     <button class="nw-action-btn" id="nw-scroll-btn" title="Free scroll" onclick="document.getElementById('scroll-toggle').click()">
       <span class="nw-cell-value" id="nw-scroll-icon">&#8645;</span><span class="nw-action-label" id="nw-scroll-label">Scroll</span>
+    </button>
+
+    <button class="nw-action-btn" id="nw-dispatch-btn" title="Dispatch — node data overlay" onclick="toggleDispatch()">
+      <span class="nw-cell-value">&#9672;</span><span class="nw-action-label">Dispatch</span>
     </button>
 
     <div class="nw-divider"></div>
@@ -5105,14 +4962,6 @@ document.addEventListener('touchstart', function() {
     var col  = document.getElementById('stream-col');
     var colR = col ? col.getBoundingClientRect() : { left: 0, right: window.innerWidth - 320 };
     var rLim = colR.right - 8;
-    // If element is off-screen (overscroll / scrolled away), park at a safe
-    // viewport-relative anchor rather than chasing an off-screen rect
-    var onScreen = rect.bottom > 0 && rect.top < window.innerHeight;
-    if (!onScreen) {
-      var safeX = Math.max(colR.left + 4, Math.min(colR.left + 8, rLim - gw));
-      var safeY = Math.max(60, Math.min(window.innerHeight * 0.38 - gh * 0.5, window.innerHeight - gh - 8));
-      return { x: safeX, y: safeY };
-    }
     var candidates = [
       { x: rect.left,        y: rect.top    - gh - 10 },
       { x: rect.left,        y: rect.bottom + 10      },
@@ -5193,13 +5042,6 @@ document.addEventListener('touchstart', function() {
     if (ghostVisible && !following) { var p = computeIdlePos(); idleX = p.x; idleY = p.y; }
   });
 
-  // Recompute idle anchor on scroll — keeps ghost tracking the viewport correctly.
-  // computeIdlePos now handles off-screen elements safely, so just nudge the RAF.
-  window.addEventListener('scroll', function() {
-    if (!ghostVisible || following) return;
-    if (!rafId) rafId = requestAnimationFrame(tick);
-  }, { passive: true });
-
   // ── Called by goTo on each sentence navigation ──
   window._specGhostUpdate = function(el) {
     document.querySelectorAll('.ghost-active').forEach(function(s) { s.classList.remove('ghost-active'); });
@@ -5215,8 +5057,8 @@ document.addEventListener('touchstart', function() {
         ghostKey.textContent = keyEl.textContent;
         ghostVal.textContent = valEl.textContent;
         if (isMob()) {
-          ghost.style.cssText = 'display:block;position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom));top:auto;opacity:1;';
-          ghost.querySelector('.scg-inner').style.cssText = '';
+          ghost.style.cssText = 'display:block;position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));top:auto;width:auto;opacity:1;';
+          ghost.querySelector('.scg-inner').style.cssText = 'min-width:unset;max-width:none;width:100%;justify-content:space-between;';
           ghost.classList.add('visible'); ghostVisible = true;
         } else { showGhost(); }
         return;
@@ -5237,8 +5079,8 @@ document.addEventListener('touchstart', function() {
       ghostKey.textContent = name || 'Sub-chapter';
       ghostVal.textContent = 'Ch.' + (ch || '?') + ' · Agency Life · Philly';
       if (isMob()) {
-        ghost.style.cssText = 'display:block;position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom));top:auto;opacity:1;';
-        ghost.querySelector('.scg-inner').style.cssText = '';
+        ghost.style.cssText = 'display:block;position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));top:auto;width:auto;opacity:1;';
+        ghost.querySelector('.scg-inner').style.cssText = 'min-width:unset;max-width:none;width:100%;justify-content:space-between;';
         ghost.classList.add('visible'); ghostVisible = true;
       } else { showGhost(); }
       return;
@@ -5263,7 +5105,6 @@ function setImage(n) {
   var pi = document.getElementById('panel-img-main');
   if (pi && imgs[n]) pi.src = imgs[n].src;
   if (window._liImgUpdate && imgs[n]) window._liImgUpdate(imgs[n].src);
-  if (window._pdvThumbUpdate && imgs[n]) window._pdvThumbUpdate(imgs[n].src);
 }
 imgs[0].classList.add('visible');
 
@@ -5458,29 +5299,6 @@ function goTo(n, opts) {
   var pct = Math.round((n / (navigable.length - 1)) * 100);
   document.getElementById('progress').style.width = pct + '%';
   document.getElementById('nw-nav-pip').style.height = pct + '%';
-
-  // ── Chapter progress bar ──
-  (function updateChapterProgress() {
-    if (typeof CHAPTERS === 'undefined') return;
-    CHAPTERS.forEach(function(chDef) {
-      var seg = document.getElementById('cpb-' + chDef.ch);
-      if (!seg) return;
-      var chNodes = navigable.filter(function(el) { return parseInt(el.dataset.ch) === chDef.ch; });
-      if (!chNodes.length) return;
-      var chFirst = navigable.indexOf(chNodes[0]);
-      var chLast  = navigable.indexOf(chNodes[chNodes.length - 1]);
-      if (n > chLast) {
-        seg.classList.add('cpb-done'); seg.classList.remove('cpb-active');
-      } else if (n >= chFirst) {
-        var chPct = Math.round(((n - chFirst) / Math.max(chLast - chFirst, 1)) * 100);
-        seg.style.setProperty('--cpb-pct', chPct + '%');
-        seg.classList.add('cpb-active'); seg.classList.remove('cpb-done');
-      } else {
-        seg.style.setProperty('--cpb-pct', '0%');
-        seg.classList.remove('cpb-done', 'cpb-active');
-      }
-    });
-  })();
   scheduleAutoFlow(n);
   var ch = parseInt(activeEl ? activeEl.dataset.ch : 1) || 1;
   var prevCh = parseInt((document.body.className.match(/\bch-(\d+)\b/) || [])[1] || '1');
@@ -5593,7 +5411,7 @@ function updateChapterWidget(ch) {
   document.getElementById('cw-dropdown').querySelectorAll('.cw-item').forEach(function(item) {
     item.addEventListener('click', function(e) {
       e.stopPropagation(); closeDD();
-      goTo(CH_FIRST[parseInt(item.dataset.ch)] || 0);
+      window._setNavModality('chapter'); goTo(CH_FIRST[parseInt(item.dataset.ch)] || 0);
     });
   });
   document.addEventListener('click', function() { if (open) closeDD(); });
@@ -5605,26 +5423,34 @@ function updateChapterWidget(ch) {
 })();
 
 document.getElementById('nw-next').addEventListener('click', function() {
-  if (darkMomentActive) { exitDarkMoment(); goToSkipDark(current + 1,  1); return; }
+  window._setNavModality('button-next');
+  if (darkMomentActive) { exitDarkMoment(); goToSkipDark(current + 1, 1); return; }
   next();
 });
 document.getElementById('nw-prev').addEventListener('click', function() {
+  window._setNavModality('button-prev');
   if (darkMomentActive) exitDarkMoment();
   clearAutoFlow(); prev();
 });
-navigable.forEach(function(el, i) { el.addEventListener('click', function() { goTo(i); }); });
+navigable.forEach(function(el, i) { el.addEventListener('click', function() { window._setNavModality('hotzone'); goTo(i); }); });
 
 // ── KEYBOARD ──────────────────────────────────────────────────────────────
 document.addEventListener('keydown', function(e) {
   if (isGridOpen() && e.key === 'Escape') { e.preventDefault(); closeGrid(); return; }
   if (document.body.classList.contains('scroll-free')) return;
   if (darkMomentActive) return; // dark moment keydown handler owns navigation while active
-  if (e.key === 'ArrowDown' || e.key === 'j' || e.key === ' ') { e.preventDefault(); next(); }
-  if (e.key === 'ArrowUp'   || e.key === 'k')                  { e.preventDefault(); prev(); }
-  if (e.key === 'Tab') {
-    // Only intercept Tab when focus is not inside a form/input element
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    window._setNavModality(e.key === 'ArrowDown' ? 'keyboard-arrow-down' : 'keyboard-arrow-up');
+    e.key === 'ArrowDown' ? next() : prev();
+  } else if (e.key === ' ') {
+    e.preventDefault(); window._setNavModality('keyboard-space'); next();
+  } else if (e.key === 'j' || e.key === 'k') {
+    e.preventDefault(); window._setNavModality('keyboard-' + e.key); e.key === 'j' ? next() : prev();
+  } else if (e.key === 'Tab') {
     if (document.activeElement && (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT')) return;
     e.preventDefault();
+    window._setNavModality('keyboard-tab');
     e.shiftKey ? prev() : next();
   }
 });
@@ -5651,11 +5477,19 @@ window.addEventListener('touchend', function(e) {
       if (dy > 0) { exitDarkMoment(); goToSkipDark(current + 1,  1); }
       else        { exitDarkMoment(); prev(); }
     } else {
+      window._setNavModality(dy > 0 ? 'swipe-up' : 'swipe-down');
       dy > 0 ? next() : prev();
     }
     setTimeout(function() { swipeCooldown = false; }, 100);
   }
 }, {passive: true});
+
+// ── Navigation modality — set by each entry point before goTo fires ──
+// Modalities: 'keyboard-arrow' | 'keyboard-space' | 'keyboard-jk' | 'keyboard-tab'
+//             'button-next' | 'button-prev' | 'hotzone' | 'wheel'
+//             'swipe' | 'pdv' | 'chapter' | 'scroll-free' | 'init'
+window._navModality = 'init';
+window._setNavModality = function(m) { window._navModality = m; };
 
 goTo(0);
 requestAnimationFrame(function() {
@@ -5705,7 +5539,7 @@ requestAnimationFrame(function() {
     document.body.classList.remove('scroll-free');
     document.documentElement.style.overflow = '';
     document.body.style.overflow = '';
-    goTo(nearest, {noScroll: true});
+    window._setNavModality('scroll-free'); goTo(nearest, {noScroll: true});
   }
   btn.addEventListener('click', function() { scrollFree ? exit() : enter(); });
   btn.addEventListener('touchend', function(e) {
@@ -6044,7 +5878,7 @@ document.addEventListener('wheel', function(e) {
     return;
   }
   var now = Date.now(); if (now - lastWheel < 550) return; lastWheel = now;
-  e.deltaY > 0 ? next() : prev();
+  window._setNavModality('wheel'); e.deltaY > 0 ? next() : prev();
 }, {passive: false});
 
 // ── CANVAS PHOTO GRID ────────────────────────────────────────────────────────
@@ -6547,7 +6381,7 @@ function isGridOpen() { return document.getElementById('imageGridOverlay').class
 //   doc-theme → label: "doc"   (parchment, DM Serif, postcard images)
 //   pitch     → label: "pitch" (dark cinematic — base palette, full-bleed images)
 (function() {
-  var state = 0; // 0=raw, 1=doc, 2=pitch
+  var state = 0; // 0=doc, 1=raw, 2=pitch
   var toastTimer;
 
   function showToast(icon, title, sub, actionLabel, actionFn, duration) {
@@ -6597,28 +6431,25 @@ function isGridOpen() { return document.getElementById('imageGridOverlay').class
     setTimeout(function() { document.body.classList.remove('no-transitions'); }, 50);
 
     if (state === 0) {
-      // Raw — engine exposed, postcard images on white
-      document.body.classList.add('raw-theme');
-      if (label) label.textContent = 'raw';
-      if (mark)  mark.textContent  = '◻';
-      // Hide cursor — raw uses system cursor:auto via CSS
-      if (typeof cursor !== 'undefined' && cursor) { cursor.style.opacity = '0'; cursorVisible = false; }
-      showToast('◻', 'Raw', 'Engine exposed.', null, null, 2200);
-
-    } else if (state === 1) {
       // Doc — parchment, serif, postcard images
       document.body.classList.add('doc-theme');
       if (label) label.textContent = 'doc';
       if (mark)  mark.textContent  = '§';
-      // Hide cursor — doc uses cursor:auto via CSS
       if (typeof cursor !== 'undefined' && cursor) { cursor.style.opacity = '0'; cursorVisible = false; }
-      showToast('§', 'Doc', 'Structure carries the weight.', 'Esc →', function() { applyState(0); }, 4000);
+      showToast('§', 'Doc', 'Structure carries the weight.', null, null, 2200);
+
+    } else if (state === 1) {
+      // Raw — engine exposed, postcard images on white
+      document.body.classList.add('raw-theme');
+      if (label) label.textContent = 'raw';
+      if (mark)  mark.textContent  = '◻';
+      if (typeof cursor !== 'undefined' && cursor) { cursor.style.opacity = '0'; cursorVisible = false; }
+      showToast('◻', 'Raw', 'Engine exposed.', 'Esc →', function() { applyState(0); }, 2200);
 
     } else if (state === 2) {
       // Pitch — dark cinematic, full-bleed images (base palette, no theme class)
       if (label) label.textContent = 'pitch';
       if (mark)  mark.textContent  = '✦';
-      // Restore custom cursor for pitch
       if (typeof cursor !== 'undefined' && cursor) { cursor.style.opacity = '1'; cursorVisible = true; }
       showToast('✦', 'Pitch', 'Conviction restored.', 'Esc →', function() { applyState(0); }, 3500);
     }
@@ -6637,10 +6468,10 @@ function isGridOpen() { return document.getElementById('imageGridOverlay').class
   var btn = document.getElementById('li-toggle');
   if (btn) btn.addEventListener('click', cycle);
 
-  // Initialize with raw theme as default (no toast on load)
-  document.body.classList.add('raw-theme');
-  if (document.getElementById('li-mark-logo'))  document.getElementById('li-mark-logo').textContent  = '◻';
-  if (document.getElementById('li-toggle-label')) document.getElementById('li-toggle-label').textContent = 'raw';
+  // Initialize with doc theme as default (no toast on load)
+  document.body.classList.add('doc-theme');
+  if (document.getElementById('li-mark-logo'))  document.getElementById('li-mark-logo').textContent  = '§';
+  if (document.getElementById('li-toggle-label')) document.getElementById('li-toggle-label').textContent = 'doc';
 })();
 
 // ── Once-per-session dark chapter tracking ──────────────────────────────────
@@ -6793,7 +6624,7 @@ img:11
 
 
 // ── Chapter metadata (mirrors link.html chapter system) ──
-var CHAPTERS = [
+const CHAPTERS = [
   { ch: 1, label: 'The Problem',    num: '01', title: 'Policy Documents',         sub: 'The format is the first failure' },
   { ch: 2, label: 'The Commitment', num: '02', title: 'The Original Commitment',  sub: 'If-then &middot; conditional safety &middot; ASL framework' },
   { ch: 3, label: 'The Reckoning',  num: '03', title: 'What Actually Happened',   sub: 'Honest assessment &middot; what worked &middot; what didn&rsquo;t' },
@@ -7008,7 +6839,7 @@ renderNarrative();
     if (!(ch in CH_FIRST)) CH_FIRST[ch] = i;
   });
   // Wire click handlers
-  navigable.forEach(function(el, i) { el.addEventListener('click', function() { goTo(i); }); });
+  navigable.forEach(function(el, i) { el.addEventListener('click', function() { window._setNavModality('hotzone'); goTo(i); }); });
   // Initialize at sentence 0
   goTo(0, { noScroll: true });
 })();
@@ -8054,12 +7885,12 @@ document.getElementById('dark-veil').addEventListener('click', function() {
 
 // ── SITES GRID ────────────────────────────────────────────────────────────
 var GRID_SITES = [
-  { url: 'https://www.wolfie.love/',          label: 'wolfie.love',            tag: 'Platform'              },
-  { url: 'https://www.reasonably.cc/',        label: 'reasonably.cc',          tag: 'Prose for Prompts'     },
-  { url: 'https://www.wolfie.love/net',       label: 'wolfie.love/net',        tag: 'Network'               },
-  { url: 'https://reasonandresolution.com/',  label: 'reasonandresolution.com', tag: 'Case Study'           },
-  { url: 'https://www.emdash.click',          label: 'emdash.click',           tag: 'Tool'                  },
-  { url: 'https://www.zackgort.com',          label: 'zackgort.com',           tag: 'Portfolio'             },
+  { url: 'https://wolfie.love',         label: 'wolfie.love',     tag: 'Platform'  },
+  { url: 'https://wolfie.lfee',         label: 'wolfie.life',     tag: 'Application'  },
+  { url: 'https:/reasonably.cc',    label: 'reasonably.cc',       tag: 'Prose for Prompts' },
+  { url: 'https://wolfie.love/dash',    label: 'wolfie.love/dash',       tag: 'Narrative Analytics' },
+  { url: 'https://wolfie.love/news',    label: 'wolfie.love/news',       tag: 'Nested Narrative Nodes' },
+
 ];
 var sitesGridOpen  = false;
 var sitesGridBuilt = false;
@@ -8148,8 +7979,6 @@ document.addEventListener('keydown', function(e) {
 (function initChapterGuidePanel() {
 
   var PANEL_SITES = [
-    { url: 'https://wolfie.love',                                           label: 'wolfie.love',          tag: 'This Engine',
-      ghost: [{"k":"Platform","v":"wolfie.love"},{"k":"What","v":"Sentence-progressive narrative"},{"k":"Built by","v":"Zack Gort · wolfie.life"},{"k":"This page","v":"Built in one day"}] },
     { url: 'https://www.anthropic.com/news/responsible-scaling-policy-v3', label: 'anthropic.com/rsp',    tag: 'This Document',
       ghost: [{"k":"Document","v":"RSP v3 Announcement"},{"k":"Published","v":"Feb 24, 2026"},{"k":"Author","v":"Anthropic"},{"k":"Type","v":"Policy · Public"}] },
     { url: 'https://anthropic.com/responsible-scaling-policy/rsp-v3-0',    label: 'RSP Full Text',        tag: 'Policy',
@@ -8158,6 +7987,8 @@ document.addEventListener('keydown', function(e) {
       ghost: [{"k":"Document","v":"Frontier Safety Roadmap"},{"k":"Areas","v":"Security · Alignment · Safeguards"},{"k":"Format","v":"Public goals · self-graded"},{"k":"Cadence","v":"Ongoing updates"}] },
     { url: 'https://anthropic.com/feb-2026-risk-report',                   label: 'Risk Report',          tag: 'Feb 2026',
       ghost: [{"k":"Document","v":"Feb 2026 Risk Report"},{"k":"First","v":"External risk publication"},{"k":"Covers","v":"Capabilities · Threats · Mitigations"},{"k":"Review","v":"External audit piloting"}] },
+    { url: 'https://wolfie.love',                                           label: 'wolfie.love',          tag: 'This Engine',
+      ghost: [{"k":"Platform","v":"wolfie.love"},{"k":"What","v":"Sentence-progressive narrative"},{"k":"Built by","v":"Zack Gort · wolfie.life"},{"k":"This page","v":"Built in one day"}] },
     { url: 'https://wolfie.life',                                           label: 'wolfie.life',          tag: 'Studio',
       ghost: [{"k":"Studio","v":"wolfie.life"},{"k":"Founder","v":"Zack Gort · Designer"},{"k":"Practice","v":"UX · Narrative · Front-end"},{"k":"Contact","v":"zack@wolfie.love"}] },
     { url: 'https://www.ifimaybefrank.com',                                 label: 'ifimaybefrank.com',    tag: 'The Broader Idea',
@@ -8211,7 +8042,7 @@ document.addEventListener('keydown', function(e) {
                 if (parseInt(navigable[k].dataset.idx) >= idx) { navIdx = k; break; }
               }
             }
-            if (navIdx >= 0 && typeof goTo === 'function') goTo(navIdx);
+            if (navIdx >= 0 && typeof goTo === 'function') { window._setNavModality('pdv'); goTo(navIdx); }
           }
         }
         setActiveChapter(i);
@@ -8396,7 +8227,12 @@ document.addEventListener('keydown', function(e) {
   // Map: chapter number → site to surface when that chapter activates.
   // Fires once on first entry to each chapter; user dismiss suppresses repeat.
   var CHAPTER_TRIGGERS = {
+    1: { url: 'https://www.reasonably.cc',  label: 'The Source',      urlDisplay: 'anthropic.com/rsp-v3',      desc: 'The original document — a wall of text that carries one of the most important arguments in technology.' },
+    2: { url: 'https://www.reasonably.cc',    label: 'Full Policy',     urlDisplay: 'RSP v3.0',                  desc: 'The complete Responsible Scaling Policy — the if-then framework governing when and how Anthropic trains more capable models.' },
+    3: { url: 'https://www.reasonably.cc',                   label: 'Risk Report',     urlDisplay: 'Feb 2026 Risk Report',      desc: 'The first Risk Report — Anthropic\'s honest accounting of what current models can and can\'t do, and the active mitigations in place.' },
+    4: { url: 'https://www.reasonably.cc',     label: 'Safety Roadmap',  urlDisplay: 'Frontier Safety Roadmap',   desc: 'The Frontier Safety Roadmap — concrete, public goals Anthropic will grade itself against across security, alignment, and safeguards.' },
     5: { url: 'https://wolfie.love',                                           label: 'The Engine',      urlDisplay: 'wolfie.love',               desc: 'The same sentence-progressive engine running this experience — built for credentials, policy, property, and client reporting.' },
+    6: { url: 'https://wolfie.life',                                           label: 'The Studio',      urlDisplay: 'wolfie.life',               desc: 'wolfie.life — the studio behind the engine. One designer. Built with conviction.' },
   };
 
   var nstPanel   = document.getElementById('nst-panel');
@@ -8447,12 +8283,6 @@ document.addEventListener('keydown', function(e) {
   function showNst(ch, trigger) {
     if (dismissedChs.has(ch)) return;
     if (lastShownCh === ch) return;
-    // Suppress when any panel is open (sheet, dispatch, interest, sites grid)
-    var panelOpen = document.getElementById('panel') && document.getElementById('panel').classList.contains('sheet-open');
-    var dispatchOn = document.body.classList.contains('dispatch-mode');
-    var interestOn = document.getElementById('interest-panel') && document.getElementById('interest-panel').classList.contains('open');
-    var sitesOn = typeof sitesGridOpen !== 'undefined' && sitesGridOpen;
-    if (panelOpen || dispatchOn || interestOn || sitesOn) return;
     lastShownCh = ch;
     currentUrl  = trigger.url;
     nstLabel.textContent = trigger.label;
@@ -9238,17 +9068,11 @@ document.addEventListener('keydown', function(e) {
   var dspSum     = document.getElementById('dsp-summary');
   var dspMeta    = document.getElementById('dsp-meta');
   var dspType    = document.getElementById('dsp-type');
-  var pdvEntries   = document.getElementById('pdv-entries');
-  var pdvFooter    = document.getElementById('pdv-footer');
-  var pdvThumb     = document.getElementById('pdv-img-thumb');
-  var pdvImgCh     = document.getElementById('pdv-img-chapter');
-  var pdvImgTitle  = document.getElementById('pdv-img-title');
-  var pdvImgSub    = document.getElementById('pdv-img-sub');
-  var pdvTrack     = document.getElementById('pdv-track');
-  var pdvTrackLbl  = document.getElementById('pdv-track-label');
+  var pdvEntries = document.getElementById('pdv-entries');
   if (pdvEntries) {
     pdvEntries.addEventListener('wheel', function(e) { e.stopPropagation(); }, { passive: true });
   }
+  var pdvFooter  = document.getElementById('pdv-footer');
   if (!ghost) return;
 
   // ── State ──
@@ -9261,8 +9085,93 @@ document.addEventListener('keydown', function(e) {
   var mx=window.innerWidth/2;
   var nodeIndex = [];
 
+  // ── Live telemetry state ──────────────────────────────────────────────
+  // AVG_READ_SPEED: characters per millisecond for dense prose
+  // (1100 wpm ≈ 5500 chars/min ≈ 91.7 chars/sec ≈ 0.0917 chars/ms — upper bound)
+  // comfortable reading: ~250 wpm ≈ 1250 chars/min ≈ 0.0208 chars/ms
+  var AVG_READ_SPEED = 0.028; // chars/ms — tuned for policy-density prose
+  var MIN_EXPECTED_MS = 400;  // floor: no read takes less than 400ms
+  var telemetry = {};         // keyed by data-idx: { visits, totalDwell, modalityCounts, ratios[] }
+  var _arrivalTime = Date.now();
+  var _lastNodeIdx = -1;
+
   function isMob() { return window.innerWidth <= 760; }
   function lerp(a,b,t) { return a+(b-a)*t; }
+
+  // ── Record a navigation event ──────────────────────────────────────────
+  function recordEvent(fromNode, toNode, dwell, modality) {
+    if (!toNode) return;
+    var key = toNode.idx;
+    if (!telemetry[key]) {
+      telemetry[key] = { visits: 0, totalDwell: 0, modalityCounts: {}, ratios: [], skips: 0, pauses: 0 };
+    }
+    var t = telemetry[key];
+    t.visits++;
+    t.modalityCounts[modality] = (t.modalityCounts[modality] || 0) + 1;
+
+    // Dwell on the node we're LEAVING (not the one we're arriving at)
+    if (fromNode && dwell > 0) {
+      var fromKey = fromNode.idx;
+      if (!telemetry[fromKey]) {
+        telemetry[fromKey] = { visits: 0, totalDwell: 0, modalityCounts: {}, ratios: [], skips: 0, pauses: 0 };
+      }
+      var ft = telemetry[fromKey];
+      ft.totalDwell += dwell;
+      // Comprehension ratio: actual dwell / expected dwell
+      var charCount = fromNode.text.length;
+      var expectedMs = Math.max(MIN_EXPECTED_MS, charCount / AVG_READ_SPEED);
+      var ratio = dwell / expectedMs;
+      ft.ratios.push(ratio);
+      if (ratio < 0.35) ft.skips++;
+      else if (ratio > 2.2) ft.pauses++;
+    }
+  }
+
+  // ── Derive live metrics for a node ────────────────────────────────────
+  function liveMetrics(node) {
+    var t = telemetry[node.idx] || { visits: 0, totalDwell: 0, modalityCounts: {}, ratios: [], skips: 0, pauses: 0 };
+    var avgDwell   = t.visits > 0 ? Math.round(t.totalDwell / t.visits) : null;
+    var avgRatio   = t.ratios.length > 0
+      ? Math.round((t.ratios.reduce(function(s,r){return s+r;},0) / t.ratios.length) * 100) / 100
+      : null;
+    // Dominant modality
+    var dominant = 'none', domCount = 0;
+    Object.keys(t.modalityCounts).forEach(function(m) {
+      if (t.modalityCounts[m] > domCount) { domCount = t.modalityCounts[m]; dominant = m; }
+    });
+    var skipRate  = t.ratios.length > 0 ? Math.round((t.skips  / t.ratios.length) * 100) : 0;
+    var pauseRate = t.ratios.length > 0 ? Math.round((t.pauses / t.ratios.length) * 100) : 0;
+    return { visits: t.visits, avgDwell, avgRatio, dominant, skipRate, pauseRate, modalityCounts: t.modalityCounts };
+  }
+
+  // ── Modality display label ─────────────────────────────────────────────
+  var MODALITY_LABELS = {
+    'keyboard-arrow-down': '↓ arrow', 'keyboard-arrow-up': '↑ arrow',
+    'keyboard-space': '⎵ space', 'keyboard-j': 'j key', 'keyboard-k': 'k key',
+    'keyboard-tab': '⇥ tab', 'button-next': '▾ button', 'button-prev': '▴ button',
+    'hotzone': '⬚ hotzone', 'wheel': '⟳ scroll', 'swipe-up': '↑ swipe',
+    'swipe-down': '↓ swipe', 'pdv': '◈ dispatch', 'chapter': '§ chapter',
+    'scroll-free': '⇕ free', 'init': '· init', 'none': '—'
+  };
+  function modalityLabel(m) { return MODALITY_LABELS[m] || m; }
+
+  // ── Comprehension signal label ─────────────────────────────────────────
+  function ratioLabel(r) {
+    if (r === null) return '—';
+    if (r < 0.35) return 'skipped';
+    if (r < 0.75) return 'scanned';
+    if (r < 1.40) return 'read';
+    if (r < 2.40) return 'studied';
+    return 'dwelt';
+  }
+  function ratioClass(r) {
+    if (r === null) return '';
+    if (r < 0.35) return 'ratio-skip';
+    if (r < 0.75) return 'ratio-scan';
+    if (r < 1.40) return 'ratio-read';
+    if (r < 2.40) return 'ratio-study';
+    return 'ratio-dwell';
+  }
 
   // ── Seeded performance data per node ─────────────────────────────────────
   // Deterministic pseudo-random so the numbers are stable on every reload.
@@ -9337,6 +9246,31 @@ document.addEventListener('keydown', function(e) {
     return '<span class="dsp-sig-bar">' + bar + '</span>';
   }
 
+  // ── Modality distribution bar ──────────────────────────────────────────────
+  var MODALITY_ORDER = ['keyboard-arrow-down','keyboard-arrow-up','keyboard-space',
+    'keyboard-j','keyboard-k','keyboard-tab','button-next','button-prev',
+    'hotzone','wheel','swipe-up','swipe-down','pdv','chapter','scroll-free'];
+  var MODALITY_COLORS = {
+    'keyboard-arrow-down':'#d97757','keyboard-arrow-up':'#d97757',
+    'keyboard-space':'#c06040','keyboard-j':'#e08060','keyboard-k':'#e08060',
+    'keyboard-tab':'#b05030','button-next':'#7b9fd4','button-prev':'#6090c4',
+    'hotzone':'#6abf8a','wheel':'#9b8fd4','swipe-up':'#d4b06a','swipe-down':'#b89050',
+    'pdv':'#c06090','chapter':'#aaaaaa','scroll-free':'#888888','unknown':'#555555'
+  };
+  function modalityBar(counts) {
+    var total = Object.keys(counts).reduce(function(s,k){ return s + counts[k]; }, 0);
+    if (!total) return '<span class="dsp-mod-empty">navigate to generate data</span>';
+    var segments = '';
+    MODALITY_ORDER.forEach(function(m) {
+      if (!counts[m]) return;
+      var pct = Math.round((counts[m] / total) * 100);
+      var color = MODALITY_COLORS[m] || '#888';
+      var lbl = MODALITY_LABELS[m] || m;
+      segments += '<span class="dsp-mod-seg" style="width:' + pct + '%;background:' + color + ';" title="' + lbl + ': ' + counts[m] + ' (' + pct + '%)"></span>';
+    });
+    return '<span class="dsp-mod-bar">' + segments + '</span>';
+  }
+
   // ── Build node index ──────────────────────────────────────────────────────
   function buildIndex() {
     nodeIndex = [];
@@ -9363,7 +9297,7 @@ document.addEventListener('keydown', function(e) {
       var ch  = parseInt(el.dataset.ch) || 1;
       var wc  = rawText.split(/\s+/).filter(Boolean).length;
       var perf = nodePerf(idx, type, ch, wc);
-      nodeIndex.push({ el, idx, ch, type, text: rawText, specKey, specVal, perf });
+      nodeIndex.push({ el: el, idx: idx, ch: ch, type: type, text: rawText, specKey: specKey, specVal: specVal, perf: perf });
     });
   }
 
@@ -9408,61 +9342,50 @@ document.addEventListener('keydown', function(e) {
   }
 
   // ── Show / hide ──
-  function showDispatchGhost(node) {
+  function showDispatchGhost(node, dwell, modality, fromNode) {
     if (!active || isMob() || !node) return;
-    var p = node.perf;
+
     var label = node.type === 'spec' ? (node.specKey + ' · ' + node.specVal) : node.text;
     dspSum.textContent = label.length > 110 ? label.substring(0,107)+'…' : label;
     if (dspType) dspType.textContent = node.type;
 
-    // Reads with formatted number
-    var readsFormatted = p.reads >= 1000
-      ? (p.reads/1000).toFixed(1).replace(/\.0$/,'') + 'k'
-      : String(p.reads);
+    var lm = liveMetrics(node);
+    var fromCharCount = fromNode ? fromNode.text.length : 0;
+    var expectedMs    = fromNode ? Math.max(MIN_EXPECTED_MS, fromCharCount / AVG_READ_SPEED) : 0;
+    var liveRatio     = (fromNode && dwell > 0) ? Math.round((dwell / expectedMs) * 100) / 100 : null;
+    var dwellSec      = dwell > 0 ? (dwell / 1000).toFixed(1) : '—';
 
-    // Signal interpretation
-    var signalLabel = p.signal >= 80 ? 'high'
-                    : p.signal >= 55 ? 'strong'
-                    : p.signal >= 35 ? 'moderate'
-                    : 'low';
+    var visitsStr   = lm.visits > 0 ? String(lm.visits) : '1';
+    var avgDwellStr = lm.avgDwell ? (lm.avgDwell / 1000).toFixed(1) + 's' : dwellSec + 's';
+    var ratioVal    = liveRatio !== null ? liveRatio : lm.avgRatio;
+    var ratioStr    = ratioVal !== null ? ratioLabel(ratioVal) : '—';
+    var rClass      = ratioVal !== null ? ratioClass(ratioVal) : '';
+    var modStr      = modalityLabel(modality || lm.dominant);
+    var thisExpMs   = Math.round(Math.max(MIN_EXPECTED_MS, node.text.length / AVG_READ_SPEED) / 100) / 10;
 
     dspMeta.innerHTML =
       '<div class="dsp-stats-row">' +
-        '<div class="dsp-stat">' +
-          '<span class="dsp-stat-val">' + readsFormatted + '</span>' +
-          '<span class="dsp-stat-key">reads</span>' +
-        '</div>' +
-        '<div class="dsp-stat">' +
-          '<span class="dsp-stat-val">' + p.dwell + 's</span>' +
-          '<span class="dsp-stat-key">avg dwell</span>' +
-        '</div>' +
-        '<div class="dsp-stat">' +
-          '<span class="dsp-stat-val">' + p.dropPct + '%</span>' +
-          '<span class="dsp-stat-key">drop-off</span>' +
-        '</div>' +
-        '<div class="dsp-stat">' +
-          '<span class="dsp-stat-val">' + p.rereadPct + '%</span>' +
-          '<span class="dsp-stat-key">re-read</span>' +
-        '</div>' +
+        '<div class="dsp-stat"><span class="dsp-stat-val">' + visitsStr + '</span><span class="dsp-stat-key">visits</span></div>' +
+        '<div class="dsp-stat"><span class="dsp-stat-val">' + avgDwellStr + '</span><span class="dsp-stat-key">dwell</span></div>' +
+        '<div class="dsp-stat"><span class="dsp-stat-val ' + rClass + '">' + ratioStr + '</span><span class="dsp-stat-key">comprehension</span></div>' +
+        '<div class="dsp-stat"><span class="dsp-stat-val dsp-modality">' + modStr + '</span><span class="dsp-stat-key">via</span></div>' +
       '</div>' +
       '<div class="dsp-signal-row">' +
-        signalBar(p.signal) +
-        '<span class="dsp-signal-label">' + signalLabel + ' engagement &middot; ' + p.depth + '% reach</span>' +
+        modalityBar(lm.modalityCounts) +
+        '<span class="dsp-signal-label">' + node.text.length + ' chars · ' + thisExpMs + 's expected</span>' +
       '</div>';
 
-    // Position
     var pos=idlePos(); ix=pos.x; iy=pos.y;
     if(!visible){ gx=ix; gy=iy; ghost.style.left=gx+'px'; ghost.style.top=gy+'px'; }
     ghost.classList.add('visible');
     visible=true;
     if(!raf) raf=requestAnimationFrame(tick);
-    // Stamp dispatch-active — find the currently .active sentence directly
     if(activeEl) activeEl.classList.remove('dispatch-active');
-    // Use node.el but also cross-check it has .active (goTo already set this)
     activeEl = node.el;
     activeEl.classList.add('dispatch-active');
-    // Ensure stream sentence is always scrolled into view when dispatch updates
-    activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (typeof current !== 'undefined' && navigable && navigable[current] === activeEl) {
+      activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   }
 
   function hideDispatchGhost() {
@@ -9473,66 +9396,6 @@ document.addEventListener('keydown', function(e) {
   }
 
   // ── Panel dispatch view — performance index ──
-  function updatePdvThumb() {
-    var visImg = document.querySelector('#image-layer img.visible');
-    if (!pdvThumb) return;
-    if (visImg && visImg.src && visImg.src !== pdvThumb.src) {
-      pdvThumb.classList.remove('pdv-thumb-vis');
-      pdvThumb.src = visImg.src;
-      if (!visImg.complete) {
-        pdvThumb.onload = function() { pdvThumb.classList.add('pdv-thumb-vis'); };
-      } else {
-        pdvThumb.classList.add('pdv-thumb-vis');
-      }
-    } else if (visImg) {
-      pdvThumb.classList.add('pdv-thumb-vis');
-    }
-  }
-  window._pdvThumbUpdate = function(src) {
-    if (!pdvThumb || !active) return;
-    pdvThumb.classList.remove('pdv-thumb-vis');
-    pdvThumb.src = src;
-    pdvThumb.onload = function() { pdvThumb.classList.add('pdv-thumb-vis'); };
-    if (pdvThumb.complete) pdvThumb.classList.add('pdv-thumb-vis');
-  };
-
-  function buildPdvTrack() {
-    if (!pdvTrack || !nodeIndex.length) return;
-    var html = '';
-    nodeIndex.forEach(function(node, i) {
-      var sig = node.perf.signal >= 80 ? 'sig-hi' : node.perf.signal >= 50 ? 'sig-mid' : 'sig-lo';
-      html += '<div class="pdv-track-pip ' + sig + '" data-pdv-pip="' + i + '"></div>';
-    });
-    pdvTrack.innerHTML = html;
-    pdvTrack.querySelectorAll('.pdv-track-pip').forEach(function(pip) {
-      pip.addEventListener('click', function() {
-        var i = parseInt(pip.dataset.pdvPip);
-        var node = nodeIndex[i];
-        if (!node) return;
-        var navEls = Array.from(document.querySelectorAll('[data-idx]')).filter(function(el){
-          return !el.classList.contains('break') && !el.classList.contains('label') && !el.classList.contains('cta-sentence');
-        });
-        var navIdx = navEls.indexOf(node.el);
-        if (navIdx >= 0 && typeof goTo === 'function') goTo(navIdx);
-      });
-    });
-  }
-
-  function refreshPdvTrack() {
-    if (!pdvTrack) return;
-    var pips = pdvTrack.querySelectorAll('.pdv-track-pip');
-    var activeIdx = -1;
-    nodeIndex.forEach(function(node, i) {
-      if (node.el.classList.contains('active')) activeIdx = i;
-    });
-    pips.forEach(function(pip, i) {
-      pip.classList.toggle('pdv-pip-active', i === activeIdx);
-    });
-    if (pdvTrackLbl && activeIdx >= 0) {
-      pdvTrackLbl.textContent = 'node ' + (activeIdx + 1) + ' of ' + nodeIndex.length;
-    }
-  }
-
   function populatePDV() {
     if (!pdvEntries) return;
     var html = '';
@@ -9540,28 +9403,34 @@ document.addEventListener('keydown', function(e) {
     var maxReads = nodeIndex.reduce(function(m, n) { return Math.max(m, n.perf.reads); }, 1);
 
     nodeIndex.forEach(function(node, i) {
-      var p = node.perf;
-      var barW = Math.round((p.reads / maxReads) * 100);
-      var readsStr = p.reads >= 1000
-        ? (p.reads/1000).toFixed(1).replace(/\.0$/,'') + 'k'
-        : String(p.reads);
-      var sigClass = p.signal >= 80 ? 'sig-hi' : p.signal >= 50 ? 'sig-mid' : 'sig-lo';
+      var lm = liveMetrics(node);
       var textSnip = node.type === 'spec'
-        ? (node.specKey + ' · ' + node.specVal)
-        : node.text;
+        ? (node.specKey + ' · ' + node.specVal) : node.text;
       if (textSnip.length > 72) textSnip = textSnip.substring(0,69) + '…';
+      var hasData = lm.visits > 0;
+      var sigClass = !hasData ? 'sig-lo'
+        : lm.avgRatio === null ? 'sig-mid'
+        : lm.avgRatio >= 1.4 ? 'sig-hi'
+        : lm.avgRatio >= 0.75 ? 'sig-mid' : 'sig-lo';
+      var visitsStr = hasData ? String(lm.visits) : '—';
+      var dwellStr  = hasData && lm.avgDwell ? (lm.avgDwell/1000).toFixed(1)+'s' : '—';
+      var ratioStr  = hasData && lm.avgRatio !== null ? ratioLabel(lm.avgRatio) : '—';
+      var modStr    = hasData ? modalityLabel(lm.dominant) : '—';
+      // Bar: visits relative to max visited node
+      var maxV = nodeIndex.reduce(function(m,n){ return Math.max(m, liveMetrics(n).visits); }, 1);
+      var barW  = Math.round((lm.visits / maxV) * 100);
 
       html += '<div class="pdv-entry' + (node.el.classList.contains('active') ? ' pdv-active' : '') + '" data-pdv-i="' + i + '">' +
         '<div class="pdv-entry-top">' +
           '<span class="pdv-entry-type ' + sigClass + '">' + node.type + '</span>' +
-          '<span class="pdv-entry-reads">' + readsStr + '</span>' +
+          '<span class="pdv-entry-reads">' + visitsStr + '</span>' +
         '</div>' +
         '<div class="pdv-entry-text">' + textSnip.replace(/</g,'&lt;') + '</div>' +
         '<div class="pdv-entry-bar-wrap"><div class="pdv-entry-bar ' + sigClass + '" style="width:' + barW + '%"></div></div>' +
         '<div class="pdv-entry-stats">' +
-          '<span>' + p.dwell + 's dwell</span>' +
-          '<span>' + p.dropPct + '% drop</span>' +
-          '<span>' + p.rereadPct + '% re-read</span>' +
+          '<span>' + dwellStr + '</span>' +
+          '<span>' + ratioStr + '</span>' +
+          '<span>' + modStr + '</span>' +
         '</div>' +
       '</div>';
     });
@@ -9577,26 +9446,17 @@ document.addEventListener('keydown', function(e) {
           return !el.classList.contains('break') && !el.classList.contains('label') && !el.classList.contains('cta-sentence');
         });
         var navIdx = navEls.indexOf(node.el);
-        if (navIdx >= 0 && typeof goTo === 'function') {
-          goTo(navIdx);
-          // goTo triggers _dispatchUpdate which calls showDispatchGhost — but also
-          // ensure the stream sentence is centred in view after the panel click
-          setTimeout(function() {
-            node.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }, 60);
-        }
+        if (navIdx >= 0 && typeof goTo === 'function') { window._setNavModality('pdv'); goTo(navIdx); }
       });
     });
 
-    // Footer summary
-    var totalReads = nodeIndex.reduce(function(s,n){ return s+n.perf.reads; },0);
-    var avgDwell   = Math.round(nodeIndex.reduce(function(s,n){ return s+n.perf.dwell; },0) / nodeIndex.length * 10) / 10;
+    // Footer — live totals
+    var totalVisits = nodeIndex.reduce(function(s,n){ return s + liveMetrics(n).visits; }, 0);
+    var visitedNodes = nodeIndex.filter(function(n){ return liveMetrics(n).visits > 0; }).length;
     if (pdvFooter) {
       var span = pdvFooter.querySelector('span');
-      if (span) span.textContent = nodeIndex.length + ' nodes · ' + (totalReads/1000).toFixed(1) + 'k total reads · ' + avgDwell + 's avg dwell';
+      if (span) span.textContent = nodeIndex.length + ' nodes · ' + visitedNodes + ' visited · ' + totalVisits + ' nav events';
     }
-    buildPdvTrack();
-    updatePdvThumb();
   }
 
   function refreshPDVActive() {
@@ -9605,75 +9465,16 @@ document.addEventListener('keydown', function(e) {
       var node = nodeIndex[i];
       entry.classList.toggle('pdv-active', !!(node && node.el.classList.contains('active')));
     });
-    // Scroll active entry into view within the right-rail panel
+    // Scroll active entry into view within panel
     var act = pdvEntries.querySelector('.pdv-active');
-    if (act) act.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-    refreshPdvTrack();
-  }
-
-  // ── Scroll tracking — while dispatch is on, nearest node drives the selection ──
-  var dispatchScrollRaf = null;
-  var dispatchLastNearest = -1;
-
-  function dispatchGetNearest() {
-    var mid = window.innerHeight / 2;
-    var best = 0, bestDist = Infinity;
-    if (typeof navigable === 'undefined') return 0;
-    navigable.forEach(function(el, i) {
-      var r = el.getBoundingClientRect();
-      var center = r.top + r.height / 2;
-      var dist = Math.abs(center - mid);
-      if (dist < bestDist) { bestDist = dist; best = i; }
-    });
-    return best;
-  }
-
-  function dispatchTrackScroll() {
-    if (!active) return;
-    var n = dispatchGetNearest();
-    if (n !== dispatchLastNearest) {
-      dispatchLastNearest = n;
-      if (typeof goTo === 'function') goTo(n, { noScroll: true });
-    }
-    dispatchScrollRaf = requestAnimationFrame(dispatchTrackScroll);
-  }
-
-  function dispatchEnterScroll() {
-    if (isMob()) {
-      // Mobile: just open the panel sheet over the stream — no scroll unlock needed
-      if (typeof openPanelSheet === 'function') openPanelSheet();
-      // Prevent the sheet open from locking body scroll (we want stream scrollable behind)
-      document.body.style.overflow = '';
-    } else {
-      document.documentElement.style.overflow = 'auto';
-      document.documentElement.style.height = 'auto';
-      document.body.style.overflow = 'auto';
-      document.body.style.height = 'auto';
-      if (typeof all !== 'undefined') {
-        all.forEach(function(el) { el.classList.add('revealed'); });
-      }
-      document.querySelectorAll('.ch-header').forEach(function(g) { g.classList.add('revealed'); });
-    }
-    dispatchLastNearest = -1;
-    dispatchScrollRaf = requestAnimationFrame(dispatchTrackScroll);
-  }
-
-  function dispatchExitScroll() {
-    if (dispatchScrollRaf) { cancelAnimationFrame(dispatchScrollRaf); dispatchScrollRaf = null; }
-    if (isMob()) {
-      if (typeof closePanelSheet === 'function') closePanelSheet();
-    } else {
-      document.documentElement.style.overflow = '';
-      document.documentElement.style.height = '';
-      document.body.style.overflow = '';
-      document.body.style.height = '';
-    }
+    if (act) { var pv = document.getElementById('pdv-entries'); if (pv && pv.contains(act)) act.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
   }
 
   // ── Toggle dispatch mode ──
   window.toggleDispatch = function() {
     active = !active;
     document.body.classList.toggle('dispatch-mode', active);
+    // Return focus to body so keyboard sentence navigation keeps working
     if (document.activeElement && document.activeElement !== document.body) {
       document.activeElement.blur();
     }
@@ -9682,7 +9483,7 @@ document.addEventListener('keydown', function(e) {
     if (active) {
       buildIndex();
       populatePDV();
-      dispatchEnterScroll();
+      // Fire on current node immediately — shows ghost and applies dispatch-active
       if (typeof current !== 'undefined') {
         var navEls = Array.from(document.querySelectorAll('[data-idx]')).filter(function(el){
           return !el.classList.contains('break') && !el.classList.contains('label') && !el.classList.contains('cta-sentence');
@@ -9691,40 +9492,40 @@ document.addEventListener('keydown', function(e) {
         var node = nodeIndex.find(function(n){ return n.el === curEl; });
         if (node) {
           showDispatchGhost(node);
+          // Ensure stream reflects current node with dispatch-active
           document.querySelectorAll('.sentence.dispatch-active').forEach(function(s){ s.classList.remove('dispatch-active'); });
           node.el.classList.add('dispatch-active');
         }
       }
     } else {
-      dispatchExitScroll();
+      // Clean up dispatch-active from all sentences
       document.querySelectorAll('.sentence.dispatch-active').forEach(function(s){ s.classList.remove('dispatch-active'); });
       hideDispatchGhost();
-      if (typeof goTo === 'function' && typeof current !== 'undefined') {
-        goTo(current, { noScroll: true });
-      }
     }
   };
 
-  // ── goTo hook — called by sentence engine on every navigation ──
+  // ── goTo hook — called last in goTo, all state settled ──────────────
   window._dispatchUpdate = function(navEl) {
+    var now = Date.now();
+    var dwell = now - _arrivalTime;
+    var modality = (window._navModality) || 'unknown';
+
+    // Find nodes
+    var toNode   = nodeIndex.find(function(n){ return n.el === navEl; });
+    var fromNode = _lastNodeIdx >= 0 ? nodeIndex.find(function(n){ return n.idx === _lastNodeIdx; }) : null;
+
+    // Always record telemetry regardless of dispatch visibility
+    recordEvent(fromNode, toNode, dwell, modality);
+
+    // Update arrival baseline for next event
+    _arrivalTime = now;
+    _lastNodeIdx = toNode ? toNode.idx : -1;
+
+    // Reset modality to unknown so next goTo without a tag is flagged
+    window._navModality = 'unknown';
+
     if (!active) return;
-    var node = nodeIndex.find(function(n){ return n.el === navEl; });
-    if (node) {
-      showDispatchGhost(node);
-      // Update chapter label in image strip
-      if (pdvImgCh) {
-        var chNum = node.ch || 1;
-        pdvImgCh.textContent = 'Chapter ' + (chNum < 10 ? '0' : '') + chNum;
-      }
-      if (pdvImgTitle) pdvImgTitle.textContent = node.type === 'spec'
-        ? (node.specKey + ' · ' + node.specVal)
-        : (node.text.length > 60 ? node.text.substring(0,57) + '…' : node.text);
-      if (pdvImgSub) {
-        var p = node.perf;
-        pdvImgSub.textContent = p.reads + ' reads · ' + p.dwell + 's dwell · ' + p.signal + '% signal';
-      }
-      updatePdvThumb();
-    }
+    if (toNode) showDispatchGhost(toNode, dwell, modality, fromNode);
     refreshPDVActive();
   };
 
