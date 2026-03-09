@@ -1043,18 +1043,23 @@ body.doc-theme .mall-crumb .node { color: #555550; font-family: 'DM Mono', monos
 body.doc-theme .mall-crumb .node:hover { color: #111110; }
 body.doc-theme .h-btn { border-color: rgba(17,17,16,0.28); color: #444440; border-radius: 0; font-family: 'DM Mono', monospace; letter-spacing: 0.08em; }
 body.doc-theme .h-btn:hover { border-color: #111110; color: #111110; background: none; }
-body.doc-theme .h-btn.cta { background: #111110; border-color: #111110; color: #faf9f7; border-radius: 0; }
-body.doc-theme .h-btn.cta:hover { background: #333330; border-color: #333330; opacity: 1; }
+body.doc-theme .h-btn.cta { background: #2c2c28; border-color: #2c2c28; color: #faf9f7; border-radius: 0; }
+body.doc-theme .h-btn.cta:hover { background: #111110; border-color: #111110; opacity: 1; }
+/* Suppress the dark-header hover overrides — doc header is always light */
+body.doc-theme header:hover .h-btn { border-color: rgba(17,17,16,0.28); color: #444440; }
+body.doc-theme header:hover .h-btn:hover { border-color: #111110; color: #111110; background: none; }
+body.doc-theme header:hover .h-btn.cta { background: #2c2c28; border-color: #2c2c28; color: #faf9f7; }
+body.doc-theme header:hover .h-btn.cta:hover { background: #111110; border-color: #111110; }
 body.doc-theme #header-overlay { background: #f0efe9; border-bottom: 1px solid rgba(17,17,16,0.14); }
 body.doc-theme .ho-label { font-family: 'DM Mono', monospace; font-size: 7px; letter-spacing: 0.18em; text-transform: uppercase; color: #999990; }
 body.doc-theme .ho-value { font-family: 'DM Serif Text', serif; font-size: 12px; color: #111110; line-height: 1.5; }
 
-/* ── li-toggle: "off" state ── */
+/* ── li-toggle: doc is home, treat as a plain outlined cycle control ── */
 body.doc-theme #li-toggle {
-  background: #111110; border-color: #111110; color: #faf9f7; border-radius: 0; padding: 5px 10px 5px 8px;
+  background: none; border-color: rgba(17,17,16,0.22); color: #555550; border-radius: 0; padding: 5px 10px 5px 8px;
 }
-body.doc-theme #li-toggle .li-mark { background: #faf9f7; color: #111110; border-radius: 1px; }
-body.doc-theme #li-toggle:hover { background: #333330; border-color: #333330; }
+body.doc-theme #li-toggle .li-mark { background: none; color: #777770; border-radius: 0; }
+body.doc-theme #li-toggle:hover { background: none; border-color: #111110; color: #111110; }
 
 /* ── Progress bar ── */
 body.doc-theme #progress { background: #111110 !important; height: 1px !important; }
@@ -1138,11 +1143,27 @@ body.doc-theme #nav-widget .nw-nav-pip-fill { background: #111110 !important; }
 body.doc-theme #cursor { background: #111110 !important; }
 
 /* ── Links ── */
-body.doc-theme a { color: #111110 !important; text-decoration: underline !important; }
+body.doc-theme a:not(.h-btn) { color: #111110 !important; text-decoration: underline !important; }
 body.doc-theme a:hover { color: #333330 !important; }
 
 /* ── Toast ── */
-body.doc-theme #toast { background: #111110 !important; border-color: #333330 !important; color: #faf9f7 !important; border-radius: 0 !important; }
+body.doc-theme #toast {
+  background: #faf9f7 !important;
+  border-color: rgba(17,17,16,0.18) !important;
+  border-radius: 0 !important;
+  color: #111110 !important;
+  box-shadow: 0 4px 24px rgba(17,17,16,0.12) !important;
+  backdrop-filter: none !important;
+}
+body.doc-theme #toast .toast-icon { color: #111110; }
+body.doc-theme #toast .toast-title { color: #111110; }
+body.doc-theme #toast .toast-sub { color: #555550; }
+body.doc-theme #toast .toast-dismiss { color: #999990; }
+body.doc-theme #toast .toast-dismiss:hover { color: #111110; }
+body.doc-theme .toast-act-btn { border-color: rgba(17,17,16,0.20); color: #444440; border-radius: 0; }
+body.doc-theme .toast-act-btn:hover { border-color: #111110; color: #111110; background: none; }
+body.doc-theme .toast-act-btn.primary { background: #111110; border-color: #111110; color: #faf9f7; }
+body.doc-theme .toast-act-btn.primary:hover { background: #333330; opacity: 1; }
 
 /* Suppress sub-chapter palette bleeds */
 body.doc-theme .sentence.pull { border-left-color: #111110 !important; }
@@ -1254,6 +1275,9 @@ body::after {
 #cursor.nav-top::after  { content: '⤒'; opacity: 1; font-size: 14px; }
 #cursor.nav-bottom::after { content: '⤓'; opacity: 1; font-size: 14px; }
 a, button, [data-idx], .cw-trigger, .cw-item { cursor: none; }
+@media (max-width: 760px) {
+  a, button, [data-idx], .cw-trigger, .cw-item { cursor: auto; }
+}
 
 /* image layer */
 #image-layer {
@@ -1968,13 +1992,21 @@ body.dispatch-mode header { position: fixed; top: 0; left: 0; right: 0; z-index:
 @media (max-width: 760px) {
   body.dispatch-mode #panel {
     top: auto; right: 0; left: 0; bottom: 0; width: 100%;
-    height: 55vh; border-radius: 18px 18px 0 0;
+    height: 52vh; border-radius: 18px 18px 0 0;
     transform: translateY(0) !important;
     z-index: 2000;
   }
-  body.dispatch-mode #panel-overlay-backdrop { display: none !important; }
+  /* Show a dim backdrop so tapping above the sheet closes dispatch */
+  body.dispatch-mode #panel-overlay-backdrop {
+    display: block !important;
+    opacity: 0.38 !important;
+    pointer-events: auto !important;
+    background: rgba(0,0,0,0.45);
+    z-index: 1999;
+  }
   body.dispatch-mode #dispatch-ghost { display: block !important; }
-  /* Show mobile dispatch exit button when dispatch is active on mobile */
+  /* Keep HUD above the dispatch sheet */
+  body.dispatch-mode #nav-widget { z-index: 2100; }
 }
 body.scroll-free .sentence { opacity: 1 !important; pointer-events: none; }
 body.scroll-free .sentence.past { opacity: 1 !important; }
@@ -2388,11 +2420,14 @@ body.ch-7 { --hud-bg: rgba(248,236,240,0.97); --hud-ink: #200810; --hud-ink-2: #
     height: 88vh; border-left: none; border-top: none;
     border-radius: 18px 18px 0 0; z-index: 2000; grid-column: unset; grid-row: unset;
     transform: translateY(100%);
-    transition: transform 0.38s cubic-bezier(0.32,0.72,0,1), background 0.4s ease;
+    /* background-only transition removed — avoids flash when sheet opens from
+       a prior semi-transparent computed value; color is always solid on mobile */
+    transition: transform 0.38s cubic-bezier(0.32,0.72,0,1);
     box-shadow: 0 -8px 60px rgba(0,0,0,0.5);
-    background: rgba(248,246,238,1) !important;
+    background: #f8f6ee !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+    will-change: transform;
   }
   #panel.sheet-open { transform: translateY(0); }
   #panel .panel-scroll-inner { padding: 0 18px 16px; }
@@ -5852,7 +5887,13 @@ function closePanelSheet() {
   document.getElementById('panel-overlay-backdrop').classList.remove('show');
   document.body.style.overflow = '';
 }
-document.getElementById('panel-overlay-backdrop').addEventListener('click', closePanelSheet);
+document.getElementById('panel-overlay-backdrop').addEventListener('click', function() {
+  if (document.body.classList.contains('dispatch-mode')) {
+    if (typeof toggleDispatch === 'function') toggleDispatch();
+  } else {
+    closePanelSheet();
+  }
+});
 
 (function initPanelSwipe() {
   var panel = document.getElementById('panel');
@@ -9580,9 +9621,11 @@ document.addEventListener('keydown', function(e) {
 
   function dispatchEnterScroll() {
     if (isMob()) {
-      // Mobile: just open the panel sheet over the stream — no scroll unlock needed
-      if (typeof openPanelSheet === 'function') openPanelSheet();
-      // Prevent the sheet open from locking body scroll (we want stream scrollable behind)
+      // Mobile: show panel directly without openPanelSheet — that sets overflow:hidden
+      // which clips fixed-position HUD elements in some mobile browsers
+      var p = document.getElementById('panel');
+      if (p) p.classList.add('sheet-open');
+      // Keep body scrollable so stream works behind the sheet
       document.body.style.overflow = '';
     } else {
       document.documentElement.style.overflow = 'auto';
@@ -9601,7 +9644,11 @@ document.addEventListener('keydown', function(e) {
   function dispatchExitScroll() {
     if (dispatchScrollRaf) { cancelAnimationFrame(dispatchScrollRaf); dispatchScrollRaf = null; }
     if (isMob()) {
-      if (typeof closePanelSheet === 'function') closePanelSheet();
+      // Close panel directly — don't use closePanelSheet which would restore overflow
+      var p = document.getElementById('panel');
+      if (p) p.classList.remove('sheet-open');
+      var bd = document.getElementById('panel-overlay-backdrop');
+      if (bd) bd.classList.remove('show');
     } else {
       document.documentElement.style.overflow = '';
       document.documentElement.style.height = '';
