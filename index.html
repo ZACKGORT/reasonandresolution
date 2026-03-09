@@ -1084,6 +1084,13 @@ body.doc-theme .h-btn { border-color: rgba(17,17,16,0.28); color: #444440; borde
 body.doc-theme .h-btn:hover { border-color: #111110; color: #111110; background: none; }
 body.doc-theme .h-btn.cta { background: #111110; border-color: #111110; color: #faf9f7; border-radius: 0; }
 body.doc-theme .h-btn.cta:hover { background: #333330; border-color: #333330; opacity: 1; }
+/* ── Active/on states in doc-theme ── */
+body.doc-theme #h-compose-btn.compose-active { border-color: #111110; color: #faf9f7; background: #111110; }
+body.doc-theme #h-compose-btn.compose-active:hover { background: #333330; border-color: #333330; }
+body.doc-theme #h-studio-btn.studio-active { border-color: #111110; color: #faf9f7; background: #111110; }
+body.doc-theme #h-studio-btn.studio-active:hover { background: #333330; border-color: #333330; }
+body.doc-theme #nw-dispatch-btn.dispatch-on { color: #111110; background: rgba(17,17,16,0.08); }
+body.doc-theme #nw-dispatch-btn.dispatch-on .nw-action-label { color: #111110; }
 body.doc-theme #header-overlay { background: #f0efe9; border-bottom: 1px solid rgba(17,17,16,0.14); }
 body.doc-theme .ho-label { font-family: 'DM Mono', monospace; font-size: 7px; letter-spacing: 0.18em; text-transform: uppercase; color: #999990; }
 body.doc-theme .ho-value { font-family: 'DM Serif Text', serif; font-size: 12px; color: #111110; line-height: 1.5; }
@@ -2347,6 +2354,12 @@ body.ch-7 { --hud-bg: rgba(248,236,240,0.97); --hud-ink: #200810; --hud-ink-2: #
     pointer-events: auto !important; touch-action: manipulation;
     display: none !important; /* replaced by HUD scroll button on mobile */
   }
+  /* Progress bar: relocate from bottom to just under the sticky header on mobile */
+  #progress {
+    top: 52px !important;
+    bottom: auto !important;
+    z-index: 9001 !important;
+  }
   #scroll-lockout { right: 0; pointer-events: none; }
   #nav-widget {
     position: fixed; bottom: calc(20px + env(safe-area-inset-bottom));
@@ -2622,10 +2635,16 @@ body.ch-7 { --hud-bg: rgba(248,236,240,0.97); --hud-ink: #200810; --hud-ink-2: #
     pointer-events: auto !important; 
   }
 
-  /* Corrects the borders for the scroll button in its new middle position */
-  #nw-scroll-btn {
+  /* Corrects the borders for the dispatch button in its new middle position */
+  #nw-dispatch-btn {
     border-radius: 0;
     border-right: none;
+    border-left: 1px solid var(--hud-border);
+  }
+  /* Scroll is now last action btn before the nav divider */
+  #nw-scroll-btn {
+    border-radius: 0;
+    border-right: 1px solid var(--hud-border);
     border-left: 1px solid var(--hud-border);
   }
 }
@@ -2889,6 +2908,153 @@ body.ch-7 { --hud-bg: rgba(248,236,240,0.97); --hud-ink: #200810; --hud-ink-2: #
 
 @media (max-width: 760px) {
   /* detail-ghost handled in main mobile block above */
+}
+
+/* ── LANDSCAPE PHONE: split view ────────────────────────────────────────────
+   Triggers when a phone is rotated: narrow height (<500px) + wide enough for split.
+   Layout: narrative column left | image right half | right-rail HUD
+   ─────────────────────────────────────────────────────────────────────────── */
+@media (max-height: 500px) and (min-width: 500px) and (orientation: landscape) {
+
+  /* Shell: two-column split */
+  #shell {
+    grid-template-columns: 1fr 40vw !important;
+    grid-template-rows: 48px 1fr !important;
+  }
+
+  /* Header spans full width, compressed */
+  header {
+    grid-column: 1 / -1 !important;
+    height: 48px !important;
+    padding: 0 12px !important;
+  }
+  .h-tagline { display: none !important; }
+  .mall-crumb { display: none !important; }
+
+  /* Progress bar: under header in landscape too */
+  #progress {
+    top: 48px !important;
+    bottom: auto !important;
+    z-index: 9001 !important;
+  }
+
+  /* Narrative stream: left column, compact padding */
+  #stream-col {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    padding: 20px 20px 80px !important;
+    overflow-y: auto !important;
+    min-height: 0 !important;
+  }
+
+  /* Right panel: hidden — replaced by image */
+  #panel {
+    display: none !important;
+  }
+  #panel-overlay-backdrop { display: none !important; }
+
+  /* Image layer: fills the right column */
+  #image-layer {
+    display: block !important;
+    position: fixed !important;
+    left: 60vw !important;
+    right: 0 !important;
+    top: 48px !important;
+    bottom: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    z-index: 1 !important;
+  }
+  #image-layer img {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center 40% !important;
+    opacity: 0 !important;
+    transform: scale(1.03) !important;
+  }
+  #image-layer img.visible {
+    opacity: 0.82 !important;
+    transform: scale(1) !important;
+  }
+  /* Fade image left edge into the narrative column */
+  #image-layer::after {
+    content: '' !important;
+    display: block !important;
+    position: absolute !important;
+    inset: 0 !important;
+    background: linear-gradient(to right, var(--bg, #141413) 0%, transparent 30%) !important;
+    z-index: 2 !important;
+  }
+
+  /* HUD: collapse to right edge, vertical pill */
+  #nav-widget {
+    position: fixed !important;
+    right: 8px !important;
+    bottom: 50% !important;
+    left: auto !important;
+    top: auto !important;
+    transform: translateY(50%) !important;
+    z-index: 9100 !important;
+    width: auto !important;
+  }
+  .nw-shell {
+    flex-direction: column !important;
+    border-radius: 20px !important;
+    width: auto !important;
+    min-width: unset !important;
+    padding: 0 !important;
+    gap: 0 !important;
+  }
+  .nw-action-btn {
+    border: none !important;
+    border-bottom: 1px solid var(--hud-border) !important;
+    border-right: none !important;
+    border-radius: 0 !important;
+    padding: 10px 12px !important;
+    font-size: 14px !important;
+  }
+  .nw-action-btn:first-of-type {
+    border-radius: 20px 20px 0 0 !important;
+  }
+  .nw-action-btn:last-of-type {
+    border-bottom: none !important;
+  }
+  .nw-action-label { display: none !important; }
+  .nw-divider {
+    display: block !important;
+    width: 100% !important;
+    height: 1px !important;
+    background: var(--hud-border) !important;
+  }
+  .nw-nav {
+    flex-direction: column !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    width: auto !important;
+  }
+  .nw-btn-prev, .nw-btn-next {
+    height: auto !important;
+    min-height: 40px !important;
+    min-width: 44px !important;
+    border-radius: 0 !important;
+    border: none !important;
+    border-top: 1px solid var(--hud-border) !important;
+    border-left: none !important;
+    padding: 0 10px !important;
+    font-size: 16px !important;
+  }
+  .nw-btn-next {
+    border-radius: 0 0 20px 20px !important;
+    border-bottom: none !important;
+  }
+  .nw-nav-pip, .nw-nav-pip-pct, .nw-handle { display: none !important; }
+
+  /* Poster text: scale down for landscape */
+  .sentence.poster { font-size: clamp(28px, 7vw, 48px) !important; }
+  .sentence.poster.active::before { left: -12px !important; }
 }
 
 /* ===================================
@@ -4553,12 +4719,12 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
       <span class="nw-cell-value">&#9671;</span><span class="nw-action-label">Interest</span>
     </button>
 
-    <button class="nw-action-btn" id="nw-scroll-btn" title="Free scroll" onclick="document.getElementById('scroll-toggle').click()">
-      <span class="nw-cell-value" id="nw-scroll-icon">&#8645;</span><span class="nw-action-label" id="nw-scroll-label">Scroll</span>
-    </button>
-
     <button class="nw-action-btn" id="nw-dispatch-btn" title="Dispatch — node data overlay" onclick="toggleDispatch()">
       <span class="nw-cell-value">&#9672;</span><span class="nw-action-label">Dispatch</span>
+    </button>
+
+    <button class="nw-action-btn" id="nw-scroll-btn" title="Free scroll" onclick="document.getElementById('scroll-toggle').click()">
+      <span class="nw-cell-value" id="nw-scroll-icon">&#8645;</span><span class="nw-action-label" id="nw-scroll-label">Scroll</span>
     </button>
 
     <div class="nw-divider"></div>
