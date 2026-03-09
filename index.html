@@ -9655,6 +9655,10 @@ document.addEventListener('keydown', function(e) {
     if (active) {
       buildIndex();
       populatePDV();
+      // On mobile: open panel sheet so PDV is visible (ghost is hidden on touch)
+      if (window.innerWidth <= 760 && typeof openPanelSheet === 'function') {
+        openPanelSheet();
+      }
       // Fire on current node immediately — shows ghost and applies dispatch-active
       if (typeof current !== 'undefined') {
         var navEls = Array.from(document.querySelectorAll('[data-idx]')).filter(function(el){
