@@ -1970,6 +1970,8 @@ body.dispatch-mode #stream-col { justify-content: flex-start; min-height: auto; 
 body.dispatch-mode #panel { position: fixed; top: 52px; right: 0; width: 320px; height: calc(100vh - 52px); }
 body.dispatch-mode #shell { grid-template-columns: 1fr 320px; }
 body.dispatch-mode main#stream-col { margin-right: 320px; }
+/* Keep header fixed when body overflow changes in dispatch mode */
+body.dispatch-mode header { position: fixed; top: 0; left: 0; right: 0; z-index: 9000; }
 @media (max-width: 760px) {
   body.dispatch-mode #panel {
     top: auto; right: 0; left: 0; bottom: 0; width: 100%;
@@ -1979,15 +1981,7 @@ body.dispatch-mode main#stream-col { margin-right: 320px; }
   }
   body.dispatch-mode #panel-overlay-backdrop { display: none !important; }
   body.dispatch-mode #dispatch-ghost { display: block !important; }
-  .pdv-mobile-close-btn {
-    display: none;
-    width: calc(100% - 32px); margin: 0 16px 16px;
-    padding: 12px; border-radius: 8px;
-    background: var(--accent); color: #fff;
-    border: none; font-family: var(--ui); font-size: 11px;
-    letter-spacing: 0.12em; text-transform: uppercase;
-    cursor: pointer; font-weight: 700; flex-shrink: 0;
-  }
+  /* Show mobile dispatch exit button when dispatch is active on mobile */
 }
 body.scroll-free .sentence { opacity: 1 !important; pointer-events: none; }
 body.scroll-free .sentence.past { opacity: 1 !important; }
@@ -2069,7 +2063,7 @@ body.ch-7 { --hud-bg: rgba(248,236,240,0.97); --hud-ink: #200810; --hud-ink-2: #
   display: flex; flex-direction: column;
   border-left: 1px solid var(--border);
   background: rgba(20,20,19,0.65); backdrop-filter: blur(20px);
-  overflow-y: auto; padding: 28px 22px 48px;
+  overflow: hidden;
   transition: background 0.4s ease, border-color 0.4s ease;
 }
 #panel:hover { background: rgba(248,246,238,0.98); border-left-color: rgba(0,0,0,0.07); }
@@ -2408,6 +2402,7 @@ body.ch-7 { --hud-bg: rgba(248,236,240,0.97); --hud-ink: #200810; --hud-ink-2: #
     -webkit-backdrop-filter: none !important;
   }
   #panel.sheet-open { transform: translateY(0); }
+  #panel .panel-scroll-inner { padding: 0 18px 16px; }
   #panel .panel-section-label { color: #aaa; }
   #panel .panel-img-area { background: #ede8e0; border-color: rgba(0,0,0,0.08); }
   #panel .service-name { color: #222; }
@@ -2462,8 +2457,6 @@ body.ch-7 { --hud-bg: rgba(248,236,240,0.97); --hud-ink: #200810; --hud-ink-2: #
   /* Hide ghost overlays when compose mode is active — they'd collide */
   body.compose-mode #detail-ghost { opacity: 0 !important; pointer-events: none !important; }
   body.compose-mode #spec-cursor-ghost { opacity: 0 !important; pointer-events: none !important; }
-  /* Show mobile dispatch exit button when dispatch is active on mobile */
-  body.dispatch-mode .pdv-mobile-close-btn { display: block; }
 }
 @media (min-width: 761px) {
   #panel-overlay-backdrop { display: none; }
@@ -2728,12 +2721,7 @@ body.ch-7 { --hud-bg: rgba(248,236,240,0.97); --hud-ink: #200810; --hud-ink-2: #
 
 /* ── RESUME PANEL ──────────────────────────────────────────────────────────── */
 
-#panel {
-  padding: 20px 18px 48px;
-  overflow-y: auto;
-}
-
-#panel::-webkit-scrollbar { width: 3px; }
+#panel::-webkit-scrollbar { display: none; }
 #panel::-webkit-scrollbar-track { background: transparent; }
 #panel::-webkit-scrollbar-thumb { background: var(--ink-3); border-radius: 2px; }
 
@@ -3124,6 +3112,10 @@ body.dispatch-mode .pg-header { display: none; }
   padding: 0; transition: opacity .12s;
 }
 .pdv-close-btn:hover { opacity: 0.7; }
+@media (max-width: 760px) {
+  .pdv-footer { padding: 14px 20px; }
+  .pdv-close-btn { font-size: 9px; padding: 8px 0; min-height: 44px; display: flex; align-items: center; }
+}
 
 /* mobile: ghost hidden, panel view stays */
 @media (max-width: 760px) {
@@ -4016,10 +4008,17 @@ body.dark-ask #ask-interstitial { opacity: 1; pointer-events: auto; }
 .pg-preview-wrap.mode-image .pg-preview-frame-shell { display: none; }
 .pg-preview-wrap.mode-image .pg-preview-overlay { display: none; }
 .pg-preview-wrap.mode-image .pg-preview-img { display: block; }
+.pg-footer {
   font-family: var(--ui); font-size: 7px; letter-spacing: 0.10em;
   color: var(--ink-3); border-top: 1px solid var(--border);
-  padding-top: 12px; margin-top: auto; flex-shrink: 0; transition: color 0.4s;
+  padding: 12px 20px; flex-shrink: 0; transition: color 0.4s;
 }
+.panel-scroll-inner {
+  flex: 1; overflow-y: auto; padding: 28px 22px 16px;
+  display: flex; flex-direction: column;
+}
+.panel-scroll-inner::-webkit-scrollbar { width: 3px; }
+.panel-scroll-inner::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 .pg-footer a { color: var(--accent); text-decoration: none; }
 .pg-footer a:hover { text-decoration: underline; }
 
@@ -4345,6 +4344,7 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
   </main>
 
   <aside id="panel">
+  <div class="panel-scroll-inner">
 
   <!-- ── CHAPTER GUIDE HEADER ── -->
   <div class="pg-header">
@@ -4368,7 +4368,7 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
       <span>0 nodes &middot; dispatch mode</span>
       <button class="pdv-close-btn" onclick="toggleDispatch()">&#10005; close</button>
     </div>
-    <button class="pdv-mobile-close-btn" onclick="toggleDispatch()" aria-label="Exit dispatch">&#10005; Exit Dispatch</button>
+
   </div>
 
   <!-- ── SITE PREVIEW ── -->
@@ -4398,7 +4398,9 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
     </div>
   </div>
 
-  <!-- ── WOLFIE FOOTER ── -->
+  </div><!-- /.panel-scroll-inner -->
+
+  <!-- ── WOLFIE FOOTER — pinned ── -->
   <div class="pg-footer">
     <a href="https://wolfie.love" target="_blank" rel="noopener">wolfie.love</a> &middot; Wolfgang &amp; Co
   </div>
