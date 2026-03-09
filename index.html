@@ -3034,12 +3034,15 @@ body.dispatch-mode .sentence.dispatch-active.poster::before {
 /* ── Panel dispatch view ── */
 #panel-dispatch-view {
   display: none; flex-direction: column;
-  width: 100%; min-height: 0;
+  width: 100%; min-height: 0; flex: 1;
 }
 body.dispatch-mode #panel-dispatch-view { display: flex; }
 body.dispatch-mode .pg-chapter-list { display: none; }
 body.dispatch-mode .pg-preview-section { display: none; }
 body.dispatch-mode .pg-header { display: none; }
+body.dispatch-mode .panel-scroll-inner {
+  overflow: hidden; padding-bottom: 0;
+}
 
 .pdv-header {
   padding: 16px 20px 12px; border-bottom: 1px solid var(--border);
@@ -3055,7 +3058,6 @@ body.dispatch-mode .pg-header { display: none; }
 }
 .pdv-entries {
   flex: 1; overflow-y: auto; padding: 0;
-  max-height: 60vh;
 }
 .pdv-entry {
   padding: 10px 20px; border-bottom: 1px solid var(--border);
