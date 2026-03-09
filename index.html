@@ -2516,22 +2516,25 @@ body:has(header:hover) #chapter-widget {
 
 /* ── MOBILE LANDSCAPE SPLIT VIEW ─────────────────────────────────────────
    Narrative left · Image right · Panel collapsed · HUD on right edge
-   Triggers on phones rotated sideways (height < 500px, width > height)
+   Triggers on phones rotated sideways (height ≤ 600px, width > height)
 ───────────────────────────────────────────────────────────────────────── */
 @media (orientation: landscape) and (max-height: 600px) and (max-width: 1024px) {
 
-  /* Shell: two columns — narrative | image. No panel column. */
+  /* ── Shell: two columns — narrative | image ── */
   #shell {
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 44px 1fr;
     z-index: auto;
   }
 
-  /* Header: full width, compact height */
+  /* ── Header: fixed, full width, compact ── */
   header {
-    grid-column: 1 / -1;
+    position: fixed;
+    top: 0; left: 0; right: 0;
     height: 44px;
     padding: 0 12px;
+    z-index: 9000;
+    grid-column: unset;
   }
   .h-tagline { display: none; }
   .mall-crumb { display: none; }
@@ -2542,121 +2545,108 @@ body:has(header:hover) #chapter-widget {
   .h-actions { gap: 4px; }
   #header-overlay { display: none !important; }
 
-  /* Stream col: left half, full height, tight padding */
+  /* ── Stream col: left half, scrollable ── */
   #stream-col {
     grid-column: 1;
     grid-row: 2;
     min-height: auto;
-    padding: 16px 20px 80px 20px;
+    padding: 16px 16px 60px 20px;
+    padding-top: calc(44px + 16px);
     z-index: 10;
     overflow-y: auto;
   }
 
-  /* Sentences: scale down for landscape viewport height */
-  .sentence.poster { font-size: clamp(28px, 7vh, 52px); }
-  .sentence.body { font-size: clamp(13px, 2.2vh, 18px); line-height: 1.45; }
-  .sentence.pull { font-size: clamp(14px, 2.6vh, 22px); }
+  /* ── Type: scale to landscape viewport height ── */
+  .sentence.poster { font-size: clamp(26px, 6.5vh, 48px); }
+  .sentence.body   { font-size: clamp(13px, 2vh, 17px); line-height: 1.44; }
+  .sentence.pull   { font-size: clamp(14px, 2.4vh, 20px); }
 
-  /* Panel: collapse completely off-screen — no sheet, no rail */
-  #panel {
-    display: none !important;
-  }
+  /* ── Panel: hidden in landscape ── */
+  #panel { display: none !important; }
   #panel-overlay-backdrop { display: none !important; }
 
-  /* Image layer: clip to right half only */
+  /* ── Image layer: right half only ── */
   #image-layer {
-    left: 50%;
-    right: 0;
+    left: 50%; right: 0;
     width: 50%;
+    top: 0; bottom: 0;
   }
-  /* Adjust gradient — fade from left edge of image toward right */
   #image-layer::after {
     background:
-      linear-gradient(to right, rgba(20,20,19,0.92) 0%, rgba(20,20,19,0.30) 50%, rgba(20,20,19,0.10) 100%),
-      linear-gradient(to top, rgba(20,20,19,0.70) 0%, transparent 50%);
+      linear-gradient(to right, rgba(20,20,19,0.95) 0%, rgba(20,20,19,0.35) 55%, rgba(20,20,19,0.10) 100%),
+      linear-gradient(to top,   rgba(20,20,19,0.65) 0%, transparent 55%);
   }
 
-  /* Image col: right half, acts as the visual column */
-  #shell::after {
-    content: '';
-    display: block;
-    grid-column: 2;
-    grid-row: 2;
-  }
+  /* ── Progress bar: just below fixed header ── */
+  #progress { top: 44px; bottom: auto; }
 
-  /* Progress bar: top of stream col */
-  #progress {
-    top: 44px;
-    bottom: auto;
-  }
-
-  /* Chapter widget: left half only */
+  /* ── Chapter widget: left half only ── */
   #chapter-widget {
-    left: 0;
-    right: 50%;
+    left: 0; right: 50%;
     top: calc(44px + 8px);
     justify-content: center;
   }
 
-  /* HUD: vertical strip hugging right viewport edge */
+  /* ── HUD: vertical pill on right viewport edge ── */
   #nav-widget {
     position: fixed;
-    right: 8px;
-    top: 50%;
-    left: auto;
-    bottom: auto;
+    right: 8px; top: 50%;
+    left: auto; bottom: auto;
     transform: translateY(-50%);
     z-index: 2100;
     width: auto;
   }
-  /* Restore vertical HUD layout */
   .nw-shell {
     flex-direction: column;
     border-radius: 16px;
     overflow: hidden;
     width: auto;
-    min-width: 52px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    min-width: 48px;
+    padding: 0; gap: 0;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.20);
   }
   .nw-action-btn {
     flex: unset;
     border-right: none;
     border-bottom: 1px solid var(--hud-border);
     border-radius: 0;
-    padding: 10px 12px;
+    padding: 9px 11px;
     font-size: 13px;
     width: 100%;
+    min-height: 0;
   }
   .nw-action-btn:first-of-type { border-radius: 0; }
-  .nw-action-btn:last-of-type { border-bottom: none; }
+  .nw-action-btn:last-of-type  { border-bottom: none; }
   .nw-nav {
     flex-direction: column;
-    flex: unset;
-    width: 100%;
-    align-items: stretch;
+    flex: unset; width: 100%;
+    align-items: stretch; padding: 0; gap: 0;
   }
   .nw-btn-prev, .nw-btn-next {
     flex: unset;
-    height: 40px;
-    min-height: 40px;
+    height: 36px; min-height: 36px;
     border-left: none;
-    border-bottom: 1px solid var(--hud-border);
+    border-top: 1px solid var(--hud-border);
+    border-bottom: none;
     border-radius: 0;
-    font-size: 14px;
-    padding: 0 12px;
+    font-size: 13px;
+    padding: 0 11px;
+    background: none;
   }
-  .nw-btn-next { border-bottom: none; border-radius: 0; }
-  .nw-action-label { font-size: 8px; }
+  .nw-btn-next { border-radius: 0; }
+  .nw-action-label { font-size: 7px; }
+  .nw-nav-pip, .nw-nav-pip-pct, .nw-handle, .nw-divider { display: none !important; }
 
-  /* Show A/ panel button, hide CV button */
-  #nw-cv-btn { display: none !important; }
+  /* A/ panel btn visible, CV/scroll btns hidden */
+  #nw-cv-btn    { display: none !important; }
+  #nw-scroll-btn { display: none !important; }
   .nw-action-btn#nw-panel-btn { display: flex; }
 
-  /* Toast and credit: adjust for landscape */
-  #toast { bottom: 16px; }
-  #wolfie-credit { bottom: 10px; }
+  /* ── Toast / credit ── */
+  #toast         { bottom: 12px; }
+  #wolfie-credit { bottom: 8px; }
 
-  /* Dispatch panel: when active, show as left-edge overlay on stream col */
+  /* ── Dispatch: overlays left half when active ── */
   body.dispatch-mode #panel {
     display: flex !important;
     position: fixed;
@@ -2668,18 +2658,29 @@ body:has(header:hover) #chapter-widget {
     background: #f8f6ee !important;
   }
   body.dispatch-mode #nav-widget { z-index: 2200; }
+  body.dispatch-mode #panel-overlay-backdrop { display: none !important; }
 
-  /* Detail ghost: above stream text, below HUD */
-  #detail-ghost {
-    display: block !important;
-    position: fixed !important;
-    left: 8px !important;
-    bottom: 20px !important;
-    right: 60px !important;
-    top: auto !important;
-    max-width: 45vw !important;
-    width: auto !important;
+  /* ── Suppress all lerp ghosts — no cursor/hover in landscape touch mode ── */
+  #detail-ghost,
+  #spec-cursor-ghost,
+  #dispatch-ghost {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
   }
+
+  /* ── Sheet panel suppressed in landscape — no bottom sheet UX ── */
+  #panel.sheet-open { display: none !important; }
+
+  /* ── Interest panel: left half ── */
+  #interest-panel {
+    right: auto;
+    left: 8px;
+    max-width: calc(50vw - 16px);
+  }
+
+  /* ── Scroll lockout: left half only ── */
+  #scroll-lockout { right: 50%; }
 }
 
 
@@ -5085,7 +5086,7 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
 
   function lerp(a,b,t){ return a+(b-a)*t; }
 
-  function isMob(){ return window.innerWidth<=760; }
+  function isMob(){ return window.innerWidth<=760 || (window.innerHeight<=600 && window.innerWidth<=1024 && window.innerWidth>window.innerHeight); }
   function rl(gw){ // right limit — keeps ghost left of panel on desktop, full-width on mobile
     if(isMob()) return window.innerWidth-12;
     var col=document.getElementById('stream-col');
@@ -5255,7 +5256,7 @@ document.addEventListener('touchstart', function() {
   var activeSpecEl = null;
 
   function lerp(a, b, t) { return a + (b - a) * t; }
-  function isMob() { return window.innerWidth <= 760; }
+  function isMob() { return window.innerWidth <= 760 || (window.innerHeight <= 600 && window.innerWidth <= 1024 && window.innerWidth > window.innerHeight); }
 
   function midX() {
     var col = document.getElementById('stream-col');
@@ -5535,7 +5536,7 @@ imgs[0].classList.add('visible');
     return document.body.classList.contains('raw-theme') ||
            document.body.classList.contains('doc-theme');
   }
-  function isMob() { return window.innerWidth <= 760; }
+  function isMob() { return window.innerWidth <= 760 || (window.innerHeight <= 600 && window.innerWidth <= 1024 && window.innerWidth > window.innerHeight); }
   function midX()  { return window.innerWidth * 0.5; }
 
   function applyTransform() {
@@ -6062,7 +6063,7 @@ streamCol.addEventListener('click', function(e) {
 });
 
 // ── MOBILE PANEL SHEET ────────────────────────────────────────────────────
-function isMobile() { return window.innerWidth <= 760; }
+function isMobile() { return window.innerWidth <= 760 || (window.innerHeight <= 600 && window.innerWidth <= 1024 && window.innerWidth > window.innerHeight); }
 function openPanelSheet() {
   var p = document.getElementById('panel');
   if (p.classList.contains('sheet-open')) { closePanelSheet(); return; }
@@ -6075,8 +6076,13 @@ function closePanelSheet() {
   var p = document.getElementById('panel');
   p.classList.remove('sheet-open');
   var bd = document.getElementById('panel-overlay-backdrop');
-  bd.classList.remove('show');
-  document.body.style.overflow = '';
+  // Fade backdrop but keep pointer-events blocking during the slide-out
+  // transition (380ms) so taps don't fall through to the narrative
+  bd.style.pointerEvents = 'none';
+  setTimeout(function() {
+    bd.classList.remove('show');
+    bd.style.pointerEvents = '';
+  }, 400);
 }
 document.getElementById('panel-overlay-backdrop').addEventListener('click', function() {
   if (document.body.classList.contains('dispatch-mode')) {
@@ -9433,7 +9439,7 @@ document.addEventListener('keydown', function(e) {
   var mx=window.innerWidth/2;
   var nodeIndex = [];
 
-  function isMob() { return window.innerWidth <= 760; }
+  function isMob() { return window.innerWidth <= 760 || (window.innerHeight <= 600 && window.innerWidth <= 1024 && window.innerWidth > window.innerHeight); }
   function lerp(a,b,t) { return a+(b-a)*t; }
 
   // ── Seeded performance data per node ─────────────────────────────────────
