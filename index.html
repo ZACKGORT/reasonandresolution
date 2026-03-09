@@ -12,6 +12,12 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Serif+Text:ital@0;1&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
 <style>
 
+/* ── Global superthin scrollbars ── */
+* { scrollbar-width: thin; scrollbar-color: var(--border, rgba(255,255,255,0.08)) transparent; }
+*::-webkit-scrollbar { width: 1px; height: 1px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: var(--border, rgba(255,255,255,0.08)); border-radius: 0; }
+
 :root {
   --bg:       #141413;
   --ink:      #faf9f5;
@@ -464,8 +470,8 @@ header:hover #h-studio-btn.studio-active { border-color: #d97757; color: #d97757
 #studio-app.s-rail-hidden #studio-left-rail { border-right:none; }
 .s-rail-inner { padding:18px 14px;overflow-y:auto;flex:1;opacity:1;transition:opacity .2s; }
 #studio-app.s-rail-hidden .s-rail-inner { opacity:0;pointer-events:none; }
-.s-rail-inner::-webkit-scrollbar{width:3px}
-.s-rail-inner::-webkit-scrollbar-thumb{background:var(--s-ink-4,#c2b8a0);border-radius:2px}
+.s-rail-inner::-webkit-scrollbar{width:1px}
+.s-rail-inner::-webkit-scrollbar-thumb{background:var(--s-ink-4,#c2b8a0);border-radius:0}
 .s-rail-section { margin-bottom:22px; }
 .s-rs-head { font-size:7px;letter-spacing:.2em;text-transform:uppercase;color:var(--s-ink-3,#8a7a62);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--s-border,rgba(26,21,16,0.10));font-family:'Space Mono',monospace; }
 .s-size-rack { display:flex;flex-direction:column;gap:3px; }
@@ -494,8 +500,8 @@ header:hover #h-studio-btn.studio-active { border-color: #d97757; color: #d97757
   transition:background .3s,border-color .3s;
 }
 [data-theme="windowed"] #s-rail-raw-out { background:#1d1f2a;border-color:rgba(255,255,255,0.07);color:#4a4f6a; }
-#s-rail-raw-out::-webkit-scrollbar{width:3px}
-#s-rail-raw-out::-webkit-scrollbar-thumb{background:var(--s-ink-4,#c2b8a0);border-radius:2px}
+#s-rail-raw-out::-webkit-scrollbar{width:1px}
+#s-rail-raw-out::-webkit-scrollbar-thumb{background:var(--s-ink-4,#c2b8a0);border-radius:0}
 .s-rail-btn-row { display:flex;gap:5px; }
 .s-rail-act-btn {
   flex:1;font-family:'Space Mono',monospace;font-size:7px;letter-spacing:.1em;text-transform:uppercase;
@@ -553,8 +559,8 @@ header:hover #h-studio-btn.studio-active { border-color: #d97757; color: #d97757
   padding:36px 0 56px;
   position:relative;z-index:5;
 }
-#s-stream-scroll::-webkit-scrollbar{width:3px}
-#s-stream-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+#s-stream-scroll::-webkit-scrollbar{width:1px}
+#s-stream-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:0}
 #s-stream-scroll.sz-sm{--ss:1}
 #s-stream-scroll.sz-md{--ss:1.18}
 #s-stream-scroll.sz-lg{--ss:1.38}
@@ -605,8 +611,8 @@ header:hover #h-studio-btn.studio-active { border-color: #d97757; color: #d97757
 [data-theme="windowed"] #studio-canvas-panel { background:#161820; }
 [data-theme="newspaper"] #studio-canvas-panel { background:#f0ebe0; }
 #s-canvas-nodes { flex:1;overflow-y:auto;padding:8px 10px;display:flex;flex-direction:column;gap:4px;overscroll-behavior:contain;min-height:0; }
-#s-canvas-nodes::-webkit-scrollbar{width:3px}
-#s-canvas-nodes::-webkit-scrollbar-thumb{background:var(--s-ink-4,#c2b8a0);border-radius:2px}
+#s-canvas-nodes::-webkit-scrollbar{width:1px}
+#s-canvas-nodes::-webkit-scrollbar-thumb{background:var(--s-ink-4,#c2b8a0);border-radius:0}
 #s-canvas-hint { height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:7px;pointer-events:none; }
 .s-hint-icon { font-size:20px;opacity:.25; }
 .s-hint-text { font-size:7px;letter-spacing:.16em;text-transform:uppercase;color:var(--s-ink-4,#c2b8a0);text-align:center;font-family:'Space Mono',monospace; }
@@ -1391,6 +1397,26 @@ header:hover #header-overlay { opacity: 1; pointer-events: auto; transform: tran
   transition: width 0.25s ease;
 }
 
+/* ── Chapter progress bar — top of viewport ── */
+#chapter-progress-bar {
+  position: fixed; top: 52px; left: 0; right: 0;
+  height: 1px; z-index: 8999;
+  display: flex; gap: 1px;
+  pointer-events: none;
+}
+.cpb-seg {
+  flex: 1; height: 1px; position: relative;
+  background: var(--border);
+}
+.cpb-seg::after {
+  content: ''; position: absolute;
+  top: 0; left: 0; bottom: 0; width: 0%;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+.cpb-seg.cpb-done::after { width: 100%; }
+.cpb-seg.cpb-active::after { width: var(--cpb-pct, 0%); }
+
 /* stream */
 #stream-col {
   grid-column: 1; grid-row: 2;
@@ -1972,6 +1998,9 @@ body.dispatch-mode #shell { grid-template-columns: 1fr 320px; }
 body.dispatch-mode main#stream-col { margin-right: 320px; }
 /* Keep header fixed when body overflow changes in dispatch mode */
 body.dispatch-mode header { position: fixed; top: 0; left: 0; right: 0; z-index: 9000; }
+@media (max-width: 760px) {
+  #chapter-progress-bar { display: none; }
+}
 @media (max-width: 760px) {
   body.dispatch-mode #panel {
     top: auto; right: 0; left: 0; bottom: 0; width: 100%;
@@ -3032,6 +3061,66 @@ body.dispatch-mode .sentence.dispatch-active.poster::before {
 #nw-dispatch-btn.dispatch-on .nw-action-label { color: var(--hud-accent); }
 
 /* ── Panel dispatch view ── */
+/* ── Dispatch image preview strip ── */
+.pdv-img-strip {
+  position: relative; flex-shrink: 0;
+  height: 110px; overflow: hidden;
+  display: flex; align-items: flex-end;
+  border-bottom: 1px solid var(--border);
+}
+.pdv-img-thumb {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: center 30%;
+  opacity: 0; transition: opacity 0.5s ease, src 0s;
+  filter: grayscale(0.3);
+}
+.pdv-img-thumb.pdv-thumb-vis { opacity: 1; }
+.pdv-img-meta {
+  position: relative; z-index: 2;
+  padding: 10px 16px 12px;
+  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 100%);
+  width: 100%;
+}
+.pdv-img-chapter {
+  font-family: var(--ui); font-size: 7px; letter-spacing: .20em;
+  text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 2px;
+}
+.pdv-img-title {
+  font-family: var(--disp); font-size: 13px; font-weight: 400;
+  color: #fff; line-height: 1.2; margin-bottom: 2px;
+}
+.pdv-img-sub {
+  font-family: var(--ui); font-size: 8px; letter-spacing: .06em;
+  color: rgba(255,255,255,0.5);
+}
+
+/* ── Dispatch scroll position track ── */
+.pdv-track-wrap {
+  flex-shrink: 0; padding: 10px 16px 8px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.pdv-track {
+  flex: 1; height: 3px; background: var(--border);
+  border-radius: 2px; position: relative; overflow: visible;
+  display: flex; align-items: center; gap: 1px;
+}
+.pdv-track-pip {
+  flex: 1; height: 3px; border-radius: 1px;
+  background: var(--border); transition: background .15s, height .15s;
+}
+.pdv-track-pip.sig-hi  { background: var(--accent); }
+.pdv-track-pip.sig-mid { background: var(--ink-2); height: 2px; }
+.pdv-track-pip.sig-lo  { background: var(--border); }
+.pdv-track-pip.pdv-pip-active {
+  background: var(--ink) !important; height: 5px;
+  box-shadow: 0 0 4px var(--accent);
+}
+.pdv-track-label {
+  font-family: var(--ui); font-size: 7px; letter-spacing: .10em;
+  text-transform: uppercase; color: var(--ink-3); white-space: nowrap; flex-shrink: 0;
+}
+
 #panel-dispatch-view {
   display: none; flex-direction: column;
   width: 100%; min-height: 0; flex: 1;
@@ -3044,10 +3133,6 @@ body.dispatch-mode .panel-scroll-inner {
   overflow: hidden; padding-bottom: 0;
 }
 
-.pdv-header {
-  padding: 16px 20px 12px; border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
 .pdv-eyebrow {
   font-family: var(--ui); font-size: 7px; letter-spacing: .20em;
   text-transform: uppercase; color: var(--accent); margin-bottom: 4px;
@@ -3059,6 +3144,8 @@ body.dispatch-mode .panel-scroll-inner {
 .pdv-entries {
   flex: 1; overflow-y: auto; padding: 0;
 }
+.pdv-entries::-webkit-scrollbar { width: 1px; }
+.pdv-entries::-webkit-scrollbar-thumb { background: var(--border); border-radius: 0; }
 .pdv-entry {
   padding: 10px 20px; border-bottom: 1px solid var(--border);
   cursor: pointer; transition: background .12s;
@@ -4019,8 +4106,8 @@ body.dark-ask #ask-interstitial { opacity: 1; pointer-events: auto; }
   flex: 1; overflow-y: auto; padding: 28px 22px 16px;
   display: flex; flex-direction: column;
 }
-.panel-scroll-inner::-webkit-scrollbar { width: 3px; }
-.panel-scroll-inner::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.panel-scroll-inner::-webkit-scrollbar { width: 1px; }
+.panel-scroll-inner::-webkit-scrollbar-thumb { background: var(--border); border-radius: 0; }
 .pg-footer a { color: var(--accent); text-decoration: none; }
 .pg-footer a:hover { text-decoration: underline; }
 
@@ -4146,6 +4233,14 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
 
 <div id="cursor"></div>
 <div id="progress"></div>
+<div id="chapter-progress-bar" aria-hidden="true">
+  <div class="cpb-seg" id="cpb-1"></div>
+  <div class="cpb-seg" id="cpb-2"></div>
+  <div class="cpb-seg" id="cpb-3"></div>
+  <div class="cpb-seg" id="cpb-4"></div>
+  <div class="cpb-seg" id="cpb-5"></div>
+  <div class="cpb-seg" id="cpb-6"></div>
+</div>
 <div id="panel-overlay-backdrop"></div>
 
 <div id="image-layer">
@@ -4368,9 +4463,19 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
 
   <!-- ── DISPATCH VIEW — narrative node summary ── -->
   <div id="panel-dispatch-view">
-    <div class="pdv-header">
-      <div class="pdv-title">&#9671; Dispatch · Node Analytics</div>
-      <div class="pdv-sub" id="pdv-sub">Navigate to inspect any node.</div>
+    <!-- ── Image preview strip ── -->
+    <div class="pdv-img-strip">
+      <img class="pdv-img-thumb" id="pdv-img-thumb" src="" alt="">
+      <div class="pdv-img-meta">
+        <div class="pdv-img-chapter" id="pdv-img-chapter">Chapter 01</div>
+        <div class="pdv-img-title" id="pdv-img-title">&#9671; Dispatch · Node Analytics</div>
+        <div class="pdv-img-sub" id="pdv-img-sub">Navigate to inspect any node.</div>
+      </div>
+    </div>
+    <!-- ── Scroll position track ── -->
+    <div class="pdv-track-wrap">
+      <div class="pdv-track" id="pdv-track"></div>
+      <div class="pdv-track-label" id="pdv-track-label">node 1 of 0</div>
     </div>
     <div class="pdv-entries" id="pdv-entries"></div>
     <div class="pdv-footer" id="pdv-footer">
@@ -5158,6 +5263,7 @@ function setImage(n) {
   var pi = document.getElementById('panel-img-main');
   if (pi && imgs[n]) pi.src = imgs[n].src;
   if (window._liImgUpdate && imgs[n]) window._liImgUpdate(imgs[n].src);
+  if (window._pdvThumbUpdate && imgs[n]) window._pdvThumbUpdate(imgs[n].src);
 }
 imgs[0].classList.add('visible');
 
@@ -5352,6 +5458,29 @@ function goTo(n, opts) {
   var pct = Math.round((n / (navigable.length - 1)) * 100);
   document.getElementById('progress').style.width = pct + '%';
   document.getElementById('nw-nav-pip').style.height = pct + '%';
+
+  // ── Chapter progress bar ──
+  (function updateChapterProgress() {
+    if (typeof CHAPTERS === 'undefined') return;
+    CHAPTERS.forEach(function(chDef) {
+      var seg = document.getElementById('cpb-' + chDef.ch);
+      if (!seg) return;
+      var chNodes = navigable.filter(function(el) { return parseInt(el.dataset.ch) === chDef.ch; });
+      if (!chNodes.length) return;
+      var chFirst = navigable.indexOf(chNodes[0]);
+      var chLast  = navigable.indexOf(chNodes[chNodes.length - 1]);
+      if (n > chLast) {
+        seg.classList.add('cpb-done'); seg.classList.remove('cpb-active');
+      } else if (n >= chFirst) {
+        var chPct = Math.round(((n - chFirst) / Math.max(chLast - chFirst, 1)) * 100);
+        seg.style.setProperty('--cpb-pct', chPct + '%');
+        seg.classList.add('cpb-active'); seg.classList.remove('cpb-done');
+      } else {
+        seg.style.setProperty('--cpb-pct', '0%');
+        seg.classList.remove('cpb-done', 'cpb-active');
+      }
+    });
+  })();
   scheduleAutoFlow(n);
   var ch = parseInt(activeEl ? activeEl.dataset.ch : 1) || 1;
   var prevCh = parseInt((document.body.className.match(/\bch-(\d+)\b/) || [])[1] || '1');
@@ -6664,7 +6793,7 @@ img:11
 
 
 // ── Chapter metadata (mirrors link.html chapter system) ──
-const CHAPTERS = [
+var CHAPTERS = [
   { ch: 1, label: 'The Problem',    num: '01', title: 'Policy Documents',         sub: 'The format is the first failure' },
   { ch: 2, label: 'The Commitment', num: '02', title: 'The Original Commitment',  sub: 'If-then &middot; conditional safety &middot; ASL framework' },
   { ch: 3, label: 'The Reckoning',  num: '03', title: 'What Actually Happened',   sub: 'Honest assessment &middot; what worked &middot; what didn&rsquo;t' },
@@ -9109,11 +9238,17 @@ document.addEventListener('keydown', function(e) {
   var dspSum     = document.getElementById('dsp-summary');
   var dspMeta    = document.getElementById('dsp-meta');
   var dspType    = document.getElementById('dsp-type');
-  var pdvEntries = document.getElementById('pdv-entries');
+  var pdvEntries   = document.getElementById('pdv-entries');
+  var pdvFooter    = document.getElementById('pdv-footer');
+  var pdvThumb     = document.getElementById('pdv-img-thumb');
+  var pdvImgCh     = document.getElementById('pdv-img-chapter');
+  var pdvImgTitle  = document.getElementById('pdv-img-title');
+  var pdvImgSub    = document.getElementById('pdv-img-sub');
+  var pdvTrack     = document.getElementById('pdv-track');
+  var pdvTrackLbl  = document.getElementById('pdv-track-label');
   if (pdvEntries) {
     pdvEntries.addEventListener('wheel', function(e) { e.stopPropagation(); }, { passive: true });
   }
-  var pdvFooter  = document.getElementById('pdv-footer');
   if (!ghost) return;
 
   // ── State ──
@@ -9338,6 +9473,66 @@ document.addEventListener('keydown', function(e) {
   }
 
   // ── Panel dispatch view — performance index ──
+  function updatePdvThumb() {
+    var visImg = document.querySelector('#image-layer img.visible');
+    if (!pdvThumb) return;
+    if (visImg && visImg.src && visImg.src !== pdvThumb.src) {
+      pdvThumb.classList.remove('pdv-thumb-vis');
+      pdvThumb.src = visImg.src;
+      if (!visImg.complete) {
+        pdvThumb.onload = function() { pdvThumb.classList.add('pdv-thumb-vis'); };
+      } else {
+        pdvThumb.classList.add('pdv-thumb-vis');
+      }
+    } else if (visImg) {
+      pdvThumb.classList.add('pdv-thumb-vis');
+    }
+  }
+  window._pdvThumbUpdate = function(src) {
+    if (!pdvThumb || !active) return;
+    pdvThumb.classList.remove('pdv-thumb-vis');
+    pdvThumb.src = src;
+    pdvThumb.onload = function() { pdvThumb.classList.add('pdv-thumb-vis'); };
+    if (pdvThumb.complete) pdvThumb.classList.add('pdv-thumb-vis');
+  };
+
+  function buildPdvTrack() {
+    if (!pdvTrack || !nodeIndex.length) return;
+    var html = '';
+    nodeIndex.forEach(function(node, i) {
+      var sig = node.perf.signal >= 80 ? 'sig-hi' : node.perf.signal >= 50 ? 'sig-mid' : 'sig-lo';
+      html += '<div class="pdv-track-pip ' + sig + '" data-pdv-pip="' + i + '"></div>';
+    });
+    pdvTrack.innerHTML = html;
+    pdvTrack.querySelectorAll('.pdv-track-pip').forEach(function(pip) {
+      pip.addEventListener('click', function() {
+        var i = parseInt(pip.dataset.pdvPip);
+        var node = nodeIndex[i];
+        if (!node) return;
+        var navEls = Array.from(document.querySelectorAll('[data-idx]')).filter(function(el){
+          return !el.classList.contains('break') && !el.classList.contains('label') && !el.classList.contains('cta-sentence');
+        });
+        var navIdx = navEls.indexOf(node.el);
+        if (navIdx >= 0 && typeof goTo === 'function') goTo(navIdx);
+      });
+    });
+  }
+
+  function refreshPdvTrack() {
+    if (!pdvTrack) return;
+    var pips = pdvTrack.querySelectorAll('.pdv-track-pip');
+    var activeIdx = -1;
+    nodeIndex.forEach(function(node, i) {
+      if (node.el.classList.contains('active')) activeIdx = i;
+    });
+    pips.forEach(function(pip, i) {
+      pip.classList.toggle('pdv-pip-active', i === activeIdx);
+    });
+    if (pdvTrackLbl && activeIdx >= 0) {
+      pdvTrackLbl.textContent = 'node ' + (activeIdx + 1) + ' of ' + nodeIndex.length;
+    }
+  }
+
   function populatePDV() {
     if (!pdvEntries) return;
     var html = '';
@@ -9400,6 +9595,8 @@ document.addEventListener('keydown', function(e) {
       var span = pdvFooter.querySelector('span');
       if (span) span.textContent = nodeIndex.length + ' nodes · ' + (totalReads/1000).toFixed(1) + 'k total reads · ' + avgDwell + 's avg dwell';
     }
+    buildPdvTrack();
+    updatePdvThumb();
   }
 
   function refreshPDVActive() {
@@ -9411,6 +9608,7 @@ document.addEventListener('keydown', function(e) {
     // Scroll active entry into view within the right-rail panel
     var act = pdvEntries.querySelector('.pdv-active');
     if (act) act.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    refreshPdvTrack();
   }
 
   // ── Scroll tracking — while dispatch is on, nearest node drives the selection ──
@@ -9511,7 +9709,22 @@ document.addEventListener('keydown', function(e) {
   window._dispatchUpdate = function(navEl) {
     if (!active) return;
     var node = nodeIndex.find(function(n){ return n.el === navEl; });
-    if (node) showDispatchGhost(node);
+    if (node) {
+      showDispatchGhost(node);
+      // Update chapter label in image strip
+      if (pdvImgCh) {
+        var chNum = node.ch || 1;
+        pdvImgCh.textContent = 'Chapter ' + (chNum < 10 ? '0' : '') + chNum;
+      }
+      if (pdvImgTitle) pdvImgTitle.textContent = node.type === 'spec'
+        ? (node.specKey + ' · ' + node.specVal)
+        : (node.text.length > 60 ? node.text.substring(0,57) + '…' : node.text);
+      if (pdvImgSub) {
+        var p = node.perf;
+        pdvImgSub.textContent = p.reads + ' reads · ' + p.dwell + 's dwell · ' + p.signal + '% signal';
+      }
+      updatePdvThumb();
+    }
     refreshPDVActive();
   };
 
