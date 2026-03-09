@@ -133,8 +133,92 @@ header::after {
   60%       { opacity: 0.8; transform: scale(0.88); }
 }
 
-/* FAB — anchored to bottom-right corner of content stream (page-wrap) */
-#capture-fab {
+/* ─── DESKTOP MAGNETIC BECKON FIELD ──────────────────────────────────── */
+/* Replaces FAB on desktop — a quiet text invitation that leans toward you */
+#capture-beckon {
+  position: absolute;
+  top: 20px;
+  /* horizontally centered within page-wrap, respecting left gutter */
+  left: 50%; 
+  transform: translateX(-50%);
+  z-index: 8100;
+  width: min(460px, 72%);
+  will-change: transform;
+  pointer-events: auto;
+}
+
+.beckon-inner {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 18px 9px 14px;
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  cursor: text;
+  transition: border-color 0.22s ease, box-shadow 0.22s ease, background 0.18s ease;
+  box-shadow: 0 1px 6px var(--shadow);
+  user-select: none;
+}
+.beckon-inner:hover,
+#capture-beckon.magnetized .beckon-inner {
+  border-color: var(--rule-2);
+  box-shadow: 0 2px 16px var(--shadow);
+  background: var(--paper-3);
+}
+#capture-beckon.active .beckon-inner {
+  display: none;
+}
+
+.beckon-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--red);
+  animation: heartbeat 3.4s ease-in-out infinite;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+.beckon-prompt {
+  flex: 1;
+  font-family: var(--f-body);
+  font-size: 15px; font-style: italic; font-weight: 300;
+  color: var(--ink-5);
+  letter-spacing: 0.01em;
+  transition: color 0.22s ease;
+  /* fake blinking cursor */
+  position: relative;
+}
+.beckon-prompt::after {
+  content: '';
+  display: inline-block;
+  width: 1px; height: 0.9em;
+  background: var(--red);
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  opacity: 0;
+  animation: cursor-blink 1.8s ease-in-out infinite;
+}
+#capture-beckon.magnetized .beckon-prompt { color: var(--ink-4); }
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 0; }
+  45%, 55%  { opacity: 0.6; }
+}
+
+.beckon-hint {
+  font-family: var(--f-ui); font-size: 7px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--ink-5);
+  flex-shrink: 0; transition: color 0.22s;
+}
+#capture-beckon.magnetized .beckon-hint { color: var(--ink-4); }
+
+/* hide beckon on mobile, show FAB */
+@media (max-width: 720px) {
+  #capture-beckon { display: none; }
+}
+/* hide FAB on desktop, show beckon */
+@media (min-width: 721px) {
+  #capture-fab { display: none; }
+  /* push page-scroll top padding down to clear the beckon field */
+  #page-scroll { padding-top: 72px; }
+}
   position: absolute;
   bottom: 20px; right: 14px;
   z-index: 8100;
@@ -273,13 +357,70 @@ header::after {
   background: var(--paper-3);
   overflow: hidden;
   max-height: 0;
-  transition: max-height 0.32s cubic-bezier(0.25,1,0.5,1), opacity 0.24s ease;
+  transition: max-height 0.36s cubic-bezier(0.25,1,0.5,1), opacity 0.24s ease;
   opacity: 0;
 }
 #capture-organizer.open {
-  max-height: 260px;
+  max-height: 340px;
   opacity: 1;
 }
+
+/* ── mood beat ── */
+#co-mood-beat {
+  padding: 12px 18px 10px;
+  border-bottom: 1px solid var(--rule);
+  transition: opacity 0.22s ease, max-height 0.28s ease;
+}
+#co-mood-beat.resolved {
+  max-height: 0; padding: 0; overflow: hidden; opacity: 0; pointer-events: none;
+  border-bottom: none;
+}
+.co-mood-eyebrow {
+  font-family: var(--f-ui); font-size: 7px; letter-spacing: 0.20em;
+  text-transform: uppercase; color: var(--ink-5);
+  margin-bottom: 9px;
+}
+.co-mood-swatches {
+  display: flex; gap: 7px; align-items: center;
+}
+.co-mood-swatch {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer; flex-shrink: 0;
+  transition: transform 0.14s, box-shadow 0.14s, border-color 0.14s;
+  position: relative;
+}
+.co-mood-swatch:hover {
+  transform: scale(1.18);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+}
+.co-mood-swatch.selected {
+  border-color: var(--ink);
+  transform: scale(1.22);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.22);
+}
+/* checkmark on selected */
+.co-mood-swatch.selected::after {
+  content: '✓';
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: rgba(255,255,255,0.9);
+  font-family: var(--f-ui);
+}
+.co-mood-label {
+  font-family: var(--f-ui); font-size: 7px; letter-spacing: 0.10em;
+  text-transform: uppercase; color: var(--ink-4);
+  flex: 1; padding-left: 4px;
+  transition: color 0.18s;
+}
+.co-mood-confirm {
+  font-family: var(--f-ui); font-size: 7px; letter-spacing: 0.14em;
+  text-transform: uppercase; background: none;
+  border: 1px solid var(--rule-2); color: var(--ink-3);
+  padding: 5px 12px; border-radius: 2px; cursor: pointer;
+  transition: all 0.14s; flex-shrink: 0;
+}
+.co-mood-confirm:hover { border-color: var(--ink); color: var(--ink); }
 
 .co-head {
   padding: 10px 18px 6px;
@@ -1192,10 +1333,18 @@ body.mood-dark      { --paper:#1a1614; --paper-2:#221e1b; --paper-3:#2a2420; --i
       <span>⇅</span>
       <span id="fsb-label">Free scroll</span>
     </button>
-    <!-- FAB lives inside page-wrap so it doesn't overlap the right rail -->
+    <!-- FAB: mobile only -->
     <button id="capture-fab" onclick="toggleCapture()" aria-label="Quick capture" title="Quick capture (c)">
       <div class="fab-dot"></div>
     </button>
+    <!-- Magnetic beckon field: desktop only -->
+    <div id="capture-beckon" title="Write the thought as it arrives (c)">
+      <div class="beckon-inner" onclick="openCapture()">
+        <div class="beckon-dot"></div>
+        <span class="beckon-prompt">Write the thought as it arrives…</span>
+        <span class="beckon-hint">c</span>
+      </div>
+    </div>
     <div id="page-scroll">
       <div id="narrative-root">
         <div id="empty-page" style="padding:40px 0;opacity:0.35">
@@ -1300,6 +1449,19 @@ body.mood-dark      { --paper:#1a1614; --paper-2:#221e1b; --paper-3:#2a2420; --i
 
   <!-- Post-capture organizer — shown after submit -->
   <div id="capture-organizer">
+    <!-- mood beat — appears first, collapses after selection -->
+    <div id="co-mood-beat">
+      <div class="co-mood-eyebrow">How does it feel?</div>
+      <div class="co-mood-swatches">
+        <button class="co-mood-swatch" data-mood="none"      style="background:#c8baa6" title="Neutral"   onclick="selectCaptureMood('none',this)"></button>
+        <button class="co-mood-swatch" data-mood="poignant"  style="background:#c8902a" title="Poignant"  onclick="selectCaptureMood('poignant',this)"></button>
+        <button class="co-mood-swatch" data-mood="perplexed" style="background:#4a6a9e" title="Perplexed" onclick="selectCaptureMood('perplexed',this)"></button>
+        <button class="co-mood-swatch" data-mood="empowered" style="background:#3a6e3a" title="Empowered" onclick="selectCaptureMood('empowered',this)"></button>
+        <button class="co-mood-swatch" data-mood="dark"      style="background:#6a5a40" title="Dark"      onclick="selectCaptureMood('dark',this)"></button>
+        <span class="co-mood-label" id="co-mood-label">Neutral</span>
+        <button class="co-mood-confirm" id="co-mood-confirm" onclick="confirmCaptureMood()">Set →</button>
+      </div>
+    </div>
     <div class="co-head">
       <span>Captured ·</span>
       <span class="co-captured-preview" id="co-preview">—</span>
@@ -1682,24 +1844,25 @@ function updateToc() {
   renderSpine();
 }
 
-// ─── SOVEREIGN CAPTURE — FAB + ORGANIZER ───────────────────────────────────
+// ─── SOVEREIGN CAPTURE — FAB + BECKON + ORGANIZER ─────────────────────────
 const capturePanel  = document.getElementById('capture-panel');
 const ceTextarea    = document.getElementById('ce-textarea');
 const ceCharcount   = document.getElementById('ce-charcount');
 const captureFab    = document.getElementById('capture-fab');
+const captureBeckon = document.getElementById('capture-beckon');
 const capOrganizer  = document.getElementById('capture-organizer');
 
-// pending node index awaiting organization
 let _pendingNodeIdx = -1;
-let _selectedChIdx  = -1; // index into chapters array, or -1 = none selected
+let _selectedChIdx  = -1;
 
 function openCapture() {
   captureOpen = true;
   capturePanel.classList.add('open');
   captureFab.classList.add('active');
-  // hide organizer when reopening
+  if (captureBeckon) captureBeckon.classList.add('active');
   capOrganizer.classList.remove('open');
   _pendingNodeIdx = -1; _selectedChIdx = -1;
+  document.dispatchEvent(new Event('captureOpened'));
   setTimeout(() => ceTextarea.focus(), 60);
 }
 
@@ -1707,11 +1870,98 @@ function closeCapture() {
   captureOpen = false;
   capturePanel.classList.remove('open');
   captureFab.classList.remove('active');
+  if (captureBeckon) captureBeckon.classList.remove('active');
   capOrganizer.classList.remove('open');
   _pendingNodeIdx = -1; _selectedChIdx = -1;
 }
 
 function toggleCapture() { captureOpen ? closeCapture() : openCapture(); }
+
+// ─── MAGNETIC LERP ENGINE ──────────────────────────────────────────────────
+// Desktop only — beckon field drifts toward cursor presence
+;(function initMagneticBeckon() {
+  const beckon = document.getElementById('capture-beckon');
+  if (!beckon) return;
+
+  // resting position (offset from CSS top:20px, left:50%)
+  // we drive transform directly for silky perf
+  let restX = 0, restY = 0;
+  let curX  = 0, curY  = 0;   // current lerped position
+  let targX = 0, targY = 0;   // target (toward cursor gravity)
+  let rafId = null;
+  let isMobile = () => window.innerWidth <= 720;
+
+  // Gravity radius — cursor influence falls off beyond this distance
+  const RADIUS    = 280;  // px from beckon center
+  const MAX_DRIFT = 14;   // max px the field will move
+  const LERP_TO   = 0.10; // approach speed toward cursor
+  const LERP_BACK = 0.055; // retreat speed back to rest — slower = lingers
+
+  function getBeckonCenter() {
+    const r = beckon.getBoundingClientRect();
+    return { x: r.left + r.width  / 2,
+             y: r.top  + r.height / 2 };
+  }
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function tick() {
+    curX = lerp(curX, targX, LERP_TO);
+    curY = lerp(curY, targY, LERP_TO);
+    // snap to rest when nearly there
+    targX = lerp(targX, restX, LERP_BACK);
+    targY = lerp(targY, restY, LERP_BACK);
+    beckon.style.transform = `translateX(calc(-50% + ${curX.toFixed(2)}px)) translateY(${curY.toFixed(2)}px)`;
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function startLoop() { if (!rafId) rafId = requestAnimationFrame(tick); }
+  function stopLoop()  { if (rafId) { cancelAnimationFrame(rafId); rafId = null; } }
+
+  // Reset position cleanly
+  function resetPos() {
+    curX = 0; curY = 0; targX = 0; targY = 0;
+    beckon.style.transform = 'translateX(-50%) translateY(0)';
+    stopLoop();
+  }
+
+  document.addEventListener('mousemove', e => {
+    if (isMobile()) return;
+    if (captureOpen) return; // don't drift while panel is open
+
+    const c = getBeckonCenter();
+    const dx = e.clientX - c.x;
+    const dy = e.clientY - c.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    if (dist < RADIUS) {
+      // Magnetic influence — stronger closer in, quadratic falloff
+      const strength = Math.pow(1 - dist / RADIUS, 1.6);
+      targX = (dx / dist) * MAX_DRIFT * strength;
+      targY = (dy / dist) * MAX_DRIFT * strength * 0.6; // less vertical range
+      beckon.classList.add('magnetized');
+      startLoop();
+    } else {
+      // Outside radius — drift back to rest
+      targX = restX;
+      targY = restY;
+      beckon.classList.remove('magnetized');
+      // keep loop running until settled
+      startLoop();
+    }
+  });
+
+  // Settle immediately when capture opens
+  document.addEventListener('captureOpened', resetPos);
+
+  // Stop loop when tab hidden
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stopLoop(); else if (!captureOpen) startLoop();
+  });
+
+  // Initial loop
+  startLoop();
+})();
 
 function submitCapture() {
   const raw = ceTextarea.value.trim();
@@ -1734,10 +1984,24 @@ function submitCapture() {
   _showOrganizer(raw);
 }
 
+// pending capture mood (separate from global currentMood until confirmed)
+let _captureMood = null; // null = will inherit currentMood at confirm time
+
 function _showOrganizer(preview) {
   // Update preview text
   document.getElementById('co-preview').textContent =
     preview.length > 60 ? preview.slice(0,58)+'…' : preview;
+
+  // Reset mood beat — pre-select the current ambient mood
+  _captureMood = currentMood;
+  const moodBeat = document.getElementById('co-mood-beat');
+  moodBeat.classList.remove('resolved');
+  // Pre-select current mood swatch
+  document.querySelectorAll('.co-mood-swatch').forEach(s => {
+    s.classList.toggle('selected', s.dataset.mood === currentMood);
+  });
+  const mc = MOOD_COLORS[currentMood] || MOOD_COLORS.none;
+  document.getElementById('co-mood-label').textContent = mc.tag;
 
   // Build chapter buttons
   const chaptersEl = document.getElementById('co-chapters');
@@ -1757,7 +2021,6 @@ function _showOrganizer(preview) {
     btn.textContent = `Ch.${String(n.num||ci+1).padStart(2,'0')} · ${(n.title||'Untitled').slice(0,20)}`;
     btn.dataset.chNodeIdx = i;
     btn.addEventListener('click', function() {
-      // toggle selection
       if (_selectedChIdx === i) {
         _selectedChIdx = -1;
         document.querySelectorAll('.co-ch-btn').forEach(b => b.classList.remove('selected'));
@@ -1773,8 +2036,34 @@ function _showOrganizer(preview) {
   capOrganizer.classList.add('open');
 }
 
+function selectCaptureMood(mood, btn) {
+  _captureMood = mood;
+  document.querySelectorAll('.co-mood-swatch').forEach(s => s.classList.toggle('selected', s === btn));
+  const mc = MOOD_COLORS[mood] || MOOD_COLORS.none;
+  document.getElementById('co-mood-label').textContent = mc.tag;
+}
+
+function confirmCaptureMood() {
+  // Stamp mood onto the pending node
+  if (_pendingNodeIdx >= 0 && _captureMood !== null) {
+    nodes[_pendingNodeIdx].mood = _captureMood;
+    // Also shift global mood to match — the capture is the ambient signal
+    setMood(_captureMood);
+  }
+  // Collapse the mood beat, reveal the organize options
+  document.getElementById('co-mood-beat').classList.add('resolved');
+  renderSpine();
+}
+
+function _stampPendingMood() {
+  if (_pendingNodeIdx >= 0 && _captureMood !== null) {
+    nodes[_pendingNodeIdx].mood = _captureMood;
+  }
+}
+
 function organizeInjectIntoChapter(chNodeIdx) {
   if (_pendingNodeIdx < 0) return;
+  _stampPendingMood();
   // Find the end of that chapter (before next chapter or end of nodes)
   const pending = nodes.splice(_pendingNodeIdx, 1)[0];
   _pendingNodeIdx = -1;
@@ -1805,12 +2094,11 @@ function organizeInjectIntoChapter(chNodeIdx) {
 
 function organizeNewChapter() {
   if (_pendingNodeIdx < 0) return;
-  // Convert pending draft node into a new chapter + body
+  _stampPendingMood();
   const pending = nodes[_pendingNodeIdx];
   const chNum = nodes.filter(n => n.type==='chapter').length + 1;
 
-  // Replace draft with chapter header, then body
-  const chNode  = { id: nid(), type:'chapter', num:String(chNum).padStart(2,'0'), title:'New Chapter', mood: currentMood };
+  const chNode  = { id: nid(), type:'chapter', num:String(chNum).padStart(2,'0'), title:'New Chapter', mood: _captureMood || currentMood };
   const bodyNode = { id: pending.id, type:'body', content: pending.content, mood: pending.mood };
 
   nodes.splice(_pendingNodeIdx, 1, chNode, bodyNode);
@@ -1819,19 +2107,17 @@ function organizeNewChapter() {
   closeCapture();
   renderCanvas(); renderPage(); syncRaw(); renderSpine();
 
-  // Open compose widget on the chapter title
   setTimeout(() => {
     const chEl = document.querySelector(`.ch-block[data-ch="${chNode.num}"]`);
     if (chEl) chEl.scrollIntoView({ behavior:'smooth', block:'start' });
-    // Let user rename the chapter
     const cardInputs = document.querySelectorAll('.n-ch-title');
     if (cardInputs.length) cardInputs[cardInputs.length - 2]?.focus();
   }, 120);
 }
 
 function organizeAppend() {
-  // Node is already appended — just close and show syntax picker
   if (_pendingNodeIdx < 0) { closeCapture(); return; }
+  _stampPendingMood();
   const idx = _pendingNodeIdx;
   closeCapture();
 
@@ -1847,7 +2133,7 @@ function organizeAppend() {
 }
 
 function organizeDone() {
-  // If a chapter is selected, inject there; else append
+  _stampPendingMood();
   if (_selectedChIdx >= 0) {
     organizeInjectIntoChapter(_selectedChIdx);
   } else {
