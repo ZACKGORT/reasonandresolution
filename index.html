@@ -296,7 +296,11 @@ body.li-theme .ip-cta:not(:disabled):hover { background: #0a66c2; border-color: 
   background: var(--accent-l);
 }
 body.li-theme #h-compose-btn.compose-active { border-color: #0a66c2; color: #0a66c2; background: rgba(10,102,194,0.08); }
-header:hover #h-compose-btn.compose-active { border-color: #d97757; color: #d97757; background: rgba(217,119,87,0.08); }
+/* default dark header: on hover accent stays orange */
+body:not(.doc-theme):not(.li-theme) header:hover #h-compose-btn.compose-active { border-color: #d97757; color: #d97757; background: rgba(217,119,87,0.08); }
+/* doc-theme: white header — active state anchors to ink, not accent */
+body.doc-theme #h-compose-btn.compose-active,
+body.doc-theme header:hover #h-compose-btn.compose-active { border-color: #111110; color: #111110; background: rgba(17,17,16,0.06); border-radius: 0; }
 
 /* ── STUDIO BUTTON ── */
 #h-studio-btn {
@@ -310,7 +314,11 @@ header:hover #h-compose-btn.compose-active { border-color: #d97757; color: #d977
   background: var(--accent-l);
 }
 body.li-theme #h-studio-btn.studio-active { border-color: #0a66c2; color: #0a66c2; background: rgba(10,102,194,0.08); }
-header:hover #h-studio-btn.studio-active { border-color: #d97757; color: #d97757; background: rgba(217,119,87,0.08); }
+/* default dark header: on hover accent stays orange */
+body:not(.doc-theme):not(.li-theme) header:hover #h-studio-btn.studio-active { border-color: #d97757; color: #d97757; background: rgba(217,119,87,0.08); }
+/* doc-theme: white header — active state anchors to ink, not accent */
+body.doc-theme #h-studio-btn.studio-active,
+body.doc-theme header:hover #h-studio-btn.studio-active { border-color: #111110; color: #111110; background: rgba(17,17,16,0.06); border-radius: 0; }
 
 /* ══════════════════════════════════════════════════════
    STUDIO OVERLAY — full-viewport compose environment
@@ -345,15 +353,15 @@ header:hover #h-studio-btn.studio-active { border-color: #d97757; color: #d97757
 }
 #studio-chrome-left { display: flex; align-items: center; gap: 10px; }
 #studio-chrome-wordmark {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--disp);
   font-weight: 400; font-size: 15px; letter-spacing: 0.08em;
   text-transform: uppercase; color: rgba(240,236,228,0.9);
 }
-#studio-chrome-wordmark em { color: #d97757; font-style: normal; }
+#studio-chrome-wordmark em { color: var(--accent); font-style: normal; }
 #studio-chrome-badge {
   font-size: 7px; letter-spacing: 0.2em; text-transform: uppercase;
   color: rgba(217,119,87,0.7);
-  background: rgba(217,119,87,0.08);
+  background: var(--accent-l);
   border: 1px solid rgba(217,119,87,0.18);
   padding: 2px 8px; border-radius: 20px;
 }
@@ -364,22 +372,22 @@ header:hover #h-studio-btn.studio-active { border-color: #d97757; color: #d97757
 }
 #studio-chrome-right { display: flex; align-items: center; gap: 6px; }
 .studio-hbtn {
-  font-family: 'DM Mono', monospace;
+  font-family: var(--ui);
   font-size: 7px; letter-spacing: 0.12em; text-transform: uppercase;
-  background: none; border: 1px solid rgba(255,255,255,0.1);
+  background: none; border: 1px solid var(--border);
   color: rgba(240,236,228,0.45); padding: 5px 11px;
   cursor: pointer; border-radius: 4px; transition: all .15s;
 }
-.studio-hbtn:hover { border-color: #d97757; color: #d97757; background: rgba(217,119,87,0.08); }
+.studio-hbtn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-l); }
 .studio-hbtn.studio-inject {
-  background: rgba(217,119,87,0.12); border-color: rgba(217,119,87,0.35);
-  color: #d97757;
+  background: var(--accent-l); border-color: rgba(217,119,87,0.35);
+  color: var(--accent);
 }
-.studio-hbtn.studio-inject:hover { background: rgba(217,119,87,0.22); border-color: #d97757; }
+.studio-hbtn.studio-inject:hover { background: rgba(217,119,87,0.22); border-color: var(--accent); }
 .studio-hbtn.studio-inject:disabled { opacity: 0.3; pointer-events: none; }
 #studio-close-btn {
   font-size: 13px; padding: 5px 9px;
-  border-color: rgba(255,255,255,0.08);
+  border-color: var(--border);
   color: rgba(240,236,228,0.3);
 }
 #studio-close-btn:hover { border-color: rgba(255,255,255,0.2); color: rgba(240,236,228,0.7); }
@@ -1395,6 +1403,16 @@ header:hover #header-overlay { opacity: 1; pointer-events: auto; transform: tran
   position: fixed; bottom: 0; left: 0; height: 2px;
   background: var(--accent); z-index: 200; width: 0%;
   transition: width 0.25s ease;
+}
+
+/* ── Mobile: flip progress to sit just below the header ── */
+@media (max-width: 760px) {
+  #progress {
+    bottom: auto;
+    top: 52px;
+    height: 2px;
+    z-index: 8998; /* below chapter-widget (8888 is fine, just above header overlay 8999) */
+  }
 }
 
 /* ── Chapter progress bar — top of viewport ── */
