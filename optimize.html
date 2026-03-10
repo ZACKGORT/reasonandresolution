@@ -7,7 +7,10 @@
 <title>reasonably · A Thinking Notebook</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+</noscript>
 <style>
 /* ─── TOKENS ──────────────────────────────────────────────────────────── */
 :root {
@@ -48,18 +51,36 @@ body {
   overscroll-behavior: none;
 }
 
+/* Fix 7: Touch-action manipulation prevents 300ms tap delay on iOS */
+button, a, input, textarea, select, .nav-btn, .n-card, .co-mood-swatch, #capture-fab, .toc-ch-name, .toc-node-item, .sentence {
+  touch-action: manipulation;
+}
+
 body::before {
   content: '';
   position: fixed; inset: 0; z-index: 9999; pointer-events: none;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") 0/220px;
   opacity: 0.032;
   mix-blend-mode: multiply;
+  /* Fix 9: Will-change containment prevents repaint thrashing */
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }
 body::after {
   content: '';
   position: fixed; top: 0; left: 0; bottom: 0; width: 18px;
   background: linear-gradient(to right, rgba(60,42,20,0.08), transparent);
   z-index: 9998; pointer-events: none;
+}
+
+/* Fix 11: Content-visibility for off-screen performance */
+.ch-block {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 150px;
+}
+#toc-inner {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
 }
 
 /* ─── LAYOUT ──────────────────────────────────────────────────────────── */
@@ -308,6 +329,8 @@ header::after {
   overflow: hidden;
   transition: transform 0.34s cubic-bezier(0.25,1,0.5,1), opacity 0.24s ease;
   opacity: 0; pointer-events: none;
+  /* Fix 3: iPhone Notch / Home bar safe area padding */
+  padding-bottom: env(safe-area-inset-bottom);
 }
 #capture-panel.open {
   transform: translateX(-50%) translateY(0);
@@ -995,7 +1018,8 @@ header::after {
 #float-scroll-btn:hover { border-color: var(--red); color: var(--red); background: var(--red-l); }
 #float-scroll-btn.active { border-color: var(--gold); color: var(--gold); background: var(--gold-l); }
 
-body.free-scroll #page-scroll { overflow-y: auto; }
+/* Fix 13: Overscroll behavior missing in free-scroll mode */
+body.free-scroll #page-scroll { overflow-y: auto; overscroll-behavior: contain; }
 body.free-scroll .sentence { opacity: 0.65 !important; transform: none !important; transition: opacity 0.2s; }
 body.free-scroll .sentence:hover { opacity: 1 !important; }
 body.free-scroll .sentence.active { opacity: 1 !important; }
@@ -1152,11 +1176,63 @@ body.mood-dark      { --paper:#1a1614; --paper-2:#221e1b; --paper-3:#2a2420; --i
 .sw-dismiss { grid-column: 1/-1; background: none; border: 1px solid var(--rule); border-radius: 2px; padding: 5px; cursor: pointer; text-align: center; font-family: var(--f-ui); font-size: 7px; letter-spacing: 0.10em; text-transform: uppercase; color: var(--ink-4); transition: all 0.12s; margin-top: 2px; }
 .sw-dismiss:hover { border-color: var(--ink-4); color: var(--ink-2); }
 
+/* ─── MOBILE FIXES ──────────────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  #app { grid-template-columns: 1fr !important; grid-template-rows: 52px 1fr auto; }
+  #toc { display: none !important; }
+  #page-wrap { grid-column: 1; grid-row: 2; }
+  /* Fix 6: Compose panel min height and safe area */
+  #compose-panel { grid-column: 1; grid-row: 3; border-left: none; border-top: 1px solid var(--rule); padding-bottom: env(safe-area-inset-bottom); }
+  #node-canvas { max-height: min(35vh, 220px); }
+  
+  /* Fix 5 & 8: Page scroll padding compensation */
+  #page-scroll { padding: 72px 24px calc(140px + env(safe-area-inset-bottom)) 48px; }
+  #page-wrap::after { left: 32px; }
+  
+  .h-center { display: none; }
+  #key-help { display: none; }
+  
+  /* Fix 1: Page nav positioning and safe area clearance */
+  #page-nav { 
+    right: calc(12px + env(safe-area-inset-right)); 
+    top: auto; 
+    bottom: calc(80px + env(safe-area-inset-bottom)); 
+    transform: none; 
+    border: 1px solid var(--rule-2);
+    border-radius: 4px;
+    box-shadow: 0 4px 16px var(--shadow);
+    flex-direction: column;
+  }
+  .nav-btn:last-child { border-bottom: none; }
+  
+  /* Fix 2: Capture FAB positioning */
+  #capture-fab { 
+    bottom: calc(20px + env(safe-area-inset-bottom)); 
+    right: calc(12px + env(safe-area-inset-right)); 
+  }
+  #rail-sizer { display: none; }
+}
+
 @media (max-width: 600px) {
-  .folio-widget { width: auto !important; left: 8px !important; right: 8px !important; top: auto !important; transform: translateY(14px) scale(1) !important; border-radius: 4px 4px 0 0; }
+  /* Fix 4 & 15: Widget bottom sheets safe area padding and z-index overlap */
+  .folio-widget { 
+    width: auto !important; 
+    left: 8px !important; 
+    right: 8px !important; 
+    top: auto !important; 
+    transform: translateY(14px) scale(1) !important; 
+    border-radius: 6px 6px 0 0; 
+    padding-bottom: env(safe-area-inset-bottom);
+    z-index: 100000 !important; 
+  }
   .folio-widget.w-open { transform: translateY(0) scale(1) !important; }
-  #syntax-widget  { bottom: var(--sw-bottom, 16px) !important; }
-  #compose-widget { bottom: var(--cw-bottom, 16px) !important; }
+  #syntax-widget  { bottom: 0 !important; }
+  #compose-widget { bottom: 0 !important; }
+}
+
+@media (max-width: 1100px) and (min-width: 721px) {
+  #app { grid-template-columns: 0px 1fr var(--rail-w) !important; }
+  #toc { overflow: hidden; pointer-events: none; }
 }
 
 /* ─── ONBOARDING ──────────────────────────────────────────────────────── */
@@ -1167,7 +1243,16 @@ body.mood-dark      { --paper:#1a1614; --paper-2:#221e1b; --paper-3:#2a2420; --i
   opacity: 1; transition: opacity 0.4s ease;
 }
 #onboard.gone { opacity: 0; pointer-events: none; }
-#onboard-inner { max-width: 460px; width: calc(100% - 48px); display: flex; flex-direction: column; gap: 0; }
+/* Fix 14: Onboarding safe area insets */
+#onboard-inner { 
+  max-width: 460px; 
+  width: calc(100% - 48px); 
+  display: flex; 
+  flex-direction: column; 
+  gap: 0; 
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
 .ob-cover { border: 1px solid var(--rule-2); border-bottom: none; padding: 36px 32px 28px; background: var(--paper-2); position: relative; }
 .ob-cover::before { content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 10px; background: linear-gradient(to right, var(--rule-2), transparent); }
 .ob-wordmark { font-family: var(--f-disp); font-size: 42px; font-weight: 300; font-style: italic; color: var(--ink); line-height: 1; margin-bottom: 4px; }
@@ -1287,30 +1372,10 @@ body.mood-dark      { --paper:#1a1614; --paper-2:#221e1b; --paper-3:#2a2420; --i
 .sentence { cursor: default; }
 .sentence[data-editable]:not(.break) { cursor: text; }
 
-/* ─── MOBILE ──────────────────────────────────────────────────────────── */
-@media (max-width: 720px) {
-  #app { grid-template-columns: 1fr !important; grid-template-rows: 52px 1fr auto; }
-  #toc { display: none !important; }
-  #page-wrap { grid-column: 1; grid-row: 2; }
-  #compose-panel { grid-column: 1; grid-row: 3; border-left: none; border-top: 1px solid var(--rule); }
-  #node-canvas { max-height: 80px; }
-  #page-scroll { padding: 36px 24px 120px 36px; }
-  #page-wrap::after { left: 28px; }
-  .h-center { display: none; }
-  #key-help { display: none; }
-  #page-nav { right: 0; }
-  #capture-fab { bottom: 18px; right: 12px; }
-  #rail-sizer { display: none; }
-}
-@media (max-width: 1100px) and (min-width: 721px) {
-  #app { grid-template-columns: 0px 1fr var(--rail-w) !important; }
-  #toc { overflow: hidden; pointer-events: none; }
-}
 </style>
 </head>
 <body>
 
-<!-- ─── ONBOARDING ──────────────────────────────────────────────────── -->
 <div id="onboard" role="dialog" aria-modal="true">
   <div id="onboard-inner">
     <div class="ob-cover">
@@ -1340,7 +1405,6 @@ body.mood-dark      { --paper:#1a1614; --paper-2:#221e1b; --paper-3:#2a2420; --i
   </div>
 </div>
 
-<!-- ─── APP ─────────────────────────────────────────────────────────── -->
 <div id="app">
 
   <header id="main-header">
@@ -1486,7 +1550,6 @@ body.mood-dark      { --paper:#1a1614; --paper-2:#221e1b; --paper-3:#2a2420; --i
 
 </div>
 
-<!-- ─── CAPTURE PANEL ────────────────────────────────────────────────── -->
 <div id="capture-panel" role="dialog" aria-label="Quick capture">
   <div class="cp-header">
     <span class="cp-label">
@@ -1543,7 +1606,6 @@ body.mood-dark      { --paper:#1a1614; --paper-2:#221e1b; --paper-3:#2a2420; --i
   </div>
 </div>
 
-<!-- ─── COMPOSE WIDGET ────────────────────────────────────────────────── -->
 <div id="compose-widget" class="folio-widget" role="dialog" aria-label="Compose">
   <div class="w-head">
     <span class="w-title">
@@ -1583,7 +1645,6 @@ body.mood-dark      { --paper:#1a1614; --paper-2:#221e1b; --paper-3:#2a2420; --i
   </div>
 </div>
 
-<!-- ─── SYNTAX WIDGET ─────────────────────────────────────────────────── -->
 <div id="syntax-widget" class="folio-widget" role="dialog" aria-label="Apply syntax">
   <div class="w-head">
     <span class="w-title">Retype sentence</span>
@@ -2634,7 +2695,8 @@ window.addEventListener('touchmove',  e => { touchMoved = true; }, {passive:true
 window.addEventListener('touchend', e => {
   if (!touchMoved || swipeLock) return;
   const dy = touchY0 - e.changedTouches[0].clientY;
-  if (Math.abs(dy) > 48) { swipeLock=true; dy>0?next():prev(); setTimeout(()=>{swipeLock=false;},120); }
+  /* Fix 12: Swipe threshold is 40px */
+  if (Math.abs(dy) > 40) { swipeLock=true; dy>0?next():prev(); setTimeout(()=>{swipeLock=false;},120); }
 }, {passive:true});
 
 document.getElementById('nav-next').addEventListener('click', next);
@@ -2798,7 +2860,7 @@ document.addEventListener('keydown', function obKey() {
     // ── Ch 11 · What This Is, Finally ───────────────────────────────────────
     { id:nid(), type:'chapter', num:'11', title:'What This Is, Finally', mood:'poignant' },
     { id:nid(), type:'poster',  content:'The sentence is not content. It is structure.', mood:'poignant' },
-    { id:nid(), type:'body',    content:'The central argument — stated in the onboarding, enforced by every design decision — is that writing is not filing. Classification should follow creation. Mood is not metadata, it is meaning. The form should emerge from the content, not precede it. How a tool *feels* to use shapes what thoughts it is capable of producing.', mood:'poignant' },
+    { id:nid(), type:'body',    content:'The central argument — stated in the onboarding, enforced by every design decision — is that writing is not filing. Classification should follow creation. Mood is not meaning. The form should emerge from the content, not precede it. How a tool *feels* to use shapes what thoughts it is capable of producing.', mood:'poignant' },
     { id:nid(), type:'spec',    key:'No backend',     val:'You own what you write. Always.' },
     { id:nid(), type:'spec',    key:'No framework',   val:'The tool is as simple as the thought.' },
     { id:nid(), type:'spec',    key:'Seed content',   val:'The tool demonstrates itself by existing.' },
