@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>The Anthropic Institute · Mar 11, 2026</title>
+<title>The Anthropic Institute · Mar 11, 2026 - Zack Gort</title>
 
 <link rel="icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAAAIAA8AQAAFgAAAIlQTkcNChoKAAAADUlIRFIAAAAQAAAAEAgGAAAAH/P/YQAAAQNJREFUeJxjYKAQMMIYlzJ5/qNL6k3/wkhIjgWmQCFQh4GBgYGBjZmRgZ2dmeHnz78Mlxgu/2dgYGCAySGDSwxX/utN/8LIyMDAwPBynQncBlEuFgZGDQGG/zc+MLz+9gev88WDzjCyMDAwMHz/ilD44sdfBv6zbxg+/vzL8OsvhssxAMSALwgDvjMwMHxk+E1QI6oBX/E7lSQXkArg0binVJGwh5GAS/d9RhQDGBgYGDZnyhJliO/0x3B9jOiSq+Ik8RoStug5ih4MAxgYGBgWBoliNSR+3WsM9VgNYGBgYJjhLohiSMbO9zjV4gT91rz/+6158XqJBZ/k969/SbaUZAAABDJTRS3nencAAAAASUVORK5CYII=" sizes="any">
 <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPGRlZnM+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9ImhnIiBjeD0iNDIlIiBjeT0iMzUlIiByPSI2NSUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZjBiODQwIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iNTUlIiBzdG9wLWNvbG9yPSIjZDQ4ODBhIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzhiNGEwMCIvPgogICAgPC9yYWRpYWxHcmFkaWVudD4KICAgIDxmaWx0ZXIgaWQ9InNvZnQiPgogICAgICA8ZmVHYXVzc2lhbkJsdXIgaW49IlNvdXJjZUFscGhhIiBzdGREZXZpYXRpb249IjAuNSIgcmVzdWx0PSJibHVyIi8+CiAgICAgIDxmZUNvbXBvc2l0ZSBpbj0iU291cmNlR3JhcGhpYyIgaW4yPSJibHVyIiBvcGVyYXRvcj0ib3ZlciIvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgogIDwhLS0gSGVhcnQgcGF0aCBjZW50ZXJlZCBpbiAzMngzMiwgc2xpZ2h0bHkgb3JnYW5pYyBwcm9wb3J0aW9ucyAtLT4KICA8cGF0aCBmaWx0ZXI9InVybCgjc29mdCkiCiAgICBkPSJNMTYgMjcuMiBDMTYgMjcuMiA0IDE5LjIgNCAxMS42IEM0IDcuNCA3LjIgNCAxMS4yIDQgQzEzLjQgNCAxNS4yIDUuMiAxNiA2LjIgQzE2LjggNS4yIDE4LjYgNCAyMC44IDQgQzI0LjggNCAyOCA3LjQgMjggMTEuNiBDMjggMTkuMiAxNiAyNy4yIDE2IDI3LjJaIgogICAgZmlsbD0idXJsKCNoZykiCiAgLz4KPC9zdmc+" type="image/svg+xml">
@@ -1964,46 +1964,39 @@ body.raw-theme.split-view #stream-col { max-width: 52vw; }
   position: fixed;
   top: calc(52px + 14px); right: calc(320px + 18px); left: auto;
   bottom: auto; transform: none;
-  z-index: 2000; width: auto; height: 28px;
-  border-radius: 14px; padding: 0 13px 0 10px;
+  z-index: 2000; width: auto; height: 26px;
+  border-radius: 3px; padding: 0 11px;
   background: var(--hud-bg, rgba(20,20,19,0.90));
   border: 1px solid var(--hud-border, rgba(250,249,245,0.10));
   backdrop-filter: blur(20px);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.22), 0 1px 3px rgba(0,0,0,0.14);
-  font-family: var(--ui); font-size: 7.5px;
-  letter-spacing: 0.16em; text-transform: uppercase;
-  color: var(--hud-ink-3, rgba(255,255,255,0.28));
-  display: flex; align-items: center; justify-content: center; gap: 5px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.22), 0 1px 3px rgba(0,0,0,0.12);
+  font-family: var(--ui); font-size: 7px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--hud-ink-2, rgba(255,255,255,0.45));
+  display: flex; align-items: center; justify-content: center;
   transition: color .18s, border-color .18s, background .18s, opacity .18s, box-shadow .18s;
   line-height: 1; text-align: center; cursor: none;
   touch-action: manipulation; -webkit-tap-highlight-color: transparent;
   pointer-events: auto !important;
-  opacity: 0.72;
+  opacity: 0.68;
+  white-space: nowrap;
 }
-#scroll-toggle::before {
-  content: '↕';
-  font-size: 9px;
-  color: var(--hud-ink-2, rgba(255,255,255,0.38));
-  opacity: 0.7;
-  line-height: 1;
-  margin-top: -0.5px;
-}
+#scroll-toggle::before { display: none; }
 #scroll-toggle:hover {
-  color: var(--hud-ink, rgba(255,255,255,0.82));
-  border-color: var(--hud-border, rgba(255,255,255,0.20));
+  color: var(--hud-ink, rgba(255,255,255,0.85));
+  border-color: var(--hud-accent, var(--accent));
   background: var(--hud-bg, rgba(20,20,19,0.97));
-  box-shadow: 0 4px 20px rgba(0,0,0,0.30), 0 1px 4px rgba(0,0,0,0.18);
+  box-shadow: 0 3px 16px rgba(0,0,0,0.28), 0 1px 4px rgba(0,0,0,0.16);
   opacity: 1;
 }
-#scroll-toggle:hover::before { opacity: 1; color: var(--hud-accent, var(--accent)); }
 /* Tooltip on hover */
 #scroll-toggle::after {
   content: attr(title);
   position: absolute; top: calc(100% + 7px); right: 0; left: auto; transform: none;
   background: var(--hud-bg, rgba(10,10,9,0.94));
   border: 1px solid var(--hud-border, var(--border));
-  color: var(--hud-ink-2, var(--ink-2)); font-size: 7.5px; letter-spacing: 0.10em;
-  white-space: nowrap; padding: 5px 10px; border-radius: 6px;
+  color: var(--hud-ink-2, var(--ink-2)); font-size: 7px; letter-spacing: 0.10em;
+  white-space: nowrap; padding: 5px 10px; border-radius: 4px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.24);
   opacity: 0; pointer-events: none;
   transition: opacity 0.18s ease 0.5s;
@@ -2012,12 +2005,12 @@ body.raw-theme.split-view #stream-col { max-width: 52vw; }
 #scroll-toggle.on {
   background: var(--accent);
   border-color: var(--accent);
-  color: rgba(0,0,0,0.75);
-  box-shadow: 0 0 0 1px var(--accent), 0 2px 16px rgba(217,119,87,0.35), 0 0 32px rgba(217,119,87,0.18);
+  color: rgba(0,0,0,0.72);
+  box-shadow: 0 0 0 1px var(--accent), 0 2px 14px rgba(217,119,87,0.32), 0 0 28px rgba(217,119,87,0.14);
   opacity: 1 !important; pointer-events: auto !important;
   z-index: 2000;
 }
-#scroll-toggle.on::before { content: '◆'; font-size: 6px; opacity: 0.65; color: rgba(0,0,0,0.6); }
+#scroll-toggle.on::before { display: none; }
 #scroll-toggle.on::after { content: 'Right-click or click to exit focus mode'; }
 
 body.scroll-free { overflow-y: auto !important; overflow-x: hidden !important; }
@@ -3981,6 +3974,30 @@ body.doc-theme.dark-moment #nav-widget, body.doc-theme.dark-moment #chapter-widg
 body.doc-theme.dark-moment #panel, body.doc-theme.dark-moment #progress,
 body.doc-theme.dark-moment #built-by, body.doc-theme.dark-moment #wolfie-credit,
 body.doc-theme.dark-moment #scroll-toggle { opacity: 1 !important; pointer-events: auto !important; }
+
+/* scroll-toggle on light themes — default state */
+body.doc-theme #scroll-toggle,
+body.li-theme #scroll-toggle {
+  background: rgba(17,17,16,0.06);
+  border-color: rgba(17,17,16,0.18);
+  color: #777770;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+body.doc-theme #scroll-toggle:hover,
+body.li-theme #scroll-toggle:hover {
+  background: rgba(17,17,16,0.10);
+  border-color: rgba(17,17,16,0.35);
+  color: #111110;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+/* active state — dark fill needs light text */
+body.doc-theme #scroll-toggle.on,
+body.li-theme #scroll-toggle.on {
+  background: #111110;
+  border-color: #111110;
+  color: rgba(250,249,247,0.82);
+  box-shadow: 0 0 0 1px #111110, 0 2px 12px rgba(17,17,16,0.22);
+}
 body.doc-theme.dark-moment .sentence,
 body.doc-theme.dark-moment .ch-header { opacity: 1 !important; }
 body.doc-theme.dark-moment #dark-escape-hint { color: rgba(17,17,16,0.35) !important; }
@@ -4676,7 +4693,7 @@ body.li-theme .pg-preview-wrap:hover { border-color: #0a66c2; }
 
 
   <main id="stream-col">
-    <button id="scroll-toggle" aria-label="Toggle step scroll" title="Right-click to step through sentences">focus</button>
+    <button id="scroll-toggle" aria-label="Toggle step scroll" title="Right-click to step through sentences">free-scroll</button>
     <div id="narrative-root"></div>
   </main>
 
@@ -5920,7 +5937,7 @@ requestAnimationFrame(function() {
   function enterFree() {
     stepMode = false;
     btn.classList.remove('on');
-    btn.textContent = ''; // label via ::before pseudo
+    btn.textContent = 'free-scroll';
     syncHud(false);
     document.body.classList.add('scroll-free');
     document.documentElement.style.overflow = 'auto';
@@ -5942,6 +5959,7 @@ requestAnimationFrame(function() {
     });
     stepMode = true;
     btn.classList.add('on');
+    btn.textContent = 'step-scroll';
     syncHud(true);
     document.body.classList.remove('scroll-free');
     document.documentElement.style.overflow = '';
@@ -6001,7 +6019,8 @@ requestAnimationFrame(function() {
     document.body.classList.add('scroll-free');
     document.documentElement.style.overflow = 'auto';
     document.body.style.overflow = 'auto';
-    document.getElementById('scroll-toggle').classList.add('on');
+    var st = document.getElementById('scroll-toggle');
+    st.classList.add('on'); st.textContent = 'step-scroll';
     all.forEach(function(el) { el.classList.add('revealed'); el.classList.remove('active'); });
     document.querySelectorAll('.ch-header').forEach(function(g) { g.classList.add('revealed'); });
     lastNearest = -1;
@@ -6016,7 +6035,8 @@ requestAnimationFrame(function() {
     document.body.classList.remove('scroll-free');
     document.documentElement.style.overflow = '';
     document.body.style.overflow = '';
-    document.getElementById('scroll-toggle').classList.remove('on');
+    var st = document.getElementById('scroll-toggle');
+    st.classList.remove('on'); st.textContent = 'free-scroll';
     var n = getNearestNode();
     goTo(n, { noScroll: true });
   }
