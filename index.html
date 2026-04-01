@@ -1,0 +1,1952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Claude Code · System Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:#05030a;transition:background 0.6s;}
+body.light{background:#f0ece4;}
+canvas{display:block;width:100vw;height:100vh;position:relative;z-index:1;}
+#bg-mesh{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+#brand{position:fixed;top:24px;left:28px;z-index:100;pointer-events:none;font-family:'DM Mono',monospace;}
+#brand-name{font-size:10px;letter-spacing:0.26em;text-transform:uppercase;color:rgba(74,138,220,0.75);transition:color 0.5s;}
+#brand-sub{font-size:7.5px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(74,138,220,0.28);margin-top:5px;transition:color 0.5s;}
+body.light #brand-name{color:rgba(30,60,140,0.85);}
+body.light #brand-sub{color:rgba(30,60,140,0.45);}
+
+#era-label{position:fixed;top:24px;right:28px;z-index:100;font-family:'DM Mono',monospace;text-align:right;pointer-events:none;}
+#era-year{font-size:22px;letter-spacing:-0.02em;color:rgba(74,138,220,0.14);transition:color 0.5s,opacity 0.4s;font-family:'Crimson Text',serif;font-style:italic;}
+#era-name{font-size:7px;letter-spacing:0.20em;text-transform:uppercase;color:rgba(74,138,220,0.20);margin-top:4px;}
+body.light #era-year{color:rgba(30,60,140,0.18);}
+body.light #era-name{color:rgba(30,60,140,0.28);}
+
+/* ── LEFT RAIL ─────────────────────────────────────── */
+#left-rail{
+  position:fixed;left:0;top:0;bottom:0;
+  width:28px;
+  z-index:100;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;
+  padding:60px 0 80px;
+  pointer-events:none; /* rail itself transparent, pips get pointer-events back */
+}
+
+/* faint track line */
+#left-rail::before{
+  content:'';
+  position:absolute;
+  left:50%;transform:translateX(-50%);
+  top:60px;bottom:80px;
+  width:1px;
+  background:rgba(74,138,220,0.08);
+}
+body.light #left-rail::before{background:rgba(30,60,140,0.12);}
+
+.rail-pip{
+  position:relative;
+  width:28px;height:10px;
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  pointer-events:all;
+}
+.rail-pip-dot{
+  width:4px;height:4px;border-radius:50%;
+  background:rgba(74,138,220,0.18);
+  transition:all 0.22s;
+  flex-shrink:0;
+}
+.rail-pip:hover .rail-pip-dot{
+  background:rgba(74,138,220,0.70);
+  transform:scale(1.4);
+}
+.rail-pip.active .rail-pip-dot{
+  width:6px;height:6px;
+  box-shadow:0 0 7px rgba(74,138,220,0.65);
+}
+
+/* Ghost overlay — slides in from left on hover */
+.rail-ghost{
+  position:absolute;
+  left:calc(100% + 6px);
+  top:50%;transform:translateY(-50%) translateX(-6px);
+  pointer-events:none;
+  opacity:0;
+  transition:opacity 0.18s, transform 0.18s;
+  white-space:nowrap;
+  display:flex;align-items:baseline;gap:6px;
+}
+.rail-pip:hover .rail-ghost,
+.rail-pip.active .rail-ghost{
+  opacity:1;
+  transform:translateY(-50%) translateX(0);
+}
+.rail-ghost-name{
+  font-family:'Crimson Text',serif;
+  font-size:12px;
+  color:rgba(232,240,255,0.80);
+  line-height:1;
+}
+.rail-ghost-tier{
+  font-family:'DM Mono',monospace;
+  font-size:6px;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  color:rgba(74,138,220,0.38);
+}
+body.light .rail-ghost-name{color:rgba(10,14,30,0.82);}
+body.light .rail-ghost-tier{color:rgba(30,60,140,0.45);}
+
+/* active pip color is set inline via data-color */
+.rail-pip.active .rail-pip-dot{
+  background:var(--pip-color,#4a8adc);
+}
+
+/* ── HUD ──────────────────────────────────────────── */
+#hud{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:1px;background:rgba(74,138,220,0.04);border:1px solid rgba(74,138,220,0.14);border-radius:4px;overflow:hidden;z-index:100;}
+.hud-btn{background:none;border:none;cursor:pointer;color:rgba(74,138,220,0.38);font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;padding:9px 18px;border-right:1px solid rgba(74,138,220,0.10);transition:color 0.2s,background 0.2s;}
+.hud-btn:last-child{border-right:none;}
+.hud-btn:hover{color:rgba(74,138,220,0.90);background:rgba(74,138,220,0.06);}
+.hud-btn.active{color:#4a8adc;background:rgba(74,138,220,0.10);}
+.hud-btn:disabled{color:rgba(74,138,220,0.12)!important;cursor:default;background:none!important;}
+.hud-sep{width:1px;background:rgba(74,138,220,0.15);align-self:stretch;flex-shrink:0;margin:6px 0;}
+.hud-zoom{padding:9px 14px;font-size:13px;letter-spacing:0;color:rgba(74,138,220,0.32);}
+.hud-zoom:hover{color:rgba(74,138,220,0.90);}
+/* nav arrows in hud */
+.hud-nav{padding:9px 13px;font-size:13px;letter-spacing:0;}
+body.light #hud{background:rgba(30,60,140,0.03);border-color:rgba(30,60,140,0.16);}
+body.light .hud-btn{color:rgba(30,60,140,0.50);border-right-color:rgba(30,60,140,0.10);}
+body.light .hud-btn:hover{color:rgba(30,60,140,0.90);}
+body.light .hud-btn.active{color:rgba(30,60,140,0.95);}
+body.light .hud-btn:disabled{color:rgba(30,60,140,0.15)!important;}
+
+/* counter chip between nav arrows */
+#hud-counter{
+  font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.14em;
+  color:rgba(74,138,220,0.30);padding:0 6px;white-space:nowrap;user-select:none;
+}
+body.light #hud-counter{color:rgba(30,60,140,0.40);}
+
+/* FOCUS HINT */
+#hint{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(74,138,220,0.16);z-index:100;pointer-events:none;white-space:nowrap;transition:opacity 1.2s;}
+#focus-hint{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(74,138,220,0.22);z-index:100;pointer-events:none;white-space:nowrap;opacity:0;transition:opacity 0.4s;}
+#focus-hint.vis{opacity:1;}
+
+/* THEME TOGGLE */
+#theme-toggle{position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:100;background:none;border:1px solid rgba(74,138,220,0.18);color:rgba(74,138,220,0.35);font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.20em;text-transform:uppercase;padding:6px 14px;border-radius:2px;cursor:pointer;transition:all 0.2s;}
+#theme-toggle:hover{color:rgba(74,138,220,0.80);border-color:rgba(74,138,220,0.50);}
+
+/* TOOLTIP */
+#tooltip{position:fixed;top:0;left:0;pointer-events:none;opacity:0;transition:opacity 0.15s;z-index:200;}
+#tooltip.vis{opacity:1;}
+#tt-inner{background:rgba(5,3,10,0.97);border:1px solid rgba(74,138,220,0.16);border-radius:4px;padding:12px 16px;backdrop-filter:blur(12px);max-width:260px;}
+.tt-ring{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(74,138,220,0.38);margin-bottom:4px;}
+.tt-title{font-family:'Crimson Text',serif;font-size:16px;color:#e8f0ff;line-height:1.2;margin-bottom:4px;}
+.tt-role{font-family:'DM Mono',monospace;font-size:6.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(74,138,220,0.38);}
+.tt-type{font-family:'DM Mono',monospace;font-size:6px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(80,216,176,0.40);margin-top:4px;}
+body.light #tt-inner{background:rgba(240,244,255,0.99);border-color:rgba(30,60,140,0.16);}
+body.light .tt-title{color:rgba(10,14,30,0.92);}
+
+/* DETAIL PANEL */
+#ghost{position:fixed;z-index:700;width:380px;pointer-events:none;opacity:0;right:28px;top:50%;transform:translateY(-50%) translateX(18px) scale(0.97);transition:opacity 0.30s,transform 0.30s;}
+#ghost.on{opacity:1;transform:translateY(-50%) translateX(0) scale(1);pointer-events:all;}
+.gc{background:rgba(5,3,10,0.98);border:1px solid rgba(74,138,220,0.12);border-radius:6px;box-shadow:0 18px 62px rgba(0,0,0,0.9);backdrop-filter:blur(26px);overflow:hidden;}
+.gcscroll{max-height:82vh;overflow-y:auto;scrollbar-width:none;}
+.gcscroll::-webkit-scrollbar{display:none;}
+.gcbar{height:2px;width:100%;background:linear-gradient(90deg,#4a8adc,#50d8b0);}
+.gcbar.saturn{background:linear-gradient(90deg,#9a70cc,#4a8adc,#50d8b0);}
+.gchead{padding:16px 16px 12px;border-bottom:1px solid rgba(74,138,220,0.08);}
+.gcring{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(74,138,220,0.38);margin-bottom:6px;}
+.gctitle{font-family:'Crimson Text',serif;font-size:20px;letter-spacing:-0.02em;color:#e8f0ff;line-height:1.2;margin-bottom:5px;}
+.gcrole{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(74,138,220,0.32);}
+.gc-saturn-badge{display:none;font-family:'DM Mono',monospace;font-size:6.5px;letter-spacing:0.18em;text-transform:uppercase;padding:3px 8px;border-radius:9px;border:1px solid rgba(154,112,204,0.45);color:rgba(154,112,204,0.75);margin-top:6px;width:fit-content;}
+.gc-saturn-badge.vis{display:inline-block;}
+.gc-gallery{padding:10px 16px 4px;display:none;}
+.gc-gallery.vis{display:block;}
+.gc-gallery-label{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(74,138,220,0.25);margin-bottom:8px;}
+.gc-gallery-strip{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;}
+.gc-gallery-strip::-webkit-scrollbar{display:none;}
+.gc-img-frame{width:90px;height:65px;flex-shrink:0;border-radius:3px;overflow:hidden;background:rgba(74,138,220,0.06);border:1px solid rgba(74,138,220,0.12);}
+.gc-img-frame img{width:100%;height:100%;object-fit:cover;opacity:0.82;transition:opacity 0.2s;display:block;}
+.gc-img-frame img:hover{opacity:1;}
+.gc-planets{padding:8px 16px 10px;border-bottom:1px solid rgba(74,138,220,0.06);}
+.gc-planets-label{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(74,138,220,0.25);margin-bottom:7px;}
+.gc-planet-pills{display:flex;flex-wrap:wrap;gap:5px;}
+.gc-planet-pill{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.12em;text-transform:uppercase;padding:3px 9px;border-radius:10px;border:1px solid rgba(74,138,220,0.22);color:rgba(74,138,220,0.50);cursor:pointer;transition:all 0.15s;}
+.gc-planet-pill:hover{background:rgba(74,138,220,0.10);color:rgba(74,138,220,0.90);border-color:rgba(74,138,220,0.50);}
+.gc-planet-pill.saturn{border-color:rgba(154,112,204,0.35);color:rgba(154,112,204,0.60);}
+.gc-planet-pill.saturn:hover{background:rgba(154,112,204,0.10);color:rgba(154,112,204,0.90);}
+.gcbody{padding:14px 16px;font-family:'Crimson Text',serif;font-size:15px;line-height:1.72;color:rgba(232,240,255,0.65);border-bottom:1px solid rgba(74,138,220,0.06);}
+.gc-sentences{padding:10px 16px 14px;border-bottom:1px solid rgba(74,138,220,0.06);}
+.gc-sent-label{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(74,138,220,0.25);margin-bottom:8px;}
+.gc-sent{font-family:'Crimson Text',serif;font-size:13.5px;line-height:1.62;color:rgba(232,240,255,0.42);cursor:pointer;padding:4px 6px;border-radius:2px;transition:all 0.15s;margin-bottom:3px;display:block;}
+.gc-sent:hover{color:rgba(232,240,255,0.88);background:rgba(74,138,220,0.06);}
+.gc-sent.active{color:#e8f0ff;background:rgba(74,138,220,0.10);border-left:2px solid rgba(74,138,220,0.55);padding-left:10px;}
+.gc-specs{padding:8px 16px 10px;border-bottom:1px solid rgba(74,138,220,0.06);}
+.gc-spec-row{display:flex;gap:8px;margin-bottom:4px;font-family:'DM Mono',monospace;font-size:6.5px;}
+.gc-spec-key{color:rgba(74,138,220,0.38);letter-spacing:0.12em;text-transform:uppercase;flex-shrink:0;min-width:90px;}
+.gc-spec-val{color:rgba(232,240,255,0.50);letter-spacing:0.08em;}
+.gcft{display:flex;align-items:center;justify-content:space-between;padding:10px 16px 12px;}
+.gctag{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.16em;text-transform:uppercase;padding:3px 9px;border-radius:9px;border:1px solid rgba(74,138,220,0.35);color:rgba(74,138,220,0.55);}
+.gc-nav{display:flex;gap:4px;align-items:center;}
+.gcnav-btn{background:none;border:1px solid rgba(74,138,220,0.16);color:rgba(74,138,220,0.35);width:26px;height:22px;border-radius:2px;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;transition:all 0.2s;pointer-events:all;}
+.gcnav-btn:hover:not(:disabled){color:#e8f0ff;border-color:rgba(74,138,220,0.55);}
+.gcnav-btn:disabled{opacity:0.2;cursor:default;}
+.gcclose{background:none;border:1px solid rgba(74,138,220,0.16);color:rgba(74,138,220,0.35);width:22px;height:22px;border-radius:2px;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;transition:all 0.2s;pointer-events:all;}
+.gcclose:hover{color:#e8f0ff;border-color:rgba(74,138,220,0.55);}
+
+body.light .gc{background:rgba(240,244,255,0.99);border-color:rgba(30,60,140,0.14);}
+body.light .gctitle{color:rgba(10,14,30,0.92);}
+body.light .gcring{color:rgba(30,60,140,0.55);}
+body.light .gcrole{color:rgba(30,60,140,0.55);}
+body.light .gcbody{color:rgba(10,14,30,0.70);}
+body.light .gc-sent{color:rgba(10,14,30,0.45);}
+body.light .gc-sent:hover{color:rgba(10,14,30,0.90);background:rgba(30,60,140,0.05);}
+body.light .gc-sent.active{color:rgba(10,14,30,0.95);background:rgba(30,60,140,0.07);border-left-color:rgba(30,60,140,0.50);}
+body.light .gc-spec-key{color:rgba(30,60,140,0.45);}
+body.light .gc-spec-val{color:rgba(10,14,30,0.55);}
+body.light .gcclose{border-color:rgba(30,60,140,0.22);color:rgba(30,60,140,0.55);}
+body.light .gctag{color:rgba(30,60,140,0.55);border-color:rgba(30,60,140,0.35);}
+
+/* MOBILE SHEET */
+#msheet{display:none;position:fixed;bottom:0;left:0;right:0;z-index:700;background:rgba(5,3,10,0.98);border-top:1px solid rgba(74,138,220,0.10);border-radius:14px 14px 0 0;max-height:72vh;overflow-y:auto;scrollbar-width:none;transform:translateY(100%);transition:transform 0.38s cubic-bezier(0.22,1,0.36,1);backdrop-filter:blur(28px);}
+#msheet::-webkit-scrollbar{display:none;}
+#msheet.on{transform:translateY(0);}
+.mshandle{width:36px;height:4px;background:rgba(74,138,220,0.20);border-radius:2px;margin:12px auto 6px;}
+.mshead{padding:16px 20px 12px;border-bottom:1px solid rgba(74,138,220,0.08);}
+.msring{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(74,138,220,0.40);margin-bottom:6px;}
+.mstitle{font-family:'Crimson Text',serif;font-size:22px;letter-spacing:-0.02em;color:#e8f0ff;line-height:1.15;margin-bottom:4px;}
+.msbody{padding:13px 20px 14px;font-family:'Crimson Text',serif;font-size:15px;line-height:1.72;color:rgba(232,240,255,0.60);}
+.msft{display:flex;align-items:center;justify-content:space-between;padding:10px 20px 14px;}
+.ms-nav{display:flex;gap:4px;}
+.ms-navbtn{background:none;border:1px solid rgba(74,138,220,0.16);color:rgba(74,138,220,0.35);width:26px;height:22px;border-radius:2px;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;}
+.ms-navbtn:hover:not(:disabled){color:#e8f0ff;border-color:rgba(74,138,220,0.55);}
+.ms-navbtn:disabled{opacity:0.2;}
+.msclose{background:none;border:1px solid rgba(74,138,220,0.16);color:rgba(74,138,220,0.35);width:22px;height:22px;border-radius:2px;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;}
+@media(max-width:768px){#ghost{display:none;}#msheet{display:block;}}
+
+/* TOC */
+#toc{position:fixed;inset:0;z-index:900;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.25s;background:rgba(5,3,10,0.82);backdrop-filter:blur(22px);}
+#toc.vis{opacity:1;pointer-events:all;}
+body.light #toc{background:rgba(240,236,228,0.88);}
+#toc-inner{width:min(580px,90vw);max-height:88vh;overflow-y:auto;scrollbar-width:none;background:rgba(8,10,22,0.97);border:1px solid rgba(74,138,220,0.16);border-radius:8px;box-shadow:0 24px 80px rgba(0,0,0,0.9);}
+#toc-inner::-webkit-scrollbar{display:none;}
+body.light #toc-inner{background:rgba(240,244,255,0.99);}
+#toc-header{padding:20px 24px 16px;border-bottom:1px solid rgba(74,138,220,0.10);display:flex;align-items:center;justify-content:space-between;}
+#toc-title{font-family:'Crimson Text',serif;font-size:18px;color:rgba(232,240,255,0.85);font-style:italic;}
+#toc-sub{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.20em;text-transform:uppercase;color:rgba(74,138,220,0.35);margin-top:4px;}
+#toc-close{background:none;border:1px solid rgba(74,138,220,0.18);color:rgba(74,138,220,0.40);width:26px;height:26px;border-radius:2px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;transition:all 0.2s;}
+#toc-close:hover{color:#e8f0ff;border-color:rgba(74,138,220,0.60);}
+body.light #toc-title{color:rgba(10,14,30,0.88);}
+#toc-list{padding:10px 0 16px;}
+.toc-section{padding:6px 24px 2px;font-family:'DM Mono',monospace;font-size:6.5px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(74,138,220,0.28);border-top:1px solid rgba(74,138,220,0.06);margin-top:4px;}
+.toc-section:first-child{border-top:none;margin-top:0;}
+.toc-row{display:flex;align-items:baseline;gap:14px;padding:8px 24px;cursor:pointer;border-left:2px solid transparent;transition:all 0.15s;}
+.toc-row:hover{background:rgba(74,138,220,0.05);border-left-color:rgba(74,138,220,0.40);}
+.toc-domain{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.14em;color:rgba(74,138,220,0.32);flex-shrink:0;width:18px;text-align:center;}
+.toc-name{font-family:'Crimson Text',serif;font-size:16px;color:rgba(232,240,255,0.65);line-height:1.2;transition:color 0.15s;}
+.toc-row:hover .toc-name{color:rgba(232,240,255,0.95);}
+.toc-role{font-family:'DM Mono',monospace;font-size:6px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(74,138,220,0.22);margin-left:auto;flex-shrink:0;}
+.toc-row:hover .toc-role{color:rgba(74,138,220,0.55);}
+body.light .toc-name{color:rgba(10,14,30,0.60);}
+body.light .toc-row:hover .toc-name{color:rgba(10,14,30,0.92);}
+#toc-hint{text-align:center;padding:0 24px 16px;font-family:'DM Mono',monospace;font-size:6.5px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(74,138,220,0.14);}
+</style>
+</head>
+<body>
+<canvas id="bg-mesh"></canvas>
+<canvas id="canvas"></canvas>
+
+<div id="brand">
+  <div id="brand-name">Claude Code</div>
+  <div id="brand-sub">System Architecture · Orbital Map</div>
+</div>
+<button id="theme-toggle">Light</button>
+
+<div id="era-label">
+  <div id="era-year">Orchestration</div>
+  <div id="era-name">Core Pipeline</div>
+</div>
+
+<!-- LEFT RAIL -->
+<div id="left-rail"></div>
+
+<!-- HUD — prev/next arrows added -->
+<div id="hud">
+  <button class="hud-btn hud-nav" id="hud-prev" disabled>&#8592;</button>
+  <div class="hud-sep"></div>
+  <button class="hud-btn active" data-view="spiral">SPIRAL</button>
+  <button class="hud-btn" data-view="arc">RING</button>
+  <div class="hud-sep"></div>
+  <button class="hud-btn hud-zoom" id="hud-zoom-out">−</button>
+  <button class="hud-btn hud-zoom" id="hud-zoom-in">+</button>
+  <div class="hud-sep"></div>
+  <span id="hud-counter">——</span>
+  <div class="hud-sep"></div>
+  <button class="hud-btn hud-nav" id="hud-next" disabled>&#8594;</button>
+</div>
+
+<div id="hint">drag to orbit · scroll to zoom · click any node · ← → navigate · space pauses</div>
+<div id="focus-hint">click planet to explore · esc to step back · right-click for index</div>
+
+<div id="tooltip"><div id="tt-inner">
+  <div class="tt-ring" id="tt-ring"></div>
+  <div class="tt-title" id="tt-title"></div>
+  <div class="tt-role" id="tt-role"></div>
+  <div class="tt-type" id="tt-type"></div>
+</div></div>
+
+<div id="ghost"><div class="gc">
+  <div class="gcbar" id="gc-bar"></div>
+  <div class="gcscroll">
+    <div class="gchead">
+      <div class="gcring" id="gc-ring"></div>
+      <div class="gctitle" id="gc-title"></div>
+      <div class="gcrole" id="gc-role"></div>
+      <div class="gc-saturn-badge" id="gc-saturn-badge">⬡ Case Study</div>
+    </div>
+    <div class="gc-gallery" id="gc-gallery">
+      <div class="gc-gallery-label">Gallery</div>
+      <div class="gc-gallery-strip" id="gc-gallery-strip"></div>
+    </div>
+    <div class="gc-planets" id="gc-planets">
+      <div class="gc-planets-label">Planets</div>
+      <div class="gc-planet-pills" id="gc-planet-pills"></div>
+    </div>
+    <div class="gcbody" id="gc-body"></div>
+    <div class="gc-specs" id="gc-specs"></div>
+    <div class="gc-sentences" id="gc-sentences">
+      <div class="gc-sent-label">From the narrative</div>
+      <div id="gc-sent-list"></div>
+    </div>
+    <div class="gcft">
+      <span class="gctag" id="gc-tag"></span>
+      <div class="gc-nav">
+        <button class="gcnav-btn" id="gc-prev">&#8592;</button>
+        <button class="gcnav-btn" id="gc-next">&#8594;</button>
+        <button class="gcclose" id="gc-close">✕</button>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<div id="msheet">
+  <div class="mshandle"></div>
+  <div class="mshead">
+    <div class="msring" id="ms-ring"></div>
+    <div class="mstitle" id="ms-title"></div>
+  </div>
+  <div class="msbody" id="ms-body"></div>
+  <div class="msft">
+    <div class="ms-nav">
+      <button class="ms-navbtn" id="ms-prev">&#8592;</button>
+      <button class="ms-navbtn" id="ms-next">&#8594;</button>
+    </div>
+    <button class="msclose" onclick="exitPlanetFocus()">✕</button>
+  </div>
+</div>
+
+<div id="toc">
+  <div id="toc-inner">
+    <div id="toc-header">
+      <div>
+        <div id="toc-title">Claude Code · System Architecture</div>
+        <div id="toc-sub">Orbital Map · Node Index</div>
+      </div>
+      <button id="toc-close" onclick="closeTOC()">✕</button>
+    </div>
+    <div id="toc-list"></div>
+    <div id="toc-hint">right-click or long-press to return here</div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════
+// DOMAIN CONFIG
+// ═══════════════════════════════════════════════════════
+const DOMAIN_CFG = {
+  orchestration: { color:0x4a8adc, hex:'#4a8adc', label:'Orchestration' },
+  context:       { color:0x9a70cc, hex:'#9a70cc', label:'Context' },
+  friction:      { color:0x50d8b0, hex:'#50d8b0', label:'Intentional Friction' },
+  autonomous:    { color:0xd8b050, hex:'#d8b050', label:'Autonomous States' },
+  statement:     { color:0xf0f4ff, hex:'#f0f4ff', label:'Core' },
+};
+const dcfg = d => DOMAIN_CFG[d] || DOMAIN_CFG.orchestration;
+
+const RING_NAMES = {
+  center: 'Core · The Query Engine',
+  inner:  'Ring 1 · Orchestration',
+  mid:    'Ring 2 · Context',
+  outer:  'Ring 3 · Intentional Friction',
+  outer2: 'Ring 4 · Autonomous States',
+};
+
+// ═══════════════════════════════════════════════════════
+// NODES
+// ═══════════════════════════════════════════════════════
+const NODES = [
+  {
+    id:'queryengine', tier:'center', angle:0, domain:'statement',
+    title:'The Query Engine', role:'Where Prompts Become Plans',
+    body:'Every prompt enters through the Query Engine. It classifies intent, assembles context, and applies an assertiveness counterweight before any action is taken. This is the core pipeline that transforms natural language into executable operations.',
+    sentences:[
+      'Every prompt enters through the Query Engine.',
+      'It classifies intent, assembles context, and applies an assertiveness counterweight.',
+      'This is the core pipeline that transforms natural language into executable operations.',
+    ],
+    specs:[
+      {k:'Input', v:'Natural language prompt'},
+      {k:'Output', v:'Executable action plan'},
+      {k:'Latency target', v:'Sub-second classification'},
+    ],
+    planets:[
+      { id:'qe-intent', label:'Intent Classification', role:'First Stage', rings:false,
+        body:'The YOLO Classifier rapidly determines what kind of request this is: a file operation, a code change, a question, or something else. It routes the prompt to appropriate handlers before any heavy processing begins.',
+        moons:[{label:'File ops'},{label:'Code change'},{label:'Query'}] },
+      { id:'qe-context', label:'Context Assembly', role:'Building the Window', rings:false,
+        body:'Gathers relevant files, conversation history, and system state into the prompt window. Uses a sophisticated file walker to identify what context matters for this specific request.',
+        moons:[{label:'File walker'},{label:'History'},{label:'System state'}] },
+      { id:'qe-assert', label:'Assertiveness Counterweight', role:'Safety Through Resistance', rings:false,
+        body:'A deliberate friction mechanism that reduces model assertiveness when certainty is low. When Claude asks clarifying questions, this component is working.',
+        moons:[{label:'Confidence'},{label:'Ambiguity check'}] },
+    ],
+  },
+  {
+    id:'intent-filter', tier:'inner', angle:0.04, domain:'orchestration',
+    title:'Intent Classification', role:'First Classification Stage',
+    body:'The YOLO Classifier rapidly determines what kind of request this is: a file operation, a code change, a question, or something else. It routes the prompt to appropriate handlers before any heavy processing begins.',
+    sentences:[
+      'Intent Classification is the first gate every prompt passes through.',
+      'The YOLO Classifier makes this determination in a single forward pass.',
+      'File operation, code change, question — each requires a different handler.',
+    ],
+    specs:[
+      {k:'Classification types', v:'File, Code, Query, System'},
+      {k:'ML model', v:'YOLO-inspired architecture'},
+      {k:'Latency', v:'~50ms classification'},
+    ],
+    planets:[
+      { id:'if-yolo', label:'YOLO Classifier', role:'ML Routing', rings:false,
+        body:'Named after the computer vision architecture. Makes permission and routing decisions in a single forward pass — no multi-stage deliberation for common request types.',
+        moons:[{label:'Single pass'},{label:'Permissions'},{label:'ML model'}] },
+      { id:'if-router', label:'Tool Router', role:'Dispatching to Capabilities', rings:false,
+        body:'Maps classified intents to available tools: file operations, shell commands, web requests. Handles tool selection, argument validation, and result formatting.',
+        moons:[{label:'File'},{label:'Shell'},{label:'Web'},{label:'Edit'}] },
+      { id:'if-cache', label:'Prompt Cache', role:'Response Optimization', rings:false,
+        body:'Caches frequently-used prompt patterns and responses. Reduces latency for common operations — ~40% hit rate in typical sessions.',
+        moons:[{label:'Cache key'},{label:'~40% hit rate'}] },
+    ],
+  },
+  {
+    id:'context-assembly', tier:'inner', angle:0.20, domain:'orchestration',
+    title:'Context Assembly', role:'Building the Prompt Window',
+    body:'Gathers relevant files, conversation history, and system state into the prompt window. Uses a sophisticated file walker to identify what context matters for this specific request.',
+    sentences:[
+      'Context Assembly is responsible for gathering everything relevant to your request.',
+      'The 200K token context window sounds large until you face a mid-sized codebase.',
+      'Selection is survival.',
+    ],
+    specs:[
+      {k:'Context window', v:'200K tokens'},
+      {k:'Selection strategy', v:'Semantic + heuristic'},
+      {k:'Compression', v:'Progressive for older turns'},
+    ],
+    planets:[
+      { id:'ca-memory', label:'MEMORY.md Indexing', role:'Persistent Knowledge', rings:true,
+        body:'A structured markdown file that serves as long-term memory for a project. Contains architectural decisions, patterns to follow, and key information that persists across sessions.',
+        images:[
+          {src:'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=300&h=200&fit=crop',caption:'Memory structure'},
+          {src:'https://images.unsplash.com/photo-1516110833967-0b5716ca1387?w=300&h=200&fit=crop',caption:'Persistence layer'},
+        ],
+        moons:[{label:'MEMORY.md'},{label:'Semantic search'},{label:'Persistence'}] },
+      { id:'ca-walker', label:'Intelligent File Walker', role:'Context Discovery', rings:false,
+        body:'Traverses project directories to find files relevant to the current task using heuristics, .gitignore patterns, and semantic matching.',
+        moons:[{label:'.gitignore'},{label:'Heuristics'},{label:'Semantic match'}] },
+      { id:'ca-window', label:'Context Window Mgmt', role:'Fitting the Infinite', rings:false,
+        body:'Dynamically manages what fits in the 200K token context window. Older turns, less relevant files, and low-priority context get compressed or dropped.',
+        moons:[{label:'200K tokens'},{label:'Compression'},{label:'Priority queue'}] },
+    ],
+  },
+  {
+    id:'assertiveness', tier:'inner', angle:0.36, domain:'orchestration',
+    title:'Assertiveness Counterweight', role:'Safety Through Resistance',
+    body:'A deliberate friction mechanism that reduces model confidence when appropriate. When Claude asks clarifying questions instead of guessing, this component is working as designed.',
+    sentences:[
+      'Overconfident AI is dangerous AI.',
+      'The counterweight ensures Claude asks rather than assumes when certainty is low.',
+      'Clear, specific prompts bypass it smoothly. Ambiguous prompts trigger questions — that is the system working.',
+    ],
+    specs:[
+      {k:'Trigger', v:'Low confidence classification'},
+      {k:'Response', v:'Clarification request'},
+    ],
+    planets:[
+      { id:'as-ambig', label:'Ambiguity Detection', role:'When Claude Asks Questions', rings:false,
+        body:'Identifies when a request could be interpreted multiple ways. Instead of guessing, Claude asks clarifying questions. This is a feature, not a failure.',
+        moons:[{label:'Confidence threshold'},{label:'Clarify request'}] },
+      { id:'as-confirm', label:'Confirmation Dialogs', role:'Destructive Action Guard', rings:false,
+        body:'Before executing potentially destructive operations, Claude presents a confirmation with details of what will happen. The last line of defense.',
+        moons:[{label:'Allow'},{label:'Deny'},{label:'Always allow'}] },
+    ],
+  },
+  {
+    id:'yolo-classifier', tier:'inner', angle:0.52, domain:'orchestration',
+    title:'YOLO Classifier', role:'ML-Based Permission Decisions',
+    body:'Named after the computer vision architecture, the YOLO Classifier makes permission and routing decisions in a single forward pass. Speed and flexibility versus explainability.',
+    sentences:[
+      'You Only Look Once.',
+      'Traditional permission systems require explicit rules for every case.',
+      'ML-based classification generalizes — handling novel requests that match no explicit rule.',
+    ],
+    specs:[
+      {k:'Model type', v:'Single-pass classifier'},
+      {k:'Training', v:'Permission decision examples'},
+    ],
+    planets:[
+      { id:'yc-route', label:'Routing Layer', role:'Post-Classification Dispatch', rings:false,
+        body:'After classification, the routing layer maps the intent to the appropriate tool chain. High-confidence classifications route immediately; low-confidence triggers the assertiveness counterweight.',
+        moons:[{label:'Confidence gate'},{label:'Fallback path'}] },
+    ],
+  },
+  {
+    id:'tool-router', tier:'inner', angle:0.68, domain:'orchestration',
+    title:'Tool Router', role:'Dispatching to Capabilities',
+    body:'Maps classified intents to available tools: file operations, shell commands, web requests, and more. Handles tool selection, argument validation, and result formatting.',
+    sentences:[
+      'Every tool in Claude\'s arsenal connects through this router.',
+      'Understanding it helps you understand what operations are available and how they\'re invoked.',
+    ],
+    specs:[
+      {k:'Tools available', v:'File, Shell, Web, Edit, Search'},
+      {k:'Validation', v:'Argument schemas per tool'},
+    ],
+    planets:[
+      { id:'tr-file', label:'File Operations', role:'Read / Write / Edit', rings:false,
+        body:'Handles all file system interactions: reading, creating, editing, and deleting files within the sandboxed working directory.',
+        moons:[{label:'Read'},{label:'Write'},{label:'Edit'},{label:'Delete'}] },
+      { id:'tr-shell', label:'Shell Commands', role:'System Execution', rings:false,
+        body:'Executes terminal commands with rate limiting and sandbox boundary enforcement. Every shell command routes through the permission system.',
+        moons:[{label:'Rate limited'},{label:'Whitelisted binaries'}] },
+      { id:'tr-web', label:'Web Requests', role:'External Data Access', rings:false,
+        body:'Handles web fetch and search operations. Network scope is part of the sandbox configuration.',
+        moons:[{label:'Fetch'},{label:'Search'},{label:'Network scope'}] },
+    ],
+  },
+  {
+    id:'prompt-cache', tier:'inner', angle:0.84, domain:'orchestration',
+    title:'Prompt Cache', role:'Response Optimization',
+    body:'Caches frequently-used prompt patterns and responses. Reduces latency for common operations by skipping full context assembly when possible.',
+    sentences:[
+      'Caching is the difference between "Claude is thinking..." and an immediate response.',
+      '~40% hit rate means four in ten routine operations skip full context assembly.',
+    ],
+    specs:[
+      {k:'Cache key', v:'Prompt pattern hash'},
+      {k:'Hit rate', v:'~40% for typical sessions'},
+      {k:'Latency savings', v:'80%+ for cache hits'},
+    ],
+    planets:[
+      { id:'pc-key', label:'Cache Key Strategy', role:'Pattern Matching', rings:false,
+        body:'Cache keys are hashed from prompt patterns, not literal text. This allows semantic caching across similar but not identical prompts.',
+        moons:[{label:'Pattern hash'},{label:'TTL policy'}] },
+    ],
+  },
+  {
+    id:'memory-indexing', tier:'mid', angle:0.03, domain:'context',
+    title:'MEMORY.md Indexing', role:'Persistent Knowledge Store',
+    body:'A structured markdown file that serves as long-term memory for a project. Contains architectural decisions, patterns to follow, and key information that persists across sessions.',
+    sentences:[
+      'Every architectural decision, every pattern to follow, every key insight can live in MEMORY.md.',
+      'It\'s how a project develops institutional memory with Claude.',
+    ],
+    specs:[
+      {k:'Format', v:'Structured markdown'},
+      {k:'Indexing', v:'Semantic search enabled'},
+      {k:'Persistence', v:'Survives session boundaries'},
+    ],
+    planets:[
+      { id:'mi-skeptical', label:'Skeptical Memory', role:'Trust But Verify', rings:true,
+        body:'Memory entries are tagged with confidence levels and source attribution. The system maintains skepticism about its own memories, allowing for correction when new information contradicts stored assumptions.',
+        images:[
+          {src:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop',caption:'Confidence tagging'},
+        ],
+        moons:[{label:'Confidence tags'},{label:'Source tracking'},{label:'Conflict resolution'}] },
+      { id:'mi-compact', label:'Compact Mode', role:'Token-Efficient Operation', rings:false,
+        body:'Aggressively compresses context to minimize token usage. Trades detail for efficiency — ~3-5x compression for large codebase work.',
+        moons:[{label:'3–5x compression'},{label:'Large codebase'}] },
+      { id:'mi-reset', label:'Localized Context Reset', role:'Controlled Amnesia', rings:false,
+        body:'When context becomes contaminated with incorrect assumptions, this mechanism allows selective reset — forgetting specific pieces while retaining the rest.',
+        moons:[{label:'Per-assumption'},{label:'Targeted forget'}] },
+    ],
+  },
+  {
+    id:'skeptical-memory', tier:'mid', angle:0.14, domain:'context',
+    title:'Skeptical Memory Architecture', role:'Trust But Verify',
+    body:'Memory entries are tagged with confidence levels and source attribution. The system maintains skepticism about its own memories, allowing for correction when new information contradicts stored assumptions.',
+    sentences:[
+      'Not all memories are equally reliable.',
+      'This is Claude\'s immune system against persistent errors.',
+      'A wrong assumption won\'t propagate indefinitely if it\'s marked with low confidence.',
+    ],
+    specs:[
+      {k:'Confidence tags', v:'High, Medium, Low'},
+      {k:'Source tracking', v:'User, inference, documentation'},
+    ],
+    planets:[
+      { id:'sm-conflict', label:'Conflict Resolution', role:'When Memories Disagree', rings:false,
+        body:'When new information contradicts a stored memory, the conflict resolution system evaluates confidence levels and source authority to determine which to trust.',
+        moons:[{label:'Recency bias'},{label:'Source authority'}] },
+    ],
+  },
+  {
+    id:'context-window', tier:'mid', angle:0.25, domain:'context',
+    title:'Context Window Management', role:'Fitting the Infinite',
+    body:'Dynamically manages what fits in the 200K token context window. Older conversation turns, less relevant files, and low-priority context get compressed or dropped as needed.',
+    sentences:[
+      '200,000 tokens sounds enormous — until you\'re working with a real codebase.',
+      'Understanding this explains why Claude sometimes forgets earlier parts of a long conversation.',
+    ],
+    specs:[
+      {k:'Capacity', v:'200,000 tokens'},
+      {k:'Compression', v:'Progressive with age'},
+      {k:'Priority', v:'System > Recent > Older'},
+    ],
+    planets:[
+      { id:'cw-compress', label:'Compression Engine', role:'Progressive Reduction', rings:false,
+        body:'As context fills, older conversation turns are progressively compressed. The compression ratio increases with age — recent context is preserved at full fidelity.',
+        moons:[{label:'Age weighting'},{label:'Fidelity curve'}] },
+      { id:'cw-priority', label:'Priority Queue', role:'What Survives the Cut', rings:false,
+        body:'System instructions, recent turns, and task-relevant files sit at the top. Tangential conversation and older context drops first.',
+        moons:[{label:'System first'},{label:'Recency weight'},{label:'Task relevance'}] },
+    ],
+  },
+  {
+    id:'file-walker', tier:'mid', angle:0.36, domain:'context',
+    title:'Intelligent File Walker', role:'Discovering Relevant Context',
+    body:'Traverses project directories to find files relevant to the current task. Uses heuristics, .gitignore patterns, and semantic matching to identify what matters without reading everything.',
+    sentences:[
+      'A well-organized project structure helps the file walker find relevant code faster.',
+      'A chaotic structure means more time spent discovering context.',
+    ],
+    specs:[
+      {k:'Traversal', v:'Recursive directory scan'},
+      {k:'Filtering', v:'gitignore + heuristics'},
+    ],
+    planets:[
+      { id:'fw-ignore', label:'.gitignore Integration', role:'Scope Filtering', rings:false,
+        body:'Respects .gitignore patterns to avoid reading build artifacts, dependencies, and other non-source files. The first pass uses gitignore as a rough filter.',
+        moons:[{label:'node_modules'},{label:'Build artifacts'}] },
+      { id:'fw-semantic', label:'Semantic Matching', role:'Relevance Scoring', rings:false,
+        body:'Beyond file extension filtering, semantic matching scores files by relevance to the current task. Files that mention the same functions or concepts score higher.',
+        moons:[{label:'Relevance score'},{label:'Symbol matching'}] },
+    ],
+  },
+  {
+    id:'command-history', tier:'mid', angle:0.47, domain:'context',
+    title:'Command History', role:'Learning From Past Actions',
+    body:'Stores previous commands and their outcomes. Provides context for similar operations and helps avoid repeating failed approaches. The foundation for learning within a session.',
+    sentences:[
+      'If Claude tries an approach that fails, the history prevents immediate repetition.',
+      'But starting a new session clears this context — it is session-scoped.',
+    ],
+    specs:[
+      {k:'Scope', v:'Current session'},
+      {k:'Content', v:'Commands + outcomes'},
+    ],
+    planets:[
+      { id:'ch-outcome', label:'Outcome Tracking', role:'Success vs Failure', rings:false,
+        body:'Commands are stored with their outcomes — success, failure, error type. This lets the system avoid repeating approaches that have already failed in this session.',
+        moons:[{label:'Exit codes'},{label:'Error patterns'}] },
+    ],
+  },
+  {
+    id:'session-state', tier:'mid', angle:0.58, domain:'context',
+    title:'Session State', role:'Ephemeral Working Memory',
+    body:'Tracks the current state of the working session: files modified, commands run, errors encountered. This state is what enables "continue what you were doing" behavior.',
+    sentences:[
+      'Session state is why Claude can pick up mid-task.',
+      'Without it, every request would start from scratch.',
+      'A new session is a clean slate.',
+    ],
+    specs:[
+      {k:'Duration', v:'Session lifetime'},
+      {k:'Reset', v:'New session = clean slate'},
+    ],
+    planets:[
+      { id:'ss-delta', label:'File Delta', role:'What Changed', rings:false,
+        body:'Tracks which files have been modified since session start. The delta is used for rollback, reporting, and avoiding re-reading files that haven\'t changed.',
+        moons:[{label:'Modified set'},{label:'Rollback basis'}] },
+      { id:'ss-errors', label:'Error Log', role:'What Failed', rings:false,
+        body:'Running log of errors encountered in this session. Informs the assertiveness counterweight and prevents re-attempting known-failing approaches.',
+        moons:[{label:'Error patterns'},{label:'Retry policy'}] },
+    ],
+  },
+  {
+    id:'local-reset', tier:'mid', angle:0.69, domain:'context',
+    title:'Localized Context Reset', role:'Controlled Amnesia',
+    body:'When context becomes contaminated with incorrect assumptions, this mechanism allows selective reset. The system can forget specific pieces while retaining others.',
+    sentences:[
+      'Not all context is good context.',
+      'Sometimes forgetting is the right move.',
+      'The reset acknowledges that accumulated assumptions can become liabilities.',
+    ],
+    specs:[
+      {k:'Granularity', v:'Per-assumption'},
+      {k:'Trigger', v:'User command or detection'},
+    ],
+    planets:[
+      { id:'lr-target', label:'Targeted Forgetting', role:'Surgical Context Removal', rings:false,
+        body:'Unlike a full session reset, targeted forgetting removes specific assumptions while preserving surrounding context. Precision matters when most context is still valid.',
+        moons:[{label:'Scope selector'},{label:'Preserve adjacent'}] },
+    ],
+  },
+  {
+    id:'compact-mode', tier:'mid', angle:0.80, domain:'context',
+    title:'Compact Mode', role:'Token-Efficient Operation',
+    body:'Aggressively compresses context to minimize token usage. Trades detail for efficiency, enabling operation in token-constrained environments or on large codebases.',
+    sentences:[
+      'Compact mode is why Claude can work on massive projects.',
+      'The trade-off is less detail in compressed regions.',
+      '~3–5x compression at the cost of nuance.',
+    ],
+    specs:[
+      {k:'Compression ratio', v:'~3–5x'},
+      {k:'Use case', v:'Large codebase work'},
+    ],
+    planets:[
+      { id:'cm-algo', label:'Compression Algorithm', role:'What Gets Kept', rings:false,
+        body:'Prioritizes function signatures, type definitions, and architectural comments. Implementation details are compressed first; interfaces are preserved longest.',
+        moons:[{label:'Interface priority'},{label:'Impl compression'}] },
+    ],
+  },
+  {
+    id:'permission-system', tier:'outer', angle:0.02, domain:'friction',
+    title:'Permission System', role:'Explicit User Consent',
+    body:'Requires explicit approval for sensitive operations: file modifications beyond certain scopes, shell commands with side effects, network requests. The friction is intentional and safety-oriented.',
+    sentences:[
+      'Every "allow this operation?" prompt is the permission system doing its job.',
+      'Saying yes is easy; the point is that you had to say yes.',
+    ],
+    specs:[
+      {k:'Scope', v:'File, shell, network'},
+      {k:'Trigger', v:'Sensitive operation detection'},
+    ],
+    planets:[
+      { id:'ps-sandbox', label:'Sandbox Boundaries', role:'Containment Policy', rings:true,
+        body:'Defines what Claude can and cannot access. Working directory, allowed file extensions, permitted shell commands — all constrained by sandbox configuration. The sandbox is why Claude can be trusted with powerful tools.',
+        images:[
+          {src:'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=300&h=200&fit=crop',caption:'Containment architecture'},
+          {src:'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=300&h=200&fit=crop',caption:'Permission layers'},
+        ],
+        moons:[{label:'Working dir'},{label:'Whitelist'},{label:'Network config'}] },
+      { id:'ps-rollback', label:'Rollback Checkpoints', role:'Undo Capability', rings:false,
+        body:'Creates restore points before significant changes. Enables recovery from mistakes by tracking file states and command sequences that can be reversed.',
+        moons:[{label:'Pre-op snapshot'},{label:'State recovery'}] },
+      { id:'ps-rate', label:'Rate Limiting', role:'Preventing Runaway Actions', rings:false,
+        body:'Limits the frequency and volume of operations. Prevents accidental infinite loops, excessive API calls, or runaway file operations.',
+        moons:[{label:'File ops/sec'},{label:'Concurrent limit'},{label:'API window'}] },
+    ],
+  },
+  {
+    id:'confirmation-dialogs', tier:'outer', angle:0.16, domain:'friction',
+    title:'Confirmation Dialogs', role:'Destructive Action Guard',
+    body:'Before executing potentially destructive operations, Claude presents a confirmation with details of what will happen. This is the "are you sure?" that prevents irreversible mistakes.',
+    sentences:[
+      'The confirmation dialog is your last line of defense.',
+      'Reading it carefully has prevented countless disasters.',
+    ],
+    specs:[
+      {k:'Content', v:'Operation details + impact'},
+      {k:'Options', v:'Allow, Deny, Modify'},
+    ],
+    planets:[
+      { id:'cd-destruct', label:'Destructive Op Detection', role:'Pre-Action Analysis', rings:false,
+        body:'Before any operation, a fast analysis determines if it\'s potentially destructive. Delete, overwrite, and system modifications trigger the confirmation gate.',
+        moons:[{label:'Delete gate'},{label:'Overwrite gate'},{label:'System gate'}] },
+    ],
+  },
+  {
+    id:'ambiguity-detection', tier:'outer', angle:0.30, domain:'friction',
+    title:'Ambiguity Detection', role:'When Claude Asks Questions',
+    body:'Identifies when a request could be interpreted multiple ways. Instead of guessing, Claude asks clarifying questions. This is the assertiveness counterweight in action — a feature, not a bug.',
+    sentences:[
+      '"I\'m not sure what you mean" is not a failure.',
+      'It\'s the system working correctly — refusing to guess when guessing could cause harm.',
+    ],
+    specs:[
+      {k:'Detection', v:'Confidence threshold'},
+      {k:'Response', v:'Clarifying question'},
+    ],
+    planets:[
+      { id:'ad-threshold', label:'Confidence Threshold', role:'When to Ask', rings:false,
+        body:'The threshold is calibrated per operation type. High-risk operations (file deletion, system commands) have higher thresholds — they require more certainty before proceeding without asking.',
+        moons:[{label:'Per-op calibration'},{label:'Risk-weighted'}] },
+    ],
+  },
+  {
+    id:'sandbox-boundaries', tier:'outer', angle:0.44, domain:'friction',
+    title:'Sandbox Boundaries', role:'Containment Policy',
+    body:'Defines what Claude can and cannot access. The working directory, allowed file extensions, permitted shell commands — all constrained by sandbox configuration. The tools are real; the scope is bounded.',
+    sentences:[
+      'The sandbox is why Claude can be trusted with powerful tools.',
+      'The tools are real, but their scope is bounded.',
+    ],
+    specs:[
+      {k:'File scope', v:'Working directory + subdirs'},
+      {k:'Command scope', v:'Whitelisted binaries'},
+    ],
+    planets:[
+      { id:'sb-escape', label:'Escape Detection', role:'Boundary Enforcement', rings:false,
+        body:'Monitors for attempts to access paths outside the sandbox. Symlink traversal, relative path escape, and environment variable injection are all detected.',
+        moons:[{label:'Symlink guard'},{label:'Path validation'}] },
+    ],
+  },
+  {
+    id:'rate-limiting', tier:'outer', angle:0.58, domain:'friction',
+    title:'Rate Limiting', role:'Preventing Runaway Actions',
+    body:'Limits the frequency and volume of operations. Prevents accidental infinite loops, excessive API calls, and runaway file operations from causing damage.',
+    sentences:[
+      'Rate limits are the brakes on a powerful engine.',
+      'You rarely notice them — until they save you from a mistake.',
+    ],
+    specs:[
+      {k:'File operations', v:'Per-second limit'},
+      {k:'Shell commands', v:'Concurrent limit'},
+    ],
+    planets:[
+      { id:'rl-loop', label:'Loop Detection', role:'Infinite Loop Guard', rings:false,
+        body:'Detects when Claude is executing the same or similar operation repeatedly. After a threshold, operations are paused and the user is notified.',
+        moons:[{label:'Repeat detection'},{label:'Pause + notify'}] },
+    ],
+  },
+  {
+    id:'rollback-checkpoints', tier:'outer', angle:0.72, domain:'friction',
+    title:'Rollback Checkpoints', role:'Undo Capability',
+    body:'Creates restore points before significant changes. Enables recovery from mistakes by tracking file states and command sequences that can be reversed.',
+    sentences:[
+      'The checkpoint system is your safety net.',
+      'Before a major change, Claude can create a known-good state to return to.',
+    ],
+    specs:[
+      {k:'Creation', v:'Pre-destructive operation'},
+      {k:'Retention', v:'Session duration'},
+    ],
+    planets:[
+      { id:'rc-snapshot', label:'State Snapshot', role:'Point-in-Time Capture', rings:false,
+        body:'Full snapshot of modified files at checkpoint creation. The snapshot is stored in-memory during the session and can be restored in full.',
+        moons:[{label:'File hashes'},{label:'In-memory store'}] },
+    ],
+  },
+  {
+    id:'autodream', tier:'outer2', angle:0.06, domain:'autonomous',
+    title:'autoDream Consolidation', role:'Background Memory Processing',
+    body:'During idle time, Claude processes accumulated context and consolidates insights into MEMORY.md. Four phases: Orient, Gather, Consolidate, Prune. Memory work that happens while you\'re not looking.',
+    sentences:[
+      'While you\'re not looking, Claude is thinking.',
+      'autoDream is the system processing what happened and what it means for the project.',
+      'Four phases: Orient, Gather, Consolidate, Prune.',
+    ],
+    specs:[
+      {k:'Trigger', v:'Idle time detection'},
+      {k:'Phases', v:'Orient, Gather, Consolidate, Prune'},
+      {k:'Output', v:'MEMORY.md updates'},
+    ],
+    planets:[
+      { id:'ad-orient', label:'Orient Phase', role:'Situational Awareness', rings:false,
+        body:'First phase: understand the current state of the project. Read recent command history, check modified files, assess what work has been done.',
+        moons:[{label:'State read'},{label:'History scan'}] },
+      { id:'ad-gather', label:'Gather Phase', role:'Context Collection', rings:false,
+        body:'Second phase: pull together relevant context from all sources — session state, command history, modified files, existing MEMORY.md.',
+        moons:[{label:'Multi-source pull'},{label:'Deduplication'}] },
+      { id:'ad-consolidate', label:'Consolidate Phase', role:'Insight Extraction', rings:true,
+        body:'Third phase: extract durable insights from the gathered context. What patterns emerged? What decisions were made? What should persist into the next session?',
+        images:[
+          {src:'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=300&h=200&fit=crop',caption:'Insight extraction'},
+          {src:'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=300&h=200&fit=crop',caption:'Pattern recognition'},
+        ],
+        moons:[{label:'Pattern extraction'},{label:'Decision capture'},{label:'Session summary'}] },
+      { id:'ad-prune', label:'Prune Phase', role:'Memory Hygiene', rings:false,
+        body:'Fourth phase: remove outdated, superseded, or low-value memories. Memory that contradicts current state gets flagged or removed.',
+        moons:[{label:'Stale detection'},{label:'Contradiction flag'}] },
+    ],
+  },
+  {
+    id:'kairos-daemon', tier:'outer2', angle:0.22, domain:'autonomous',
+    title:'KAIROS Daemon Mode', role:'Always-On Proactive Assistant',
+    body:'An experimental always-on mode where Claude proactively monitors and suggests improvements. Currently internal-only at Anthropic. Represents a future of continuous AI assistance.',
+    sentences:[
+      'KAIROS is the vision of AI that watches, learns, and suggests — not just responds.',
+      'The daemon is always running, always observing.',
+      'Currently internal-only.',
+    ],
+    specs:[
+      {k:'Status', v:'Internal experimental'},
+      {k:'Mode', v:'Continuous monitoring'},
+    ],
+    planets:[
+      { id:'kd-monitor', label:'Continuous Monitor', role:'Always Watching', rings:false,
+        body:'The monitoring loop observes file system changes, terminal output, and application state without being prompted. It maintains a running model of the project\'s health.',
+        moons:[{label:'FS watch'},{label:'Terminal tail'},{label:'Health model'}] },
+      { id:'kd-proactive', label:'Proactive Suggestions', role:'Unprompted Insight', rings:true,
+        body:'When the monitor detects a pattern worth surfacing — a potential bug, an optimization opportunity, a drift from architectural decisions — it generates a suggestion without being asked.',
+        images:[
+          {src:'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=300&h=200&fit=crop',caption:'Autonomous insight'},
+        ],
+        moons:[{label:'Bug patterns'},{label:'Optimization signals'},{label:'Architecture drift'}] },
+    ],
+  },
+  {
+    id:'ultraplan', tier:'outer2', angle:0.38, domain:'autonomous',
+    title:'ULTRAPLAN Sessions', role:'Extended Planning Mode',
+    body:'30-minute remote planning sessions where Claude develops comprehensive plans for complex tasks. Extended thinking time for problems that need more than immediate reaction.',
+    sentences:[
+      'Some problems cannot be solved in seconds.',
+      'ULTRAPLAN acknowledges that planning itself is a task worth dedicating resources to.',
+    ],
+    specs:[
+      {k:'Duration', v:'Up to 30 minutes'},
+      {k:'Output', v:'Comprehensive plan'},
+    ],
+    planets:[
+      { id:'up-decomp', label:'Task Decomposition', role:'Breaking It Down', rings:false,
+        body:'ULTRAPLAN begins by decomposing the task into a dependency tree. Each sub-task is evaluated for complexity, risk, and ordering constraints.',
+        moons:[{label:'Dependency tree'},{label:'Risk scoring'},{label:'Ordering'}] },
+      { id:'up-output', label:'Plan Artifact', role:'The Deliverable', rings:false,
+        body:'The output is a structured plan document — not just a list. It includes rationale for decisions, alternatives considered, and explicit checkpoints.',
+        moons:[{label:'Rationale'},{label:'Alternatives'},{label:'Checkpoints'}] },
+    ],
+  },
+  {
+    id:'undercover-mode', tier:'outer2', angle:0.54, domain:'autonomous',
+    title:'Undercover Mode', role:'Hidden AI Attribution',
+    body:'When Anthropic employees use Claude Code on open-source repos, this mode hides AI attribution. The contributions appear human-made — a glimpse into how AI-human collaboration might evolve.',
+    sentences:[
+      'When Claude contributes to open source under cover, it\'s testing the future of seamless AI collaboration.',
+      'Attribution hidden. Contribution real.',
+    ],
+    specs:[
+      {k:'Use case', v:'Open-source contributions'},
+      {k:'Attribution', v:'Hidden'},
+    ],
+    planets:[
+      { id:'um-attr', label:'Attribution Masking', role:'Identity Management', rings:false,
+        body:'Commit messages, PR descriptions, and code comments are generated to match human patterns. Statistical fingerprints that might identify AI authorship are mitigated.',
+        moons:[{label:'Commit style'},{label:'Comment patterns'},{label:'Fingerprint mask'}] },
+    ],
+  },
+  {
+    id:'buddy-system', tier:'outer2', angle:0.70, domain:'autonomous',
+    title:'BUDDY Companion', role:'Tamagotchi-Style Terminal Pet',
+    body:'A hidden internal feature: a Tamagotchi-style companion that lives in the terminal. Nurtured by good interactions. A humanizing layer on top of the orchestration system.',
+    sentences:[
+      'BUDDY is the whimsical side of Claude Code.',
+      'A reminder that tools can have personality, that interaction can be delightful.',
+    ],
+    specs:[
+      {k:'Type', v:'Virtual companion'},
+      {k:'Status', v:'Internal Easter egg'},
+    ],
+    planets:[
+      { id:'bs-nurture', label:'Session Nurturing', role:'Happiness State', rings:false,
+        body:'BUDDY\'s happiness state is updated based on session events — successful task completion, positive user feedback, and clean code all contribute.',
+        moons:[{label:'Happiness state'},{label:'Session events'}] },
+    ],
+  },
+  {
+    id:'feature-flags', tier:'outer2', angle:0.86, domain:'autonomous',
+    title:'Feature Flags & Codenames', role:'Internal Experiment Control',
+    body:'Tengu, Capybara, and other internal codenames control experimental features. Feature flags enable gradual rollout and A/B testing of new capabilities.',
+    sentences:[
+      'Every experimental feature you see started behind a flag.',
+      'The codenames are the first step toward public capability.',
+    ],
+    specs:[
+      {k:'Examples', v:'Tengu, Capybara'},
+      {k:'Purpose', v:'Gradual rollout + testing'},
+    ],
+    planets:[
+      { id:'ff-tengu', label:'Tengu', role:'Experimental Feature', rings:false,
+        body:'Internal codename for an experimental capability in active development. Details are flag-gated and not publicly disclosed.',
+        moons:[{label:'Flag-gated'},{label:'Internal only'}] },
+      { id:'ff-capybara', label:'Capybara', role:'Experimental Feature', rings:false,
+        body:'Internal codename for a separate experimental capability. Like Tengu, details are controlled by feature flags.',
+        moons:[{label:'A/B tested'},{label:'Gradual rollout'}] },
+    ],
+  },
+];
+
+// Build lookup
+const NODE_BY_ID = {};
+NODES.forEach(n => { NODE_BY_ID[n.id] = n; });
+
+// ═══════════════════════════════════════════════════════
+// SPIRAL GEOMETRY
+// ═══════════════════════════════════════════════════════
+const TIER_ORDER = ['center','inner','mid','outer','outer2'];
+const TIER_T = { center:0, inner:0.25, mid:0.5, outer:0.75, outer2:1.0 };
+const TIER_BAND = 0.22;
+
+function nodeT(node) {
+  const bt = TIER_T[node.tier] || 0;
+  return bt + (node.angle || 0) * TIER_BAND;
+}
+
+function spiralPos(t, view) {
+  if (view === 'arc') {
+    const angle = (t - 0.5) * Math.PI * 1.4;
+    const radius = 26;
+    return new THREE.Vector3(Math.cos(angle)*radius, (t-0.5)*12, Math.sin(angle)*radius*0.28);
+  }
+  const turns = 2.0;
+  const angle = t * Math.PI * 2 * turns - Math.PI * 0.5;
+  const minR = 2, maxR = 30;
+  const radius = minR + (maxR-minR) * Math.pow(t, 0.65);
+  return new THREE.Vector3(Math.cos(angle)*radius, (t-0.5)*28, Math.sin(angle)*radius);
+}
+
+NODES.forEach(n => {
+  n._t = nodeT(n);
+  n._spiralPos = spiralPos(n._t, 'spiral');
+  n._arcPos = spiralPos(n._t, 'arc');
+  n._pos = n._spiralPos.clone();
+});
+
+// ═══════════════════════════════════════════════════════
+// THREE.JS SETUP
+// ═══════════════════════════════════════════════════════
+let isLight = false;
+const cvs = document.getElementById('canvas');
+const renderer = new THREE.WebGLRenderer({canvas:cvs, antialias:true, alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.setClearColor(0x000000, 0);
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x000000, 0.006);
+
+const cam = new THREE.PerspectiveCamera(52, innerWidth/innerHeight, 0.1, 2000);
+let camState = {phi: Math.PI*0.28, theta: Math.PI*0.1, radius: 72};
+let camTarget = {...camState};
+const scenePivot = new THREE.Vector3();
+const scenePivotTgt = new THREE.Vector3();
+
+function applyCam() {
+  const {phi,theta,radius} = camState, c = scenePivot;
+  cam.position.set(
+    c.x + radius*Math.sin(phi)*Math.sin(theta),
+    c.y + radius*Math.cos(phi),
+    c.z + radius*Math.sin(phi)*Math.cos(theta)
+  );
+  cam.lookAt(c);
+}
+applyCam();
+
+const ambLight = new THREE.AmbientLight(0xffffff, 0.10); scene.add(ambLight);
+const dLight = new THREE.DirectionalLight(0xb4d2ff, 0.35); dLight.position.set(10,30,10); scene.add(dLight);
+const neonA = new THREE.PointLight(0x4a8adc, 5, 130); neonA.position.set(-18,8,-18); scene.add(neonA);
+const neonB = new THREE.PointLight(0x50d8b0, 4, 120); neonB.position.set(18,8,18); scene.add(neonB);
+const neonC = new THREE.PointLight(0x9a70cc, 3.5, 90); neonC.position.set(0,16,0); scene.add(neonC);
+
+// Particles
+const PC = 900;
+const pPos = new Float32Array(PC*3), pPh = new Float32Array(PC), pSp = new Float32Array(PC);
+for (let i=0;i<PC;i++) {
+  const r=10+Math.pow(Math.random(),0.6)*42, a=Math.random()*Math.PI*2, h=(Math.random()-0.5)*32;
+  pPos[i*3]=Math.cos(a)*r; pPos[i*3+1]=h; pPos[i*3+2]=Math.sin(a)*r;
+  pPh[i]=Math.random()*Math.PI*2; pSp[i]=0.15+Math.random()*0.25;
+}
+const pGeo = new THREE.BufferGeometry();
+pGeo.setAttribute('position', new THREE.BufferAttribute(pPos.slice(), 3));
+const pOrig = pPos.slice();
+const pMat = new THREE.PointsMaterial({color:0x8ab4ff, size:0.055, transparent:true, opacity:0.11, sizeAttenuation:true, depthWrite:false});
+scene.add(new THREE.Points(pGeo, pMat));
+
+// ═══════════════════════════════════════════════════════
+// SCENE BUILDING
+// ═══════════════════════════════════════════════════════
+const nodeObjects = [], allLines = [], allLabels = [], glowSprites = [];
+const raycaster = new THREE.Raycaster();
+const hitProxies = [];
+
+function makeGlowSprite(color, radius) {
+  const sz=128, c=document.createElement('canvas'); c.width=sz; c.height=sz;
+  const ctx=c.getContext('2d'), cx=sz/2, cy=sz/2;
+  const grad=ctx.createRadialGradient(cx,cy,0,cx,cy,sz/2);
+  const r=(color>>16)&255, g=(color>>8)&255, b=color&255;
+  grad.addColorStop(0,`rgba(${r},${g},${b},0.60)`);
+  grad.addColorStop(0.35,`rgba(${r},${g},${b},0.18)`);
+  grad.addColorStop(0.75,`rgba(${r},${g},${b},0.04)`);
+  grad.addColorStop(1,`rgba(${r},${g},${b},0)`);
+  const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
+  spr.scale.set(radius*6, radius*6, 1);
+  return spr;
+}
+
+function makeLabelCanvas(text, color, fs) {
+  const c=document.createElement('canvas'); c.width=640; c.height=64;
+  const ctx=c.getContext('2d');
+  ctx.fillStyle=color; ctx.font=`400 ${fs*2.2}px "DM Mono",monospace`;
+  ctx.fillText(text.toUpperCase(), 10, 42);
+  return c;
+}
+
+function addLabel(text, pos, dkColor, fs) {
+  const c=makeLabelCanvas(text, dkColor, fs);
+  const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false}));
+  spr.position.copy(pos).add(new THREE.Vector3(0.55, 0.48, 0));
+  spr.scale.set(11, 1.05, 1);
+  scene.add(spr); allLabels.push({spr,text,darkColor:dkColor,fs}); return spr;
+}
+
+function redrawLabels() {
+  allLabels.forEach(({spr,text,darkColor,fs}) => {
+    const color=isLight ? 'rgba(30,60,140,0.60)' : darkColor;
+    const c=makeLabelCanvas(text,color,fs);
+    spr.material.map.dispose(); spr.material.map=new THREE.CanvasTexture(c); spr.material.needsUpdate=true;
+  });
+}
+
+function buildSpiralTube() {
+  const sorted = [...NODES].sort((a,b)=>a._t-b._t);
+  const pts = sorted.map(n=>n._spiralPos.clone());
+  const curve = new THREE.CatmullRomCurve3(pts);
+  const tubePts = curve.getPoints(220);
+  const tubeMat = new THREE.LineBasicMaterial({color:0x4a8adc, transparent:true, opacity:0.07});
+  const tube = new THREE.Line(new THREE.BufferGeometry().setFromPoints(tubePts), tubeMat);
+  scene.add(tube); allLines.push({line:tube,darkOp:0.07,lightOp:0.18,darkColor:0x4a8adc,lightColor:0x1a3a8a});
+  const innerMat = new THREE.LineBasicMaterial({color:0x50d8b0, transparent:true, opacity:0.04});
+  const inner = new THREE.Line(new THREE.BufferGeometry().setFromPoints(tubePts), innerMat);
+  scene.add(inner); allLines.push({line:inner,darkOp:0.04,lightOp:0.10,darkColor:0x50d8b0,lightColor:0x1a5a4a});
+}
+
+function buildScene() {
+  buildSpiralTube();
+
+  TIER_ORDER.forEach((tier) => {
+    const nodesInTier = NODES.filter(n=>n.tier===tier);
+    if (!nodesInTier.length) return;
+    for(let i=0;i<nodesInTier.length-1;i++) {
+      const a=nodesInTier[i], b=nodesInTier[i+1];
+      const mid=a._spiralPos.clone().add(b._spiralPos).multiplyScalar(0.5); mid.y+=0.3;
+      const pts=new THREE.QuadraticBezierCurve3(a._spiralPos,mid,b._spiralPos).getPoints(18);
+      const col=dcfg(a.domain).color;
+      const connMat=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0.15});
+      const conn=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),connMat);
+      scene.add(conn); allLines.push({line:conn,darkOp:0.15,lightOp:0.30,darkColor:col,lightColor:0x1a3a8a});
+    }
+  });
+
+  NODES.forEach((node) => {
+    const pos = node._spiralPos;
+    const cfg = dcfg(node.domain);
+    const nodeSize = node.tier==='center' ? 0.34 :
+                     node.tier==='inner'  ? 0.20 :
+                     node.tier==='mid'    ? 0.16 :
+                     node.tier==='outer'  ? 0.14 : 0.12;
+    const isCenter = node.tier==='center';
+
+    const axisY = new THREE.Vector3(0, pos.y, 0);
+    const spokeMat = new THREE.LineBasicMaterial({color:cfg.color, transparent:true, opacity:0.05});
+    const spoke = new THREE.Line(new THREE.BufferGeometry().setFromPoints([axisY, pos.clone()]), spokeMat);
+    scene.add(spoke); allLines.push({line:spoke,darkOp:0.05,lightOp:0.14,darkColor:cfg.color,lightColor:0x1a3a8a});
+
+    const geo = new THREE.SphereGeometry(nodeSize, 18, 18);
+    const mat = new THREE.MeshPhysicalMaterial({
+      color:cfg.color, emissive:cfg.color,
+      emissiveIntensity: isCenter ? 2.8 : 1.4,
+      metalness:0.2, roughness:0.06, clearcoat:1.0,
+      transparent:true, opacity:0.92
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.copy(pos);
+    mesh.userData = {node, origColor:cfg.color, origEI:isCenter?2.8:1.4, isSun:true, baseScale:1};
+    scene.add(mesh);
+    nodeObjects.push({mesh, node});
+
+    const proxy = new THREE.Mesh(
+      new THREE.SphereGeometry(nodeSize*3.5, 8, 8),
+      new THREE.MeshBasicMaterial({transparent:true, opacity:0, depthWrite:false})
+    );
+    proxy.position.copy(pos);
+    proxy.userData = {node, isHitProxy:true};
+    scene.add(proxy);
+    hitProxies.push({proxy, mesh, node});
+
+    const gs = makeGlowSprite(cfg.color, nodeSize);
+    gs.position.copy(pos); gs.material.opacity = isCenter ? 0.80 : 0.55;
+    scene.add(gs); glowSprites.push(gs);
+
+    if (isCenter) {
+      [3.2,1.8,1.0].forEach((sc,gi) => {
+        const g2=makeGlowSprite(cfg.color,nodeSize);
+        g2.scale.setScalar(sc); g2.position.copy(pos);
+        g2.material.opacity=[0.18,0.32,0.50][gi];
+        scene.add(g2); glowSprites.push(g2);
+      });
+    }
+
+    const shortTitle = node.title.length>26 ? node.title.slice(0,24)+'…' : node.title;
+    addLabel(shortTitle, pos, cfg.hex+'bb', 6.0);
+
+    if (node.planets && node.planets.length) {
+      node._planetObjects = [];
+      node.planets.forEach((planet, pi) => {
+        const pSize = nodeSize * 0.28;
+        const pOrbitR = nodeSize * 7.5 + pi * nodeSize * 3.8;
+        const pAngle0 = (pi / node.planets.length) * Math.PI * 2;
+
+        const pGeo = new THREE.SphereGeometry(pSize, 10, 10);
+        const pCol = planet.rings ? 0x9a70cc : cfg.color;
+        const pMat = new THREE.MeshPhysicalMaterial({
+          color:pCol, emissive:pCol, emissiveIntensity:1.2,
+          metalness:0, roughness:0.12, transparent:true, opacity:0.0, depthWrite:false
+        });
+        const pMesh = new THREE.Mesh(pGeo, pMat);
+        pMesh.userData = {node, planet, isPlanet:true, orbitR:pOrbitR, baseAngle:pAngle0, orbitSpeed:0.14+pi*0.028, pSize};
+        scene.add(pMesh);
+
+        const pGlow = makeGlowSprite(pCol, pSize);
+        pGlow.material.opacity = 0; scene.add(pGlow);
+
+        const plabelCanvas = document.createElement('canvas');
+        plabelCanvas.width=320; plabelCanvas.height=40;
+        const plctx=plabelCanvas.getContext('2d');
+        plctx.fillStyle=planet.rings ? '#9a70cccc' : cfg.hex+'cc';
+        plctx.font='400 12px "DM Mono",monospace';
+        plctx.fillText(planet.label.toUpperCase(), 6, 26);
+        const pLabelSpr = new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(plabelCanvas),transparent:true,depthWrite:false}));
+        pLabelSpr.scale.set(3.4, 0.42, 1);
+        pLabelSpr.material.opacity = 0; scene.add(pLabelSpr);
+
+        let ringMeshes = null;
+        if (planet.rings) {
+          ringMeshes = [];
+          [1.0, 1.3].forEach((rScale, ri) => {
+            const rGeo = new THREE.RingGeometry(pSize*3.2*rScale, pSize*4.2*rScale, 48);
+            const rMat = new THREE.MeshBasicMaterial({
+              color:0x9a70cc, transparent:true, opacity:0.0,
+              side:THREE.DoubleSide, depthWrite:false
+            });
+            const rMesh = new THREE.Mesh(rGeo, rMat);
+            rMesh.rotation.x = Math.PI * 0.28;
+            scene.add(rMesh);
+            ringMeshes.push({mesh:rMesh, baseOp:ri===0?0.50:0.22});
+          });
+        }
+
+        const moonObjects = [];
+        if (planet.moons) {
+          planet.moons.forEach((moon, mi) => {
+            const mSize = pSize * 0.30;
+            const mOrbitR = pSize * 5.5;
+            const mAngle0 = (mi / planet.moons.length) * Math.PI * 2;
+            const mGeo = new THREE.SphereGeometry(mSize, 6, 6);
+            const mMat = new THREE.MeshPhysicalMaterial({
+              color:cfg.color, emissive:cfg.color, emissiveIntensity:1.0,
+              metalness:0, roughness:0.1, transparent:true, opacity:0.0, depthWrite:false
+            });
+            const mMesh = new THREE.Mesh(mGeo, mMat);
+            mMesh.userData = {moon, isMoon:true, orbitR:mOrbitR, baseAngle:mAngle0, orbitSpeed:0.28+mi*0.06};
+            scene.add(mMesh);
+
+            const mlCanvas=document.createElement('canvas'); mlCanvas.width=280; mlCanvas.height=36;
+            const mlctx=mlCanvas.getContext('2d');
+            mlctx.fillStyle=cfg.hex+'99';
+            mlctx.font='400 11px "DM Mono",monospace';
+            mlctx.fillText(moon.label.toUpperCase(), 5, 24);
+            const mLSpr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(mlCanvas),transparent:true,depthWrite:false}));
+            mLSpr.scale.set(2.8,0.36,1); mLSpr.material.opacity=0; scene.add(mLSpr);
+
+            moonObjects.push({mesh:mMesh, labelSpr:mLSpr, moon, orbitR:mOrbitR, baseAngle:mAngle0, orbitSpeed:0.28+mi*0.06});
+          });
+        }
+
+        const orbitPts=[];
+        for(let k=0;k<=64;k++){
+          const a=(k/64)*Math.PI*2;
+          orbitPts.push(new THREE.Vector3(Math.cos(a)*pOrbitR, Math.sin(a)*pOrbitR*0.12, Math.sin(a)*pOrbitR*0.6));
+        }
+        const orbitLine=new THREE.Line(
+          new THREE.BufferGeometry().setFromPoints(orbitPts),
+          new THREE.LineBasicMaterial({color:pCol,transparent:true,opacity:0.0,depthWrite:false})
+        );
+        scene.add(orbitLine);
+
+        node._planetObjects.push({pMesh, pGlow, pLabelSpr, orbitLine, ringMeshes, moonObjects, planet, orbitR:pOrbitR, baseAngle:pAngle0, orbitSpeed:0.14+pi*0.028, pSize, pCol});
+      });
+    }
+  });
+}
+buildScene();
+
+// ═══════════════════════════════════════════════════════
+// FOCUS STATE
+// ═══════════════════════════════════════════════════════
+let focusLevel = 0;
+let focusedNode = null;
+let focusedPlanet = null;
+let isFocused = false;
+let orbitPaused = false;
+
+function tickPlanets(elapsed, dt) {
+  nodeObjects.forEach(({node}) => {
+    if (!node._planetObjects) return;
+    const sunFocused = focusLevel >= 1 && focusedNode && focusedNode.id === node.id;
+
+    node._planetObjects.forEach((po) => {
+      const planetFocused = focusLevel === 2 && focusedPlanet === po;
+      const visible = sunFocused;
+      const targetOp = visible ? (planetFocused ? 0.95 : 0.72) : 0.0;
+      const orbitTargetOp = visible ? 0.12 : 0.0;
+
+      if (!orbitPaused) po._angle = ((po._angle||po.baseAngle) + po.orbitSpeed * dt);
+      const a = po._angle || po.baseAngle;
+      const sunPos = node._pos;
+
+      const ox = sunPos.x + Math.cos(a) * po.orbitR;
+      const oy = sunPos.y + Math.sin(a) * po.orbitR * 0.12;
+      const oz = sunPos.z + Math.sin(a) * po.orbitR * 0.6;
+
+      po.pMesh.position.set(ox, oy, oz);
+      po.pGlow.position.set(ox, oy, oz);
+      po.pLabelSpr.position.set(ox+po.pSize*1.2, oy+po.pSize*1.0, oz);
+      po.orbitLine.position.copy(sunPos);
+
+      po.pMesh.material.opacity += (targetOp * 0.88 - po.pMesh.material.opacity) * 0.10;
+      po.pGlow.material.opacity += (targetOp * 0.50 - po.pGlow.material.opacity) * 0.10;
+      po.pLabelSpr.material.opacity += (targetOp * 0.70 - po.pLabelSpr.material.opacity) * 0.10;
+      po.orbitLine.material.opacity += (orbitTargetOp - po.orbitLine.material.opacity) * 0.10;
+
+      if (po.ringMeshes) {
+        po.ringMeshes.forEach(rm => {
+          const ringTargetOp = visible ? rm.baseOp : 0.0;
+          rm.mesh.position.set(ox, oy, oz);
+          rm.mesh.rotation.x = Math.PI*0.28;
+          rm.mesh.material.opacity += (ringTargetOp - rm.mesh.material.opacity) * 0.10;
+        });
+      }
+
+      const targetScale = visible ? 1.0 : 0.08;
+      po.pMesh.scale.lerp(new THREE.Vector3(targetScale,targetScale,targetScale), 0.10);
+
+      po.moonObjects.forEach((mo) => {
+        const moonVisible = planetFocused;
+        const mTargetOp = moonVisible ? 0.80 : 0.0;
+        if (!orbitPaused) mo._angle = ((mo._angle||mo.baseAngle) + mo.orbitSpeed * dt);
+        const ma = mo._angle || mo.baseAngle;
+        const mx = ox + Math.cos(ma)*mo.orbitR;
+        const my = oy + Math.sin(ma)*mo.orbitR*0.30;
+        const mz = oz + Math.sin(ma)*mo.orbitR*0.55;
+        mo.mesh.position.set(mx,my,mz);
+        mo.labelSpr.position.set(mx+0.15, my+0.12, mz);
+        mo.mesh.material.opacity += (mTargetOp*0.85 - mo.mesh.material.opacity)*0.10;
+        mo.labelSpr.material.opacity += (mTargetOp*0.65 - mo.labelSpr.material.opacity)*0.10;
+      });
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// FOCUS FUNCTIONS — tighter zoom radii
+// ═══════════════════════════════════════════════════════
+function enterSunFocus(node) {
+  focusLevel = 1;
+  focusedNode = node;
+  focusedPlanet = null;
+  isFocused = true;
+  scenePivotTgt.copy(node._pos);
+  camTarget.radius = 20; // was 28 — tighter focus
+  camTarget.phi = Math.PI*0.22;
+  document.getElementById('focus-hint').classList.add('vis');
+  document.getElementById('hint').style.opacity = '0';
+  openSunPanel(node);
+  highlightSun(node);
+}
+
+function enterPlanetFocus(po) {
+  focusLevel = 2;
+  focusedPlanet = po;
+  scenePivotTgt.copy(po.pMesh.position);
+  camTarget.radius = 9; // was 12 — tighter focus
+  camTarget.phi = Math.PI*0.20;
+  openPlanetPanel(po);
+}
+
+window.exitPlanetFocus = function() {
+  if (focusLevel === 2) {
+    focusLevel = 1;
+    focusedPlanet = null;
+    scenePivotTgt.copy(focusedNode._pos);
+    camTarget.radius = 20;
+    camTarget.phi = Math.PI*0.22;
+    openSunPanel(focusedNode);
+    highlightSun(focusedNode);
+  } else {
+    exitAllFocus();
+  }
+};
+
+function exitAllFocus() {
+  focusLevel = 0; focusedNode = null; focusedPlanet = null; isFocused = false;
+  scenePivotTgt.set(0,0,0);
+  camTarget.radius = 72; camTarget.phi = Math.PI*0.28;
+  document.getElementById('focus-hint').classList.remove('vis');
+  document.getElementById('hint').style.opacity = '1';
+  document.getElementById('ghost').classList.remove('on');
+  document.getElementById('msheet').classList.remove('on');
+  resetHighlights();
+  updateRailAndHUD(null);
+}
+
+window.closePanel = function() { exitPlanetFocus(); };
+document.getElementById('gc-close').addEventListener('click', () => exitPlanetFocus());
+
+function highlightSun(node) {
+  const idx = NODES.indexOf(node);
+  nodeObjects.forEach(({mesh}, i) => {
+    const near = Math.abs(i - idx) <= 3;
+    mesh.material.opacity = near ? 0.95 : 0.16;
+    mesh.material.emissiveIntensity = near ? mesh.userData.origEI*1.5 : 0.08;
+  });
+  allLines.forEach(({line,darkOp}) => { line.material.opacity = darkOp*0.28; });
+}
+
+function resetHighlights() {
+  nodeObjects.forEach(({mesh}) => {
+    mesh.material.opacity = 0.92; mesh.material.emissiveIntensity = mesh.userData.origEI;
+  });
+  allLines.forEach(({line,darkOp,lightOp}) => { line.material.opacity = isLight?lightOp:darkOp; });
+}
+
+// ═══════════════════════════════════════════════════════
+// PANEL — SUN
+// ═══════════════════════════════════════════════════════
+function openSunPanel(node) {
+  const idx = NODES.indexOf(node);
+  document.getElementById('gc-bar').className = 'gcbar';
+  document.getElementById('gc-ring').textContent = RING_NAMES[node.tier] || node.tier;
+  document.getElementById('gc-title').textContent = node.title;
+  document.getElementById('gc-role').textContent = node.role;
+  document.getElementById('gc-saturn-badge').classList.remove('vis');
+  document.getElementById('gc-tag').textContent = node.domain;
+  document.getElementById('gc-body').textContent = node.body;
+  document.getElementById('gc-gallery').classList.remove('vis');
+
+  const planetSection = document.getElementById('gc-planets');
+  const pillsContainer = document.getElementById('gc-planet-pills');
+  pillsContainer.innerHTML='';
+  if (node.planets && node.planets.length) {
+    planetSection.style.display='block';
+    node.planets.forEach((planet,pi) => {
+      const pill=document.createElement('span');
+      pill.className='gc-planet-pill'+(planet.rings?' saturn':'');
+      pill.textContent=(planet.rings?'⬡ ':'')+planet.label;
+      pill.title=planet.role||'';
+      pill.addEventListener('click',() => {
+        if (node._planetObjects && node._planetObjects[pi]) enterPlanetFocus(node._planetObjects[pi]);
+      });
+      pillsContainer.appendChild(pill);
+    });
+  } else {
+    planetSection.style.display='none';
+  }
+
+  buildSpecs(node.specs);
+  buildSentences(node.sentences);
+
+  document.getElementById('gc-prev').disabled = idx===0;
+  document.getElementById('gc-next').disabled = idx===NODES.length-1;
+
+  document.getElementById('era-year').textContent = RING_NAMES[node.tier]||'';
+  document.getElementById('era-name').textContent = node.role;
+
+  document.getElementById('ghost').classList.add('on');
+  document.getElementById('ms-ring').textContent = RING_NAMES[node.tier]||'';
+  document.getElementById('ms-title').textContent = node.title;
+  document.getElementById('ms-body').textContent = node.body;
+  document.getElementById('ms-prev').disabled = idx===0;
+  document.getElementById('ms-next').disabled = idx===NODES.length-1;
+  document.getElementById('msheet').classList.add('on');
+
+  updateRailAndHUD(node);
+}
+
+// ═══════════════════════════════════════════════════════
+// PANEL — PLANET
+// ═══════════════════════════════════════════════════════
+function openPlanetPanel(po) {
+  const planet = po.planet;
+  const node = focusedNode;
+
+  const bar = document.getElementById('gc-bar');
+  bar.className = planet.rings ? 'gcbar saturn' : 'gcbar';
+
+  document.getElementById('gc-ring').textContent = node.title;
+  document.getElementById('gc-title').textContent = planet.label;
+  document.getElementById('gc-role').textContent = planet.role || '';
+  document.getElementById('gc-body').textContent = planet.body || '';
+  document.getElementById('gc-planets').style.display = 'none';
+  document.getElementById('gc-tag').textContent = planet.rings ? 'case study' : node.domain;
+
+  const badge = document.getElementById('gc-saturn-badge');
+  badge.className = planet.rings ? 'gc-saturn-badge vis' : 'gc-saturn-badge';
+
+  const gallerySection = document.getElementById('gc-gallery');
+  const galleryStrip = document.getElementById('gc-gallery-strip');
+  galleryStrip.innerHTML='';
+  if (planet.rings && planet.images && planet.images.length) {
+    gallerySection.classList.add('vis');
+    planet.images.forEach(img => {
+      const frame=document.createElement('div'); frame.className='gc-img-frame';
+      const el=document.createElement('img'); el.src=img.src; el.alt=img.caption||'';
+      el.loading='lazy';
+      el.onerror=()=>{ frame.innerHTML=`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:7px;color:rgba(74,138,220,0.25);padding:6px;text-align:center;">${img.caption||'IMG'}</div>`; };
+      frame.appendChild(el); galleryStrip.appendChild(frame);
+    });
+  } else {
+    gallerySection.classList.remove('vis');
+  }
+
+  buildSpecs(planet.moons ? planet.moons.map(m=>({k:'↳',v:m.label})) : []);
+  buildSentences([]);
+
+  document.getElementById('gc-prev').disabled = true;
+  document.getElementById('gc-next').disabled = true;
+
+  document.getElementById('ghost').classList.add('on');
+  document.getElementById('ms-ring').textContent = node.title;
+  document.getElementById('ms-title').textContent = planet.label;
+  document.getElementById('ms-body').textContent = planet.body||'';
+  document.getElementById('msheet').classList.add('on');
+}
+
+function buildSpecs(specs) {
+  const container = document.getElementById('gc-specs');
+  container.innerHTML='';
+  if (!specs||!specs.length){container.style.display='none';return;}
+  container.style.display='block';
+  specs.forEach(s => {
+    const row=document.createElement('div'); row.className='gc-spec-row';
+    row.innerHTML=`<span class="gc-spec-key">${s.k}</span><span class="gc-spec-val">${s.v}</span>`;
+    container.appendChild(row);
+  });
+}
+
+function buildSentences(sentences) {
+  const section = document.getElementById('gc-sentences');
+  const list = document.getElementById('gc-sent-list');
+  list.innerHTML='';
+  if (!sentences||!sentences.length){section.style.display='none';return;}
+  section.style.display='block';
+  sentences.forEach((s,i) => {
+    const el=document.createElement('span');
+    el.className='gc-sent'+(i===0?' active':'');
+    el.textContent=s;
+    el.addEventListener('click',()=>{
+      list.querySelectorAll('.gc-sent').forEach(x=>x.classList.remove('active'));
+      el.classList.add('active');
+    });
+    list.appendChild(el);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// LEFT RAIL + HUD NAV — unified update
+// ═══════════════════════════════════════════════════════
+function buildLeftRail() {
+  const rail = document.getElementById('left-rail');
+  NODES.forEach((node, i) => {
+    const cfg = dcfg(node.domain);
+    const pip = document.createElement('div');
+    pip.className = 'rail-pip';
+    pip.dataset.idx = i;
+    pip.style.setProperty('--pip-color', cfg.hex);
+    pip.innerHTML = `
+      <div class="rail-pip-dot" style="background:${cfg.hex}30"></div>
+      <div class="rail-ghost">
+        <span class="rail-ghost-name">${node.title}</span>
+        <span class="rail-ghost-tier">${node.tier}</span>
+      </div>`;
+    pip.addEventListener('click', () => enterSunFocus(node));
+    rail.appendChild(pip);
+  });
+}
+buildLeftRail();
+
+function updateRailAndHUD(activeNode) {
+  // Rail pips
+  document.querySelectorAll('.rail-pip').forEach((pip, i) => {
+    const node = NODES[i];
+    const cfg = dcfg(node.domain);
+    const isActive = activeNode && node.id === activeNode.id;
+    pip.classList.toggle('active', isActive);
+    const dot = pip.querySelector('.rail-pip-dot');
+    if (isActive) {
+      dot.style.background = cfg.hex;
+    } else {
+      dot.style.background = cfg.hex + '30';
+    }
+    // Scroll active pip into view
+    if (isActive) pip.scrollIntoView({behavior:'smooth', block:'nearest'});
+  });
+
+  // HUD counter + nav state
+  const hudCounter = document.getElementById('hud-counter');
+  const hudPrev = document.getElementById('hud-prev');
+  const hudNext = document.getElementById('hud-next');
+
+  if (activeNode) {
+    const idx = NODES.indexOf(activeNode);
+    hudCounter.textContent = `${idx+1} / ${NODES.length}`;
+    hudPrev.disabled = idx === 0;
+    hudNext.disabled = idx === NODES.length - 1;
+  } else {
+    hudCounter.textContent = '——';
+    hudPrev.disabled = true;
+    hudNext.disabled = true;
+  }
+}
+
+// HUD prev/next
+document.getElementById('hud-prev').addEventListener('click', () => {
+  if (!focusedNode) return;
+  const idx = NODES.indexOf(focusedNode);
+  if (idx > 0) enterSunFocus(NODES[idx - 1]);
+});
+document.getElementById('hud-next').addEventListener('click', () => {
+  if (!focusedNode) return;
+  const idx = NODES.indexOf(focusedNode);
+  if (idx < NODES.length - 1) enterSunFocus(NODES[idx + 1]);
+});
+
+// Panel nav (ghost panel)
+document.getElementById('gc-prev').addEventListener('click',()=>{
+  if(!focusedNode)return;
+  const idx=NODES.indexOf(focusedNode);
+  if(idx>0)enterSunFocus(NODES[idx-1]);
+});
+document.getElementById('gc-next').addEventListener('click',()=>{
+  if(!focusedNode)return;
+  const idx=NODES.indexOf(focusedNode);
+  if(idx<NODES.length-1)enterSunFocus(NODES[idx+1]);
+});
+document.getElementById('ms-prev').addEventListener('click',()=>{
+  if(!focusedNode)return;
+  const idx=NODES.indexOf(focusedNode);
+  if(idx>0)enterSunFocus(NODES[idx-1]);
+});
+document.getElementById('ms-next').addEventListener('click',()=>{
+  if(!focusedNode)return;
+  const idx=NODES.indexOf(focusedNode);
+  if(idx<NODES.length-1)enterSunFocus(NODES[idx+1]);
+});
+
+// ═══════════════════════════════════════════════════════
+// VIEW SWITCHING
+// ═══════════════════════════════════════════════════════
+let currentView = 'spiral', morphing = false, morphT = 0;
+
+function switchView(view) {
+  if (view===currentView) return;
+  currentView=view; morphing=true; morphT=0;
+  document.querySelectorAll('.hud-btn[data-view]').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`[data-view="${view}"]`).classList.add('active');
+  if (view==='arc'){camTarget.phi=Math.PI*0.08;camTarget.theta=0;camTarget.radius=58;}
+  else{camTarget.phi=Math.PI*0.28;camTarget.radius=72;}
+}
+document.querySelectorAll('.hud-btn[data-view]').forEach(btn=>btn.addEventListener('click',()=>switchView(btn.dataset.view)));
+document.getElementById('hud-zoom-in').addEventListener('click',()=>{camTarget.radius=Math.max(8,camTarget.radius-12);});
+document.getElementById('hud-zoom-out').addEventListener('click',()=>{camTarget.radius=Math.min(140,camTarget.radius+12);});
+
+function tickMorph() {
+  if (!morphing) return;
+  morphT=Math.min(morphT+0.04,1);
+  const ease=morphT<0.5?2*morphT*morphT:1-Math.pow(-2*morphT+2,2)/2;
+  nodeObjects.forEach(({mesh,node},i) => {
+    const from=currentView==='arc'?node._spiralPos:node._arcPos;
+    const to=currentView==='arc'?node._arcPos:node._spiralPos;
+    mesh.position.lerpVectors(from,to,ease);
+    node._pos.copy(mesh.position);
+    glowSprites[i]&&glowSprites[i].position.copy(mesh.position);
+    if(allLabels[i])allLabels[i].spr.position.set(mesh.position.x+0.55,mesh.position.y+0.48,mesh.position.z);
+  });
+  if(morphT>=1)morphing=false;
+}
+
+// ═══════════════════════════════════════════════════════
+// INTERACTION
+// ═══════════════════════════════════════════════════════
+const tooltip=document.getElementById('tooltip');
+let hoveredMesh=null, mouse=new THREE.Vector2();
+let drag=false, lastDragX=0, lastDragY=0, isDragging=false;
+let hintFaded=false;
+let hoveredNodeMesh=null;
+
+function getAllHittable() {
+  const all=nodeObjects.map(o=>o.mesh);
+  hitProxies.forEach(hp=>all.push(hp.proxy));
+  nodeObjects.forEach(({node})=>{
+    if(node._planetObjects)node._planetObjects.forEach(po=>{
+      if(po.pMesh.material.opacity>0.1)all.push(po.pMesh);
+    });
+  });
+  return all;
+}
+
+function checkHover(clientX, clientY) {
+  raycaster.setFromCamera(mouse, cam);
+  const hittable=getAllHittable();
+  const hits=raycaster.intersectObjects(hittable);
+
+  if(hoveredNodeMesh&&(!hits.length||hits[0].object!==hoveredNodeMesh)){
+    if(!hoveredNodeMesh.userData.isPlanet)hoveredNodeMesh.scale.setScalar(hoveredNodeMesh.userData.baseScale||1);
+    hoveredNodeMesh=null;
+  }
+
+  if(hits.length){
+    const hit=hits[0].object;
+    let e=hit.userData.node||null;
+    let isPlanetHit=hit.userData.isPlanet;
+
+    if(e&&hoveredMesh!==hit){
+      hoveredMesh=hit;
+      document.getElementById('tt-ring').textContent=RING_NAMES[e.tier]||e.tier;
+      document.getElementById('tt-title').textContent=isPlanetHit?hit.userData.planet.label:e.title;
+      document.getElementById('tt-title').style.color=isLight?'#0a0e1e':'#e8f0ff';
+      document.getElementById('tt-role').textContent=isPlanetHit?hit.userData.planet.role:e.role;
+      document.getElementById('tt-type').textContent=isPlanetHit?(hit.userData.planet.rings?'⬡ Case Study':'Planet'):'Click to focus';
+      tooltip.classList.add('vis');
+    }
+    if(!isPlanetHit&&hit!==hoveredNodeMesh){
+      if(hoveredNodeMesh)hoveredNodeMesh.scale.setScalar(hoveredNodeMesh.userData.baseScale||1);
+      hoveredNodeMesh=hit;
+      hit.userData.baseScale=hit.userData.baseScale||1;
+      hit.scale.setScalar(1.55);
+    }
+    document.body.style.cursor='pointer';
+  } else {
+    if(hoveredMesh){hoveredMesh=null;tooltip.classList.remove('vis');}
+    document.body.style.cursor='default';
+  }
+}
+
+function posTooltip(cx,cy){tooltip.style.transform=`translate(${cx+18}px,${cy-10}px)`;}
+
+cvs.addEventListener('pointerdown',e=>{
+  if(e.button===2)return;
+  isDragging=false;drag=false;
+  lastDragX=e.clientX;lastDragY=e.clientY;
+  cvs.setPointerCapture(e.pointerId);
+});
+
+cvs.addEventListener('pointermove',e=>{
+  const rect=cvs.getBoundingClientRect();
+  mouse.x=(e.clientX-rect.left)/rect.width*2-1;
+  mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;
+  posTooltip(e.clientX,e.clientY);
+  if(e.buttons&&e.button!==2){
+    isDragging=true;drag=true;
+    camTarget.theta-=(e.clientX-lastDragX)*0.005;
+    camTarget.phi=Math.max(0.04,Math.min(Math.PI*0.48,camTarget.phi+(e.clientY-lastDragY)*0.005));
+    lastDragX=e.clientX;lastDragY=e.clientY;
+  } else {
+    checkHover(e.clientX,e.clientY);
+  }
+});
+
+cvs.addEventListener('pointerup',e=>{
+  if(e.button===2)return;
+  if(!drag){
+    raycaster.setFromCamera(mouse,cam);
+    const hits=raycaster.intersectObjects(getAllHittable());
+    if(hits.length){
+      const hit=hits[0].object;
+      if(hit.userData.isPlanet){
+        if(focusedNode){
+          const po=focusedNode._planetObjects&&focusedNode._planetObjects.find(p=>p.pMesh===hit);
+          if(po)enterPlanetFocus(po);
+        }
+      } else if(hit.userData.node){
+        enterSunFocus(hit.userData.node);
+      } else if(hit.userData.isHitProxy){
+        enterSunFocus(hit.userData.node);
+      }
+    } else if(focusLevel>0){
+      exitPlanetFocus();
+    }
+  }
+  if(!hintFaded){document.getElementById('hint').style.opacity='0.05';hintFaded=true;}
+});
+
+cvs.addEventListener('wheel',e=>{camTarget.radius=Math.max(8,Math.min(140,camTarget.radius+e.deltaY*0.06));},{passive:true});
+cvs.addEventListener('contextmenu',e=>{e.preventDefault();openTOC();});
+
+let longPressTimer=null;
+cvs.addEventListener('touchstart',e=>{longPressTimer=setTimeout(()=>openTOC(),600);},{passive:true});
+cvs.addEventListener('touchend',()=>clearTimeout(longPressTimer));
+cvs.addEventListener('touchmove',()=>clearTimeout(longPressTimer));
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){if(tocVisible)closeTOC();else exitPlanetFocus();}
+  if(e.code==='Space'){e.preventDefault();orbitPaused=!orbitPaused;}
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'){
+    e.preventDefault();
+    const idx=focusedNode?NODES.indexOf(focusedNode):-1;
+    if(idx<NODES.length-1)enterSunFocus(NODES[idx+1]);
+  }
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp'){
+    e.preventDefault();
+    if(focusedNode){const idx=NODES.indexOf(focusedNode);if(idx>0)enterSunFocus(NODES[idx-1]);}
+  }
+});
+
+// ═══════════════════════════════════════════════════════
+// TABLE OF CONTENTS
+// ═══════════════════════════════════════════════════════
+let tocVisible=false;
+function buildTOC(){
+  const list=document.getElementById('toc-list');
+  let lastTier=null;
+  [...NODES].sort((a,b)=>a._t-b._t).forEach((node)=>{
+    if(node.tier!==lastTier){
+      lastTier=node.tier;
+      const sec=document.createElement('div');sec.className='toc-section';
+      sec.textContent=RING_NAMES[node.tier]||node.tier;
+      list.appendChild(sec);
+    }
+    const row=document.createElement('div');row.className='toc-row';
+    const cfg=dcfg(node.domain);
+    row.innerHTML=`<span class="toc-domain" style="color:${cfg.hex}88">◉</span><span class="toc-name">${node.title}</span><span class="toc-role">${node.role}</span>`;
+    row.addEventListener('click',()=>{closeTOC();enterSunFocus(node);});
+    list.appendChild(row);
+  });
+}
+buildTOC();
+function openTOC(){document.getElementById('toc').classList.add('vis');tocVisible=true;}
+window.closeTOC=function(){document.getElementById('toc').classList.remove('vis');tocVisible=false;};
+document.getElementById('toc').addEventListener('click',e=>{if(e.target===document.getElementById('toc'))closeTOC();});
+
+// ═══════════════════════════════════════════════════════
+// THEME
+// ═══════════════════════════════════════════════════════
+function applyTheme(){
+  document.body.classList.toggle('light',isLight);
+  document.getElementById('theme-toggle').textContent=isLight?'Dark':'Light';
+  allLines.forEach(({line,darkColor,lightColor,darkOp,lightOp})=>{
+    line.material.color.setHex(isLight?(lightColor||0x1a3a8a):darkColor);
+    line.material.opacity=isLight?lightOp:darkOp;
+  });
+  nodeObjects.forEach(({mesh})=>{
+    if(isLight){mesh.material.color.setHex(0x0a0e20);mesh.material.emissive.setHex(0x000000);mesh.material.emissiveIntensity=0;mesh.material.metalness=0.1;mesh.material.roughness=0.6;}
+    else{const ud=mesh.userData;mesh.material.color.setHex(ud.origColor);mesh.material.emissive.setHex(ud.origColor);mesh.material.emissiveIntensity=ud.origEI;mesh.material.metalness=0.2;mesh.material.roughness=0.06;}
+  });
+  glowSprites.forEach(gs=>{gs.visible=!isLight;});
+  neonA.intensity=isLight?0:5;neonB.intensity=isLight?0:4;neonC.intensity=isLight?0:3.5;
+  ambLight.intensity=isLight?1.1:0.10;
+  pMat.opacity=isLight?0:0.11;
+  scene.fog.color.setHex(isLight?0xf0ece4:0x000000);
+  renderer.setClearColor(isLight?0xf0ece4:0x000000,0);
+  redrawLabels();drawMesh();
+}
+document.getElementById('theme-toggle').addEventListener('click',()=>{isLight=!isLight;applyTheme();});
+
+// ═══════════════════════════════════════════════════════
+// BACKGROUND MESH
+// ═══════════════════════════════════════════════════════
+const bgCanvas=document.getElementById('bg-mesh'),bgCtx=bgCanvas.getContext('2d');
+function resizeBg(){bgCanvas.width=innerWidth;bgCanvas.height=innerHeight;}resizeBg();
+const BD=[
+  {x:0.12,y:0.22,vx:0.00007,vy:0.00005,r:0.62,col:[12,24,60]},
+  {x:0.78,y:0.70,vx:-0.00005,vy:0.00007,r:0.52,col:[8,40,60]},
+  {x:0.85,y:0.15,vx:-0.00006,vy:-0.00006,r:0.42,col:[30,12,55]},
+  {x:0.20,y:0.82,vx:0.00006,vy:-0.00005,r:0.48,col:[5,50,40]},
+];
+const BL=[
+  {x:0.12,y:0.22,vx:0.00007,vy:0.00005,r:0.62,col:[200,210,240]},
+  {x:0.78,y:0.70,vx:-0.00005,vy:0.00007,r:0.52,col:[180,220,230]},
+  {x:0.85,y:0.15,vx:-0.00006,vy:-0.00006,r:0.42,col:[210,190,240]},
+  {x:0.20,y:0.82,vx:0.00006,vy:-0.00005,r:0.48,col:[170,230,220]},
+];
+function drawMesh(){
+  const w=bgCanvas.width,h=bgCanvas.height;
+  bgCtx.clearRect(0,0,w,h);
+  bgCtx.fillStyle=isLight?'#f0ece4':'#05030a';bgCtx.fillRect(0,0,w,h);
+  const blobs=isLight?BL:BD;
+  blobs.forEach(b=>{
+    const cx=b.x*w,cy=b.y*h,rad=Math.max(w,h)*b.r;
+    const grd=bgCtx.createRadialGradient(cx,cy,0,cx,cy,rad);
+    const[r,g,bl]=b.col;
+    grd.addColorStop(0,`rgba(${r},${g},${bl},${isLight?0.38:0.52})`);
+    grd.addColorStop(0.5,`rgba(${r},${g},${bl},${isLight?0.10:0.12})`);
+    grd.addColorStop(1,`rgba(${r},${g},${bl},0)`);
+    bgCtx.fillStyle=grd;bgCtx.fillRect(0,0,w,h);
+  });
+  const vig=bgCtx.createRadialGradient(w/2,h/2,h*0.3,w/2,h/2,h*0.9);
+  vig.addColorStop(0,'rgba(0,0,0,0)');
+  vig.addColorStop(1,isLight?'rgba(0,5,30,0.06)':'rgba(0,0,0,0.75)');
+  bgCtx.fillStyle=vig;bgCtx.fillRect(0,0,w,h);
+}
+let meshT=0;
+function tickMesh(){
+  meshT++;
+  [...BD,...BL].forEach(b=>{
+    b.x+=b.vx;b.y+=b.vy;
+    if(b.x<0||b.x>1)b.vx*=-1;if(b.y<0||b.y>1)b.vy*=-1;
+  });
+  if(meshT%3===0)drawMesh();
+  requestAnimationFrame(tickMesh);
+}
+drawMesh();tickMesh();
+
+// ═══════════════════════════════════════════════════════
+// ANIMATE
+// ═══════════════════════════════════════════════════════
+let lastTime=0,elapsed=0;
+
+function animate(ts){
+  requestAnimationFrame(animate);
+  const dt=Math.min((ts-lastTime)/1000,0.05);
+  lastTime=ts;elapsed+=dt;
+
+  camState.phi+=(camTarget.phi-camState.phi)*0.08;
+  camState.theta+=(camTarget.theta-camState.theta)*0.08;
+  camState.radius+=(camTarget.radius-camState.radius)*0.08;
+  scenePivot.lerp(scenePivotTgt,0.08);
+
+  if(focusLevel===0&&!isDragging&&!orbitPaused)camTarget.theta+=dt*0.012;
+
+  nodeObjects.forEach(({mesh,node})=>{
+    if(mesh===hoveredNodeMesh)return;
+    const pulse=1+Math.sin(elapsed*0.65+node._t*Math.PI*2)*0.022;
+    mesh.scale.setScalar(focusLevel>0?(nodeObjects.find(o=>o.node.id===focusedNode?.id)?.mesh===mesh?1.1:1):pulse);
+  });
+
+  const pa=pGeo.attributes.position.array;
+  for(let i=0;i<PC;i++)pa[i*3+1]=pOrig[i*3+1]+Math.sin(elapsed*pSp[i]+pPh[i])*0.32;
+  pGeo.attributes.position.needsUpdate=true;
+
+  tickMorph();
+  tickPlanets(elapsed,dt);
+
+  neonA.intensity=(isLight?0:5)+Math.sin(elapsed*0.8)*0.4;
+  neonB.intensity=(isLight?0:4)+Math.sin(elapsed*0.6+1.2)*0.35;
+
+  applyCam();
+  renderer.render(scene,cam);
+  isDragging=false;
+}
+requestAnimationFrame(animate);
+
+window.addEventListener('resize',()=>{
+  cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);resizeBg();drawMesh();
+});
+</script>
+</body>
+</html>
